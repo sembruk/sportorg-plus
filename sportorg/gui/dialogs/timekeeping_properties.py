@@ -97,7 +97,7 @@ class TimekeepingPropertiesDialog(QDialog):
         self.assignment_mode.stateChanged.connect(self.on_assignment_mode)
         self.tk_layout.addRow(self.assignment_mode)
 
-        self.auto_connect = QCheckBox(_('Auto connect to SPORTident station'))
+        self.auto_connect = QCheckBox(_('Auto connect to station'))
         self.tk_layout.addRow(self.auto_connect)
 
         self.timekeeping_tab.setLayout(self.tk_layout)
@@ -142,7 +142,7 @@ class TimekeepingPropertiesDialog(QDialog):
         self.sduino_finish_group_box.setLayout(self.sduino_finish_layout)
         self.sduino_layout.addRow(self.sduino_finish_group_box)
 
-        self.sduino_auto_connect = QCheckBox(_('Auto connect to Sportiduino station'))
+        self.sduino_auto_connect = QCheckBox(_('Auto connect to station'))
         self.sduino_layout.addRow(self.sduino_auto_connect)
 
         self.sportiduino_tab.setLayout(self.sduino_layout)
@@ -278,8 +278,10 @@ class TimekeepingPropertiesDialog(QDialog):
 
         self.time_settings_tab.setLayout(self.time_settings_layout)
 
-        self.tab_widget.addTab(self.timekeeping_tab, _('SPORTident settings'))
-        self.tab_widget.addTab(self.sportiduino_tab, _('Sportiduino settings'))
+        if Config().configuration.get('punching_system') == 'Sportiduino':
+            self.tab_widget.addTab(self.sportiduino_tab, _('Sportiduino settings'))
+        else:
+            self.tab_widget.addTab(self.timekeeping_tab, _('SPORTident settings'))
         self.tab_widget.addTab(self.result_proc_tab, _('Result processing'))
         self.tab_widget.addTab(self.team_result_tab, _('Team results'))
         self.tab_widget.addTab(self.scores_tab, _('Scores'))

@@ -33,6 +33,12 @@ class SettingsDialog(QDialog):
         self.item_lang.setCurrentText(Config().configuration.get('current_locale', 'ru_RU'))
         self.layout.addRow(self.label_lang, self.item_lang)
 
+        self.label_epunching = QLabel(_('Punching system'))
+        self.item_epunching = AdvComboBox()
+        self.item_epunching.addItems(('SPORTident', 'Sportiduino'))
+        self.item_epunching.setCurrentText(Config().configuration.get('punching_system', 'SPORTident'))
+        self.layout.addRow(self.label_epunching, self.item_epunching)
+
         self.item_show_toolbar = QCheckBox(_('Show toolbar'))
         self.item_show_toolbar.setChecked(Config().configuration.get('show_toolbar'))
         self.layout.addRow(self.item_show_toolbar)
@@ -76,6 +82,7 @@ class SettingsDialog(QDialog):
 
     def apply_changes_impl(self):
         Config().configuration.set('current_locale', self.item_lang.currentText())
+        Config().configuration.set('punching_system', self.item_epunching.currentText())
         Config().configuration.set('show_toolbar', self.item_show_toolbar.isChecked())
         Config().configuration.set('autosave', self.item_auto_save.isChecked())
         Config().configuration.set('autoconnect', self.item_auto_connect.isChecked())
