@@ -13,6 +13,7 @@ from sportorg.models.memory import race
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.modules.configs.configs import Config
 from sportorg.modules.sportident.sireader import SIReaderClient
+from sportorg.modules.sportiduino.sportiduino import SportiduinoClient
 from sportorg.utils.time import time_to_otime
 
 
@@ -96,10 +97,55 @@ class TimekeepingPropertiesDialog(QDialog):
         self.assignment_mode.stateChanged.connect(self.on_assignment_mode)
         self.tk_layout.addRow(self.assignment_mode)
 
-        self.auto_connect = QCheckBox(_('Auto connect to station'))
+        self.auto_connect = QCheckBox(_('Auto connect to SPORTident station'))
         self.tk_layout.addRow(self.auto_connect)
 
         self.timekeeping_tab.setLayout(self.tk_layout)
+
+        # Sportiduino tab
+        self.sportiduino_tab = QWidget()
+        self.sduino_layout = QFormLayout()
+
+        self.sduino_label_port = QLabel(_('Available Ports'))
+        self.sduino_item_port = AdvComboBox()
+        self.sduino_item_port.addItems(SportiduinoClient().get_ports())
+        self.sduino_layout.addRow(self.sduino_label_port, self.sduino_item_port)
+
+        self.sduino_start_group_box = QGroupBox(_('Start time'))
+        self.sduino_start_layout = QFormLayout()
+        self.sduino_item_start_protocol = QRadioButton(_('From protocol'))
+        self.sduino_start_layout.addRow(self.sduino_item_start_protocol)
+        self.sduino_item_start_station = QRadioButton(_('Start station'))
+        self.sduino_start_layout.addRow(self.sduino_item_start_station)
+        self.sduino_item_start_cp = QRadioButton(_('Control point'))
+        self.sduino_item_start_cp_value = QSpinBox()
+        self.sduino_item_start_cp_value.setMaximumSize(60, 20)
+        self.sduino_start_layout.addRow(self.sduino_item_start_cp, self.sduino_item_start_cp_value)
+        self.sduino_item_start_gate = QRadioButton(_('Start gate'))
+        self.sduino_item_start_gate.setDisabled(True)
+        self.sduino_start_layout.addRow(self.sduino_item_start_gate)
+        self.sduino_start_group_box.setLayout(self.sduino_start_layout)
+        self.sduino_layout.addRow(self.sduino_start_group_box)
+
+        self.sduino_finish_group_box = QGroupBox(_('Finish time'))
+        self.sduino_finish_layout = QFormLayout()
+        self.sduino_item_finish_station = QRadioButton(_('Finish station'))
+        self.sduino_finish_layout.addRow(self.sduino_item_finish_station)
+        self.sduino_item_finish_cp = QRadioButton(_('Control point'))
+        self.sduino_item_finish_cp_value = QSpinBox()
+        self.sduino_item_finish_cp_value.setMinimum(-1)
+        self.sduino_item_finish_cp_value.setMaximumSize(60, 20)
+        self.sduino_finish_layout.addRow(self.sduino_item_finish_cp, self.sduino_item_finish_cp_value)
+        self.sduino_item_finish_beam = QRadioButton(_('Light beam'))
+        self.sduino_item_finish_beam.setDisabled(True)
+        self.sduino_finish_layout.addRow(self.sduino_item_finish_beam)
+        self.sduino_finish_group_box.setLayout(self.sduino_finish_layout)
+        self.sduino_layout.addRow(self.sduino_finish_group_box)
+
+        self.sduino_auto_connect = QCheckBox(_('Auto connect to Sportiduino station'))
+        self.sduino_layout.addRow(self.sduino_auto_connect)
+
+        self.sportiduino_tab.setLayout(self.sduino_layout)
 
         # result processing tab
         self.result_proc_tab = QWidget()
@@ -233,6 +279,7 @@ class TimekeepingPropertiesDialog(QDialog):
         self.time_settings_tab.setLayout(self.time_settings_layout)
 
         self.tab_widget.addTab(self.timekeeping_tab, _('SPORTident settings'))
+        self.tab_widget.addTab(self.sportiduino_tab, _('Sportiduino settings'))
         self.tab_widget.addTab(self.result_proc_tab, _('Result processing'))
         self.tab_widget.addTab(self.team_result_tab, _('Team results'))
         self.tab_widget.addTab(self.scores_tab, _('Scores'))

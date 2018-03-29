@@ -3,6 +3,9 @@ import logging
 from queue import Queue, Empty
 from threading import main_thread, Event
 
+import os
+import platform
+import re
 import time
 import serial
 
@@ -179,6 +182,37 @@ class SportiduinoClient(object):
             return
         self.start()
 
+    @staticmethod
+    def get_ports():
+        ports = []
+        if platform.system() == 'Linux':
+            scan_ports = [os.path.join('/dev', f) for f in os.listdir('/dev') if
+                     re.match('ttyUSB.*', f)]
+        elif platform.system() == 'Windows':
+            scan_ports = ['COM' + str(i) for i in range(32)]
+
+        for p in scan_ports:
+            try:
+                com = serial.Serial(p, 9600, timeout=5)
+                com.close()
+                ports.append(p)
+            except serial.SerialException:
+                continue
+
+        return ports
+
     def choose_port(self):
-        return memory.race().get_setting('sportident_port', None)
+        sduino_port = memory.race().get_setting('sportiduino_port', None)
+        if sduino_port:
+            return sduino_port
+        ports = self.get_ports()
+        if len(ports):
+            self._logger.info(_('Available Ports'))
+            for i, p in enumerate(ports):
+                self._logger.info("{} - {}".format(i, p))
+            return ports[0]
+        else:
+            self._logger.info('No ports available')
+            return None
+
 
