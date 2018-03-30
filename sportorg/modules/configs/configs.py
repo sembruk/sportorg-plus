@@ -69,7 +69,6 @@ class Config(metaclass=Singleton):
         self._configurations = {
             ConfigFile.CONFIGURATION: Configurations({
                 'current_locale': 'ru_RU',
-                'punching_system': 'SPORTident',
                 'show_toolbar': True,
                 'autosave': False,
                 'autoconnect': False,

@@ -97,7 +97,7 @@ class TimekeepingPropertiesDialog(QDialog):
         self.assignment_mode.stateChanged.connect(self.on_assignment_mode)
         self.tk_layout.addRow(self.assignment_mode)
 
-        self.auto_connect = QCheckBox(_('Auto connect to station'))
+        self.auto_connect = QCheckBox(_('Auto connect to SPORTident station'))
         self.tk_layout.addRow(self.auto_connect)
 
         self.timekeeping_tab.setLayout(self.tk_layout)
@@ -142,7 +142,7 @@ class TimekeepingPropertiesDialog(QDialog):
         self.sduino_finish_group_box.setLayout(self.sduino_finish_layout)
         self.sduino_layout.addRow(self.sduino_finish_group_box)
 
-        self.sduino_auto_connect = QCheckBox(_('Auto connect to station'))
+        self.sduino_auto_connect = QCheckBox(_('Auto connect to Sportiduino station'))
         self.sduino_layout.addRow(self.sduino_auto_connect)
 
         self.sportiduino_tab.setLayout(self.sduino_layout)
@@ -278,10 +278,8 @@ class TimekeepingPropertiesDialog(QDialog):
 
         self.time_settings_tab.setLayout(self.time_settings_layout)
 
-        if Config().configuration.get('punching_system') == 'Sportiduino':
-            self.tab_widget.addTab(self.sportiduino_tab, _('Sportiduino settings'))
-        else:
-            self.tab_widget.addTab(self.timekeeping_tab, _('SPORTident settings'))
+        self.tab_widget.addTab(self.timekeeping_tab, _('SPORTident settings'))
+        self.tab_widget.addTab(self.sportiduino_tab, _('Sportiduino settings'))
         self.tab_widget.addTab(self.result_proc_tab, _('Result processing'))
         self.tab_widget.addTab(self.team_result_tab, _('Team results'))
         self.tab_widget.addTab(self.scores_tab, _('Scores'))
@@ -322,8 +320,7 @@ class TimekeepingPropertiesDialog(QDialog):
         self.finish_group_box.setDisabled(mode)
         self.chip_reading_box.setDisabled(mode)
 
-    def set_values_from_model(self):
-        cur_race = race()
+    def set_sportident_values(self, cur_race):
         zero_time = cur_race.get_setting('sportident_zero_time', (8, 0, 0))
         start_source = cur_race.get_setting('sportident_start_source', 'protocol')
         start_cp_number = cur_race.get_setting('sportident_start_cp_number', 31)
@@ -366,6 +363,42 @@ class TimekeepingPropertiesDialog(QDialog):
 
         self.assignment_mode.setChecked(assignment_mode)
         self.auto_connect.setChecked(Config().configuration.get('autoconnect'))
+
+    def set_sportiduino_values(self, cur_race):
+        start_source = cur_race.get_setting('sduino_start_source', 'protocol')
+        start_cp_number = cur_race.get_setting('sduino_start_cp_number', 31)
+        finish_source = cur_race.get_setting('sduino_finish_source', 'station')
+        finish_cp_number = cur_race.get_setting('sduino_finish_cp_number', 90)
+        sduino_port = cur_race.get_setting('sduino_port', None)
+
+        self.sduino_item_port.setCurrentText(sduino_port)
+
+        if start_source == 'protocol':
+            self.sduino_item_start_protocol.setChecked(True)
+        elif start_source == 'station':
+            self.sduino_item_start_station.setChecked(True)
+        elif start_source == 'cp':
+            self.sduino_item_start_cp.setChecked(True)
+        elif start_source == 'gate':
+            self.sduino_item_start_gate.setChecked(True)
+
+        self.sduino_item_start_cp_value.setValue(start_cp_number)
+
+        if finish_source == 'station':
+            self.sduino_item_finish_station.setChecked(True)
+        elif finish_source == 'cp':
+            self.sduino_item_finish_cp.setChecked(True)
+        elif finish_source == 'beam':
+            self.sduino_item_finish_beam.setChecked(True)
+
+        self.sduino_item_finish_cp_value.setValue(finish_cp_number)
+
+        self.sduino_auto_connect.setChecked(Config().configuration.get('sduino_autoconnect', False))
+
+    def set_values_from_model(self):
+        cur_race = race()
+        self.set_sportident_values(cur_race)
+        self.set_sportiduino_values(cur_race)
 
         # result processing
         obj = cur_race
@@ -453,7 +486,7 @@ class TimekeepingPropertiesDialog(QDialog):
         elif time_format_24 == 'more24':
             self.time_settings_format_more.setChecked(True)
 
-    def apply_changes_impl(self):
+    def apply_sportident(self):
         changed = False
         obj = race()
 
@@ -505,6 +538,53 @@ class TimekeepingPropertiesDialog(QDialog):
 
         Config().configuration.set('autoconnect', self.auto_connect.isChecked())
 
+    def apply_sportiduino(self):
+        changed = False
+        obj = race()
+
+        start_source = 'protocol'
+        if self.sduino_item_start_station.isChecked():
+            start_source = 'station'
+        elif self.sduino_item_start_cp.isChecked():
+            start_source = 'cp'
+        elif self.sduino_item_start_gate.isChecked():
+            start_source = 'gate'
+
+        finish_source = 'station'
+        if self.sduino_item_finish_cp.isChecked():
+            finish_source = 'cp'
+        elif self.sduino_item_finish_beam.isChecked():
+            finish_source = 'beam'
+
+        start_cp_number = self.sduino_item_start_cp_value.value()
+        finish_cp_number = self.sduino_item_finish_cp_value.value()
+
+        old_start_source = obj.get_setting('sduino_start_source', 'protocol')
+        old_start_cp_number = obj.get_setting('sduino_start_cp_number', 31)
+        old_finish_source = obj.get_setting('sduino_finish_source', 'station')
+        old_finish_cp_number = obj.get_setting('sduino_finish_cp_number', 90)
+
+        if old_start_source != start_source or old_finish_source != finish_source:
+            changed = True
+        if old_start_cp_number != start_cp_number or old_finish_cp_number != finish_cp_number:
+            changed = True
+            #race().clear_sportident_results()
+
+        obj.set_setting('sduino_port', self.sduino_item_port.currentText())
+
+        obj.set_setting('sduino_start_source', start_source)
+        obj.set_setting('sduino_finish_source', finish_source)
+
+        obj.set_setting('sduino_start_cp_number', start_cp_number)
+        obj.set_setting('sduino_finish_cp_number', finish_cp_number)
+
+        Config().configuration.set('sduino_autoconnect', self.sduino_auto_connect.isChecked())
+
+    def apply_changes_impl(self):
+        self.apply_sportident()
+        self.apply_sportiduino()
+
+        obj = race()
         # result processing
         rp_mode = 'time'
         if self.rp_scores_radio.isChecked():
