@@ -74,6 +74,7 @@ class RaceType(_TitleType):
     RELAY = 3
     # ONE_MAN_RELAY = 4
     # SPRINT_RELAY = 5
+    ROGAINING = 6
 
 
 class ResultStatus(_TitleType):
