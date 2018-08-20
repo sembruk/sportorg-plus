@@ -83,6 +83,7 @@ class RaceType(_TitleType):
     RELAY = PrintableValue(3, _('Relay'))
     # ONE_MAN_RELAY = PrintableValue(4, _('One man relay'))
     # SPRINT_RELAY = PrintableValue(5, _('Sprint relay'))
+    ROGAINING = PrintableValue(6, _('Rogaining'))
 
 
 class ResultStatus(_TitleType):
