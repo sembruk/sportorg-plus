@@ -588,11 +588,6 @@ class Result:
         return self.bib
 
     def get_result(self):
-        if not self.is_status_ok():
-            if self.status_comment:
-                return self.status_comment
-            return self.status.get_title()
-
         if not self.person:
             return ''
 
@@ -602,6 +597,13 @@ class Result:
 
         time_accuracy = race().get_setting('time_accuracy', 0)
         ret += self.get_result_otime().to_str(time_accuracy)
+
+        #if not self.is_status_ok():
+        #    if self.status_comment:
+        #        ret += ' ' + self.status_comment
+        #    else:
+        #        ret += ' ' + self.status.get_title()
+
         return ret
 
     def get_result_start_in_comment(self):

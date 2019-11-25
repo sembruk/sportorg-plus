@@ -67,9 +67,12 @@
                 if (result.status !== 1) {
                     r.diff = '';
                     r.place_show = '';
+                    if (result.status === 8) {
+                        r.place_show = 'КВ';
+                    }
                     r.speed = '';
                     r.scores = '';
-                    r.penalty_time = '';
+                    //r.penalty_time = '';
                     r.penalty_laps = '';
                 }
 
@@ -239,10 +242,13 @@
                 };
                 if (result.status !== 1) {
                     r.diff = '';
-                    r.place_show = '';
+                    r.place_show = r.status_comment;
+                    if (result.status === 8) {
+                        r.place_show = 'КВ';
+                    }
                     r.speed = '';
                     r.scores = '';
-                    r.penalty_time = '';
+                    //r.penalty_time = '';
                     r.penalty_laps = '';
                 }
 
