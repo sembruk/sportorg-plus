@@ -307,10 +307,14 @@ class TimekeepingPropertiesDialog(QDialog):
 
         # result processing
         obj = cur_race
-        rp_mode = obj.get_setting('result_processing_mode', 'time')
+        rp_mode = obj.get_result_processing_mode()
         rp_score_mode = obj.get_setting('result_processing_score_mode', 'rogain')
         rp_fixed_scores_value = obj.get_setting('result_processing_fixed_score_value', 1)
         rp_scores_minute_penalty = obj.get_setting('result_processing_scores_minute_penalty', 1)
+
+        if obj.is_rogaining():
+            self.rp_time_radio.setEnabled(False)
+            self.rp_scores_radio.setEnabled(False)
 
         if rp_mode == 'time':
             self.rp_time_radio.setChecked(True)

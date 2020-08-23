@@ -308,6 +308,9 @@ class Group(Model):
     def is_relay(self):
         return self.get_type() == RaceType.RELAY
 
+    def is_rogaining(self):
+        return self.get_type() == RaceType.ROGAINING
+
     def to_dict(self):
         return {
             'object': self.__class__.__name__,
@@ -458,7 +461,7 @@ class Result:
     def __eq__(self, other):
         eq = self.system_type and other.system_type
 
-        if race().get_setting('result_processing_mode', 'time') == 'time':
+        if race().get_result_processing_mode() == 'time':
             if self.get_start_time() and other.get_start_time():
                 eq = eq and self.get_start_time() == other.get_start_time()
             if self.get_finish_time() and other.get_finish_time():
@@ -482,7 +485,7 @@ class Result:
             # incorrect statuses sort
             return self.status.value > other.status.value
 
-        if race().get_setting('result_processing_mode', 'time') == 'time':
+        if race().get_result_processing_mode() == 'time':
             return self.get_result_otime() > other.get_result_otime()
         else:  # process by score (rogain)
             if self.scores == other.scores:
@@ -585,8 +588,17 @@ class Result:
         if not self.person:
             return ''
 
+        if self.person.bib > 2000 and self.person.group and self.person.group.is_rogaining():
+            cur_bib = self.person.bib - 1000
+            while cur_bib > 1000:
+                prev_person = find(race().persons, bib=cur_bib)
+                res = race().find_person_result(prev_person)
+                if res and not res.is_status_ok():
+                    return res.status.get_title()
+                cur_bib -= 1000
+
         ret = ''
-        if race().get_setting('result_processing_mode', 'time') == 'scores':
+        if race().get_result_processing_mode() == 'scores':
             ret += str(self.scores) + ' ' + _('points') + ' '
 
         time_accuracy = race().get_setting('time_accuracy', 0)
@@ -603,7 +615,7 @@ class Result:
             return ''
 
         ret = ''
-        if race().get_setting('result_processing_mode', 'time') == 'scores':
+        if race().get_result_processing_mode() == 'scores':
             ret += str(self.scores) + ' ' + _('points') + ' '
 
         # time_accuracy = race().get_setting('time_accuracy', 0)
@@ -633,7 +645,7 @@ class Result:
                 cur_bib -= 1000
 
         ret = ''
-        if race().get_setting('result_processing_mode', 'time') == 'scores':
+        if race().get_result_processing_mode() == 'scores':
             ret += str(self.scores) + ' ' + _('points') + ' '
 
         time_accuracy = race().get_setting('time_accuracy', 0)
@@ -1193,6 +1205,7 @@ class Race(Model):
         self.results = []  # type: List[Result]
         self.persons = []  # type: List[Person]
         self.relay_teams = []  # type: List[RelayTeam]
+        self.rogaining_teams = [] #type: List[RogainingTeam]
         self.settings = {}  # type: Dict[str, Any]
         self.controls = []  # type: List[ControlPoint]
 
@@ -1283,6 +1296,11 @@ class Race(Model):
             return self.settings[setting]
         else:
             return nvl_value
+    
+    def get_result_processing_mode(self):
+        if self.is_rogaining():
+            return 'scores'
+        return get_setting('result_processing_mode', 'time')
 
     def get_days(self, date_=None):
         return self.data.get_days(date_)
@@ -1491,6 +1509,11 @@ class Race(Model):
 
     def is_relay(self):
         if self.data.race_type == RaceType.RELAY:
+            return True
+        return False
+
+    def is_rogaining(self):
+        if self.data.race_type == RaceType.ROGAINING:
             return True
         return False
 
@@ -1937,6 +1960,63 @@ class RelayTeam(object):
         self.place = place
         for i in self.legs:
             i.set_place(place)
+
+
+class RogainingTeam(object):
+    def __init__(self, r):
+        self.race = r
+        self.group = None  # type: Group
+        self.description = ''  # Name of team, optional
+        self.bib_number = None  # bib
+        self.members_results = []  # type: List[Result]
+        self.score = 0
+        self.finish_time = OTime()
+
+    def __eq__(self, other):
+        if self.get_is_status_ok() == other.get_is_status_ok():
+            if self.get_score() == other.get_score():
+                if self.get_time() == other.get_time():
+                    return True
+        return False
+
+    def __gt__(self, other):
+        if self.get_is_status_ok() and not other.get_is_status_ok():
+            return False
+
+        if not self.get_is_status_ok() and other.get_is_status_ok():
+            return True
+
+        if self.get_scores() != other.get_scores():
+            return self.get_score() < other.get_score()
+
+        return self.get_time() > other.get_time()
+    
+    def get_score(self)
+        return self.score
+
+    def add_result(self, result):
+        """Add new result to the team"""
+        self.members_results.append(result)
+        self.finish_time = max(finish_time, result.get_finish_time())
+        if self.score == 0:
+            self.score = result.scores
+        else:
+            self.score = min(self.score, result.scores)
+
+    def get_time(self):
+        if len(self.members_results) > 0:
+            start_time = self.members_results[0].get_start_time()
+            return self.finish_time - start_time
+        return OTime()
+
+    def get_is_status_ok(self):
+        for r in self.members_results:
+            if not r.is_status_ok():
+                return False
+        return True
+
+    def set_place(self, place):
+        self.place = place
 
 
 def create(obj, **kwargs):

@@ -19,7 +19,7 @@ class ResultChecker:
         if self.person.group is None:
             return True
 
-        if race().get_setting('result_processing_mode', 'time') == 'scores':
+        if race().get_result_processing_mode() == 'scores':
             # process by score (rogain)
             result.scores = self.calculate_scores_rogain(result)
             return True
@@ -54,7 +54,7 @@ class ResultChecker:
                     result.status_comment = StatusComments().remove_hint(StatusComments().get())
             elif result.person.group and result.person.group.max_time.to_msec():
                 if result.get_result_otime() > result.person.group.max_time:
-                    if race().get_setting('result_processing_mode', 'time') == 'time':
+                    if race().get_result_processing_mode() == 'time':
                         result.status = ResultStatus.OVERTIME
 
         return o
