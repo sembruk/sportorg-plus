@@ -602,7 +602,10 @@ class Result:
             ret += str(self.scores) + ' ' + _('points') + ' '
 
         time_accuracy = race().get_setting('time_accuracy', 0)
-        ret += self.get_result_otime().to_str(time_accuracy)
+        if self.person.group.is_rogaining():
+            ret += self.get_result_otime_rogaine().to_str(time_accuracy)
+        else:
+            ret += self.get_result_otime().to_str(time_accuracy)
         return ret
 
     def get_result_start_in_comment(self):
@@ -669,6 +672,15 @@ class Result:
         ret_ms += self.get_penalty_time().to_msec(time_accuracy)
         ret_ms -= self.get_credit_time().to_msec(time_accuracy)
         return OTime(msec=ret_ms)
+
+    def get_result_otime_rogaine(self):
+        time_accuracy = race().get_setting('time_accuracy', 0)
+        if self.person:
+            team_bib = self.person.bib // 10
+            team = find(race().rogaining_teams, bib_number=team_bib)
+            if team:
+                return team.get_time()
+        return OTime()
 
     def get_start_time(self):
         if self.start_time and self.start_time.to_msec():
@@ -2002,6 +2014,8 @@ class RogainingTeam(object):
             self.score = result.scores
         else:
             self.score = min(self.score, result.scores)
+        for i in range(len(self.members_results)):
+            self.members_results[i].scores = self.score
 
     def get_time(self):
         if len(self.members_results) > 0:
@@ -2017,6 +2031,9 @@ class RogainingTeam(object):
 
     def set_place(self, place):
         self.place = place
+        for i in range(len(self.members_results)):
+            self.members_results[i].place = place
+
 
 
 def create(obj, **kwargs):

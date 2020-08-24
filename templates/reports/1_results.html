@@ -39,6 +39,7 @@
     function getResultsByGroup(group, count) {
         count = +count || 0;
         var isRelay = group.__type ? group.__type === 3 : race.data.race_type === 3;
+        var isRogaine = group.__type ? group.__type === 6 : race.data.race_type === 6;
         var results = [];
         for (var _i = 0, _a = race.results; _i < _a.length; _i++) {
             var result = _a[_i];
@@ -192,6 +193,25 @@
                     index++;
                     results.push({index: index});
                     prevBib = r.bib % 1000;
+                }
+                results.push(r);
+            }
+        } else if (isRogaine) {
+            var prevTeamBib = 0;
+            var resultsList = results.slice();
+            results = [];
+            for (var _i = 0, resultsList_ = resultsList; _i < resultsList_.length; _i++) {
+                var r = resultsList_[_i];
+                r.index = '';
+                teamBib = ~~(r.bib / 10)
+                if (teamBib !== prevTeamBib) {
+                    index++;
+                    results.push({index: index});
+                    prevTeamBib = teamBib;
+                } else {
+                    r.result = ''
+                    r.scores = ''
+                    r.place_show = ''
                 }
                 results.push(r);
             }
@@ -481,7 +501,7 @@
             {key: 'bib', title: 'Номер', size: 6},
             {key: 'penalty_time', title: 'Штраф', size: 9, active: false},
             {key: 'penalty_laps', title: 'Штраф', size: 9, active: false},
-            {key: 'result', title: 'Результат', size: 14},
+            {key: 'result', title: 'Результат', size: 16},
             {key: 'result_relay', title: 'Ком. рез-т', size: 14},
             {key: 'diff', title: 'Отставание', size: 11},
             {key: 'speed', title: 'Темп', size: 12, active: false},
@@ -525,11 +545,14 @@
         init: function () {
             try {
                 var isRelay = race.data.race_type === 3
+                var isRogaine = race.data.race_type === 6
                 this.getField('all_splits').active = location.href.indexOf('all_splits=1') > -1;
                 this.getField('scores').active = location.href.indexOf('scores=1') > -1;
                 this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
 
                 this.getField('result_relay').active = isRelay
+                this.getField('diff').active = !isRogaine
+                this.getField('qual').active = !isRogaine
             } catch (e){}
             return this;
         }
