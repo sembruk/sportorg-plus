@@ -588,14 +588,14 @@ class Result:
         if not self.person:
             return ''
 
-        if self.person.bib > 2000 and self.person.group and self.person.group.is_rogaining():
-            cur_bib = self.person.bib - 1000
-            while cur_bib > 1000:
+        if self.person.bib % 10 > 1 and self.person.group and self.person.group.is_rogaining():
+            cur_bib = self.person.bib - 1
+            while (cur_bib % 10) > 0:
                 prev_person = find(race().persons, bib=cur_bib)
                 res = race().find_person_result(prev_person)
                 if res and not res.is_status_ok():
                     return res.status.get_title()
-                cur_bib -= 1000
+                cur_bib -= 1
 
         ret = ''
         if race().get_result_processing_mode() == 'scores':
@@ -1300,7 +1300,7 @@ class Race(Model):
     def get_result_processing_mode(self):
         if self.is_rogaining():
             return 'scores'
-        return get_setting('result_processing_mode', 'time')
+        return self.get_setting('result_processing_mode', 'time')
 
     def get_days(self, date_=None):
         return self.data.get_days(date_)
@@ -1986,18 +1986,18 @@ class RogainingTeam(object):
         if not self.get_is_status_ok() and other.get_is_status_ok():
             return True
 
-        if self.get_scores() != other.get_scores():
+        if self.get_score() != other.get_score():
             return self.get_score() < other.get_score()
 
         return self.get_time() > other.get_time()
     
-    def get_score(self)
+    def get_score(self):
         return self.score
 
     def add_result(self, result):
         """Add new result to the team"""
         self.members_results.append(result)
-        self.finish_time = max(finish_time, result.get_finish_time())
+        self.finish_time = max(self.finish_time, result.get_finish_time())
         if self.score == 0:
             self.score = result.scores
         else:

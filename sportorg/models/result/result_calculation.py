@@ -3,7 +3,7 @@ import logging
 from sportorg.common.otime import OTime
 from sportorg.models.constant import RankingTable
 from sportorg.models.memory import Result, Person, Group, Qualification, RankingItem, \
-    RelayTeam, RogainingTeam RaceType, find
+    RelayTeam, RogainingTeam, RaceType, find
 from sportorg.modules.configs.configs import Config
 
 
@@ -118,7 +118,7 @@ class ResultCalculation(object):
             for res in results:
                 bib = res.person.bib
 
-                team_number = bib % 1000
+                team_number = bib // 10
                 if not str(team_number) in rogaine_teams:
                     new_team = RogainingTeam(self.race)
                     new_team.group = group

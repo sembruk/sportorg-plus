@@ -276,10 +276,21 @@ class StartNumberManager(object):
 
     def set_numbers_by_order(self, persons, first_number=1, interval=1):
         cur_number = first_number
+        remap = {}
         if persons and len(persons) > 0:
             for current_person in persons:
-                current_person.bib = cur_number
-                cur_number += interval
+                if self.race.is_rogaining():
+                    old_team_bib = current_person.bib
+                    if old_team_bib in remap:
+                        remap[old_team_bib] += 1
+                        current_person.bib = remap[old_team_bib]
+                    else:
+                        remap[old_team_bib] = cur_number*10 + 1
+                        current_person.bib = remap[old_team_bib]
+                        cur_number += interval
+                else:
+                    current_person.bib = cur_number
+                    cur_number += interval
         return cur_number
 
 class StartTimeManager(object):
