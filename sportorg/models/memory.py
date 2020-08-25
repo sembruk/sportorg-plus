@@ -280,6 +280,7 @@ class Group(Model):
         self.start_interval = OTime()
         self.start_corridor = 0
         self.order_in_corridor = 0
+        self.start_time = OTime() # Rogaining
 
         self.first_number = 0
         self.count_person = 0
@@ -329,6 +330,7 @@ class Group(Model):
             'start_interval': self.start_interval.to_msec(),
             'start_corridor': self.start_corridor,
             'order_in_corridor': self.order_in_corridor,
+            'start_time':self.start_time.to_msec(),
             'first_number': self.first_number,
             'count_person': self.count_person,  # readonly
             'count_finished': self.count_finished,  # readonly
@@ -350,6 +352,8 @@ class Group(Model):
         self.max_time = OTime(msec=int(data['max_time']))
         self.start_interval = OTime(msec=int(data['start_interval']))
         self.start_corridor = int(data['start_corridor'])
+        if 'start_time' in data:
+            self.start_time = OTime(msec=int(data['start_time']))
         self.order_in_corridor = int(data['order_in_corridor'])
         self.first_number = int(data['first_number'])
         self.relay_legs = int(data['relay_legs'])

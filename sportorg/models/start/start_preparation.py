@@ -281,13 +281,14 @@ class StartNumberManager(object):
             for current_person in persons:
                 if self.race.is_rogaining():
                     old_team_bib = current_person.bib
-                    if old_team_bib in remap:
-                        remap[old_team_bib] += 1
-                        current_person.bib = remap[old_team_bib]
-                    else:
-                        remap[old_team_bib] = cur_number*10 + 1
-                        current_person.bib = remap[old_team_bib]
-                        cur_number += interval
+                    if old_team_bib > 100000: # may be claim ID from Orgeo
+                        if old_team_bib in remap:
+                            remap[old_team_bib] += 1
+                            current_person.bib = remap[old_team_bib]
+                        else:
+                            remap[old_team_bib] = cur_number*10 + 1
+                            current_person.bib = remap[old_team_bib]
+                            cur_number += interval
                 else:
                     current_person.bib = cur_number
                     cur_number += interval

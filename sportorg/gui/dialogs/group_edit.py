@@ -99,6 +99,15 @@ class GroupEditDialog(QDialog):
         self.item_start_interval.setDisplayFormat(self.time_format)
         self.layout.addRow(self.label_start_interval, self.item_start_interval)
 
+        self.label_start_time = QLabel(_('Start time'))
+        self.item_start_time = QTimeEdit()
+        self.item_start_time.setDisplayFormat(self.time_format)
+        self.layout.addRow(self.label_start_time, self.item_start_time)
+
+        if not self.current_object.is_rogaining():
+            self.label_start_time.hide()
+            self.item_start_time.hide()
+
         self.label_price = QLabel(_('Start fee'))
         self.item_price = QSpinBox()
         self.item_price.setSingleStep(50)
@@ -197,6 +206,8 @@ class GroupEditDialog(QDialog):
             self.item_corridor_order.setValue(self.current_object.order_in_corridor)
         if self.current_object.price:
             self.item_price.setValue(self.current_object.price)
+        if self.current_object.start_time:
+            self.item_start_time.setTime(time_to_qtime(self.current_object.start_time))
 
         self.item_is_any_course.setChecked(self.current_object.is_any_course)
         self.rank_checkbox.setChecked(self.current_object.ranking.is_active)
@@ -255,6 +266,10 @@ class GroupEditDialog(QDialog):
 
         if group.max_time != time:
             group.max_time = time
+
+        time = time_to_otime(self.item_start_time.time())
+        if group.start_time != time:
+            group.start_time = time
 
         if group.ranking.is_active != self.rank_checkbox.isChecked():
             group.ranking.is_active = self.rank_checkbox.isChecked()
