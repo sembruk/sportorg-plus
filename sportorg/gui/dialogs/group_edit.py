@@ -104,10 +104,6 @@ class GroupEditDialog(QDialog):
         self.item_start_time.setDisplayFormat(self.time_format)
         self.layout.addRow(self.label_start_time, self.item_start_time)
 
-        if not self.current_object.is_rogaining():
-            self.label_start_time.hide()
-            self.item_start_time.hide()
-
         self.label_price = QLabel(_('Start fee'))
         self.item_price = QSpinBox()
         self.item_price.setSingleStep(50)
@@ -122,6 +118,19 @@ class GroupEditDialog(QDialog):
         self.rank_checkbox = QCheckBox(_('Rank calculation'))
         self.rank_button = QPushButton(_('Configuration'))
         self.layout.addRow(self.rank_checkbox, self.rank_button)
+
+        if race().is_rogaining():
+            self.label_corridor.hide()
+            self.item_corridor.hide()
+            self.label_corridor_order.hide()
+            self.item_corridor_order.hide()
+            self.label_start_interval.hide()
+            self.item_start_interval.hide()
+            self.rank_checkbox.hide()
+            self.rank_button.hide()
+        else:
+            self.label_start_time.hide()
+            self.item_start_time.hide()
 
         def cancel_changes():
             self.close()

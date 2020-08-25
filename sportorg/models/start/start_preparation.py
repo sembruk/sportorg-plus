@@ -493,6 +493,11 @@ def reverse_start_time():
             person.start_time = cur_time
             cur_time += handicap_interval
 
+def start_time_from_group():
+    obj = race()
+    for person in obj.persons:
+        if person.group and person.group.start_time:
+            person.start_time = person.group.start_time
 
 def copy_bib_to_card_number():
     obj = race()

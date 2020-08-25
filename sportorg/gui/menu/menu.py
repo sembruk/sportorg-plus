@@ -215,6 +215,11 @@ def menu_list():
                     'title': _('Use card number as bib'),
                     'action': 'CopyCardNumberToBib'
                 },
+                {
+                    'title': _('Copy start time from group'),
+                    'action': 'CopyStartTimeFromGroup'
+                },
+
             ]
         },
         {
