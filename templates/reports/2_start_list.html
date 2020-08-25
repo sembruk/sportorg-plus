@@ -138,7 +138,19 @@
             }
             return false;
         },
+        getField: function (key) {
+            for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                if (key === obj.key) {
+                    return obj
+                }
+            }
+        },
         init: function () {
+            try {
+                var isRogaine = race.data.race_type === 6
+                this.getField('qual').active = !isRogaine
+            } catch (e){}
             return this;
         }
     }.init();
