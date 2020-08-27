@@ -758,21 +758,21 @@ class Result:
         """Generate statistic about unfinished athletes in the group for current person.
            Calculate, how much people can win and at what time current result will be final (nobody can win).
         """
-        if self.person and self.person.group:
-            who_can_win_count = 0
-            max_unfinished_start_time = OTime()
+        #if self.person and self.person.group:
+        #    who_can_win_count = 0
+        #    max_unfinished_start_time = OTime()
 
-            for cur_person in race().get_persons_by_group(self.person.group):
+        #    for cur_person in race().get_persons_by_group(self.person.group):
 
-                if cur_person.result_count == 0:
-                    if not cur_person.is_out_of_competition:
-                        if cur_person.start_time > self.person.start_time:
-                            if self.get_result_otime() > OTime.now() - cur_person.start_time:
-                                who_can_win_count += 1
-                                max_unfinished_start_time = max(cur_person.start_time, max_unfinished_start_time)
+        #        if cur_person.result_count == 0:
+        #            if not cur_person.is_out_of_competition:
+        #                if cur_person.start_time > self.person.start_time:
+        #                    if self.get_result_otime() > OTime.now() - cur_person.start_time:
+        #                        who_can_win_count += 1
+        #                        max_unfinished_start_time = max(cur_person.start_time, max_unfinished_start_time)
 
-            self.can_win_count = who_can_win_count
-            self.final_result_time = max_unfinished_start_time + self.get_result_otime()
+        #    self.can_win_count = who_can_win_count
+        #    self.final_result_time = max_unfinished_start_time + self.get_result_otime()
 
 
 class ResultManual(Result):

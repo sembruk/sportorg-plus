@@ -245,6 +245,9 @@
         bibListBlock.innerHTML = '';
         for (var _i = 0, _a = race.persons; _i < _a.length; _i++) {
             var person = _a[_i];
+            if (!person.card_number) {
+                continue;
+            }
             var bibItemBlock = document.createElement('div');
             bibItemBlock.className = 'bib-item';
             var bibTitleBlock = document.createElement('div');
@@ -259,7 +262,7 @@
                 { title: 'Номер чипа: ', value: person.card_number || '' },
                 { title: 'Время старта: ', value: toHHMMSS(person.start_time) },
                 { title: 'Группа: ', value: person.group && person.group.name },
-                { title: 'Коллектив: ', value: person.organization && person.organization.name || '' }
+                { title: 'Команда: ', value: person.organization && person.organization.name || '' }
             ];
             for (var _b = 0, detildData_ = detildData; _b < detildData_.length; _b++) {
                 var obj = detildData_[_b];

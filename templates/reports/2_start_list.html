@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Start List{% endblock %}
+{% block title %}Протокол старта{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -13,7 +13,7 @@
     <h2>ПРОТОКОЛ СТАРТА</h2>
 </div>
 <div id="start-list-tables"></div>
-<div>
+<!--<div>
     <table class="empty-table">
         <tr>
             <td><b>Главный судья:</b></td>
@@ -27,6 +27,7 @@
         </tr>
     </table>
 </div>
+-->
 {% raw %}
 <script>
     var race = {% endraw %}{{race|tojson}}{%raw %};
@@ -39,17 +40,20 @@
         for (var _i = 0, _a = race.persons; _i < _a.length; _i++) {
             var person = _a[_i];
             if (person.group && person.group.id === group.id) {
-                results.push({
-                    index: 0,
-                    name: person.surname + ' ' + person.name,
-                    org: (person.organization && String(person.organization.name).slice(0, MAX_ORG_NAME)) || '',
-                    qual: Qualification[person.qual],
-                    bib: person.bib,
-                    card_number: person.card_number,
-                    year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
-                    start: toHHMMSS(person.start_time),
-                    start_time: person.start_time
-                });
+                if (person.card_number) {
+                    results.push({
+                        index: 0,
+                        name: person.surname + ' ' + person.name,
+                        org: (person.organization && String(person.organization.name).slice(0, MAX_ORG_NAME)) || '',
+                        qual: Qualification[person.qual],
+                        bib: person.bib,
+                        card_number: person.card_number,
+                        year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
+                        start: toHHMMSS(person.start_time),
+                        start_time: person.start_time,
+                        comment: person.comment
+                    });
+                }
             }
         }
         results.sort(function (a, b) {
@@ -114,7 +118,8 @@
             {key: 'qual', title: 'Разряд', size: 7},
             {key: 'bib', title: 'Номер', size: 6},
             {key: 'card_number', title: 'Номер чипа', size: 11},
-            {key: 'start', title: 'Время старта', size: 13}
+            {key: 'start', title: 'Время старта', size: 13},
+            {key: 'comment', title: '', size: 6}
         ],
         active: function (key, val) {
             for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
