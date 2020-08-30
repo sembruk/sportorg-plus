@@ -178,6 +178,7 @@
         <br> Результат: {{result.result}}
         {% if result.place > 0 %}
             <br> Место: {{result.place}} из {{group.count_finished}} (всего {{group.count_person}})
+            <!--
             {% if "can_win_count" in result %}
                 {% if result.can_win_count > 0 %}
                     <br>Вас могут выиграть: {{result.can_win_count}} чел.
@@ -186,6 +187,7 @@
                     <br>Вас уже никто не обгонит!
                 {% endif %}
             {% endif %}
+            -->
         <br>
         {% endif %}
         <br>
@@ -193,9 +195,9 @@
             {% for control in course.controls %}
                 {{control.code}}
             {% endfor %}<br>
-			<h1>ПЛОХАЯ ОТМЕТКА</h1>
+			<!--<h1>ПЛОХАЯ ОТМЕТКА</h1>-->
 		{% else %}
-			<h1>ОТМЕТКА - OK</h1>
+			<!--<h1>ОТМЕТКА - OK</h1>-->
         {% endif %}
         <table>
             {% for item in items %}
