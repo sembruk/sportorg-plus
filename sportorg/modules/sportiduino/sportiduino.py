@@ -72,7 +72,7 @@ class ResultThread(QThread):
         time.sleep(3)
         while True:
             try:
-                cmd = self._queue.get(timeout=5)
+                cmd = self._queue.get(timeout=3)
                 if cmd.command == 'card_data':
                     result = self._get_result(cmd.data)
                     self.data_sender.emit(result)
@@ -174,6 +174,11 @@ class SportiduinoClient(object):
 
     def stop(self):
         self._stop_event.set()
+        if self._sportiduino_thread is not None and self._sportiduino_thread.isRunning():
+            self._sportiduino_thread.wait()
+        if self._result_thread is not None and self._result_thread.isRunning():
+            self._result_thread.wait()
+
 
     def toggle(self):
         if self.is_alive():

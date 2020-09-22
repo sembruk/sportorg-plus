@@ -91,6 +91,7 @@ class MainWindow(QMainWindow):
         self.post_show()
 
     def close(self):
+        SportiduinoClient().stop()
         self.conf_write()
         Broker().produce('close')
 
