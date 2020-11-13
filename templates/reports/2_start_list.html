@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Start List{% endblock %}
+{% block title %}Протокол старта{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -13,20 +13,6 @@
     <h2>ПРОТОКОЛ СТАРТА</h2>
 </div>
 <div id="start-list-tables"></div>
-<div>
-    <table class="empty-table">
-        <tr>
-            <td><b>Главный судья:</b></td>
-            <td width="150px"></td>
-            <td><b>{{ race.data.chief_referee }}</b></td>
-        </tr>
-        <tr>
-            <td><b>Главный секретарь:</b></td>
-            <td width="150px"></td>
-            <td><b>{{ race.data.secretary }}</b></td>
-        </tr>
-    </table>
-</div>
 {% raw %}
 <script>
     var race = {% endraw %}{{race|tojson}}{%raw %};
@@ -37,7 +23,7 @@
         var results = [];
         for (var _i = 0, _a = race.persons; _i < _a.length; _i++) {
             var person = _a[_i];
-            if (person.group && person.group.id === group.id) {
+            if (person.group && person.group.id === group.id && !person.is_out_of_competition) {
                 results.push({
                     index: 0,
                     name: person.surname + ' ' + person.name,
@@ -52,17 +38,23 @@
             }
         }
         results.sort(function (a, b) {
-            if (isRelay && a.start_time === b.start_time) {
-                if (a.bib % 1000 === b.bib % 1000) {
-                    return ~~(a.bib / 1000) - ~~(b.bib / 1000)
-                } else {
-                    return a.bib % 1000 - b.bib % 1000
-                }
+            //if (isRelay && a.start_time === b.start_time) {
+            //    if (a.bib % 1000 === b.bib % 1000) {
+            //        return ~~(a.bib / 1000) - ~~(b.bib / 1000)
+            //    } else {
+            //        return a.bib % 1000 - b.bib % 1000
+            //    }
+            //}
+            //if (a.start_time === b.start_time) {
+            //    return a.bib - b.bib;
+            //}
+            if (a.name < b.name) {
+                return -1;
             }
-            if (a.start_time === b.start_time) {
-                return a.bib - b.bib;
+            if (a.name > b.name) {
+                return 1;
             }
-            return a.start_time - b.start_time
+            return 0;
         });
         var index = 0;
         results.forEach(function (elem) {
@@ -95,9 +87,9 @@
             {key: 'org', title: 'Коллектив', size: 20},
             {key: 'year', title: 'ГР', size: 5},
             {key: 'qual', title: 'Разряд', size: 7},
-            {key: 'bib', title: 'Номер', size: 6},
+            {key: 'bib', title: 'Номер', size: 6, active: false},
             {key: 'card_number', title: 'Номер чипа', size: 11},
-            {key: 'start', title: 'Время старта', size: 13}
+            {key: 'start', title: 'Время старта', size: 13, active: false}
         ],
         active: function (key, val) {
             for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
