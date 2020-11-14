@@ -338,7 +338,10 @@ class Group(Model):
         self.name = str(data['name'])
         self.long_name = str(data['long_name'])
         self.price = int(data['price'])
-        self.sex = Sex(int(data['sex']))
+        if 'sex' in data:
+            self.sex = Sex(int(data['sex']))
+        else:
+            self.sex = Sex.MF
         self.min_year = int(data['min_year'])
         self.max_year = int(data['max_year'])
         self.min_age = int(data['min_age'])
@@ -737,7 +740,7 @@ class Result:
 
                 if cur_person.result_count == 0:
                     if not cur_person.is_out_of_competition:
-                        if cur_person.start_time > self.person.start_time:
+                        if cur_person.start_time is not None and self.person.start_time is not None and cur_person.start_time > self.person.start_time:
                             if self.get_result_otime() > OTime.now() - cur_person.start_time:
                                 who_can_win_count += 1
                                 max_unfinished_start_time = max(cur_person.start_time, max_unfinished_start_time)
@@ -1087,7 +1090,10 @@ class Person(Model):
     def update_data(self, data):
         self.name = str(data['name'])
         self.surname = str(data['surname'])
-        self.sex = Sex(int(data['sex']))
+        if 'sex' in data:
+            self.sex = Sex(int(data['sex']))
+        else:
+            self.self = Sex.MF
         self.card_number = int(data['card_number'])
         self.bib = int(data['bib'])
         self.contact = []
