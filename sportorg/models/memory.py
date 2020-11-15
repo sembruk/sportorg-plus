@@ -579,10 +579,10 @@ class Result:
         return self.bib
 
     def get_result(self):
-        if not self.is_status_ok():
-            if self.status_comment:
-                return self.status_comment
-            return self.status.get_title()
+        #if not self.is_status_ok():
+        #    if self.status_comment:
+        #        return self.status_comment
+        #    return self.status.get_title()
 
         if not self.person:
             return ''

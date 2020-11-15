@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Results{% endblock %}
+{% block title %}Результаты{% endblock %}
 {% block head %}{{ super() }}{% endblock %}
 {% block content %}
 <div class="text-center">
@@ -7,7 +7,7 @@
     <h2>ПРОТОКОЛ РЕЗУЛЬТАТОВ</h2>
 </div>
 <div id="results-tables"></div>
-<div>
+<!--<div>
     <table class="empty-table">
         <tr>
             <td><b>Главный судья:</b></td>
@@ -20,7 +20,7 @@
             <td><b>{{ race.data.secretary }}</b></td>
         </tr>
     </table>
-</div>
+</div>-->
 {% raw %}
 <style>
     table.table-split {
@@ -43,6 +43,10 @@
         for (var _i = 0, _a = race.results; _i < _a.length; _i++) {
             var result = _a[_i];
             if (result.status !== 13 && result.person && result.person.group && result.person.group.id === group.id && (count ? result.place <= count && result.place > 0 : 1)) {
+                var time = result.finish_time - result.start_time;
+                if (result.start_time > result.finish_time) {
+                    time += 86400000;
+                }
                 var r = {
                     index: 0,
                     name: (result.person.surname + ' ' + result.person.name).slice(0, MAX_PERSON_NAME),
@@ -50,6 +54,7 @@
                     qual: Qualification[result.person.qual],
                     bib: result.person.bib,
                     year: result.person.birth_date ? (new Date(result.person.birth_date)).getFullYear() : '',
+                    time: toHHMMSS(time),
                     penalty_time: toHHMMSS(result.penalty_time),
                     penalty_laps: result.penalty_laps,
                     result: result.result,
@@ -67,9 +72,12 @@
                 if (result.status !== 1) {
                     r.diff = '';
                     r.place_show = '';
+                    if (result.status === 8) {
+                        r.place_show = 'КВ';
+                    }
                     r.speed = '';
                     r.scores = '';
-                    r.penalty_time = '';
+                    //r.penalty_time = '';
                     r.penalty_laps = '';
                 }
 
@@ -157,6 +165,9 @@
 
             } else {
                 if (a.status !== 1 && b.status !== 1) {
+                    if (a.status === 8 && b.status === 8) {
+                        return a.result_msec - b.result_msec;
+                    }
                     return STATUS_PRIORITY.indexOf(a.status) - STATUS_PRIORITY.indexOf(b.status);
                 }
                 if (a.status !== 1) {
@@ -479,11 +490,12 @@
             {key: 'year', title: 'ГР', size: 5},
             {key: 'qual', title: 'Разряд', size: 7},
             {key: 'bib', title: 'Номер', size: 6},
-            {key: 'penalty_time', title: 'Штраф', size: 9, active: false},
+            {key: 'time', title: 'Время', size: 9},
+            {key: 'penalty_time', title: 'Штраф', size: 9},
             {key: 'penalty_laps', title: 'Штраф', size: 9, active: false},
             {key: 'result', title: 'Результат', size: 14},
             {key: 'result_relay', title: 'Ком. рез-т', size: 14},
-            {key: 'diff', title: 'Отставание', size: 11},
+            {key: 'diff', title: 'Отставание', size: 11, active: false},
             {key: 'speed', title: 'Темп', size: 12, active: false},
             {key: 'place_show', title: 'Место', size: 6},
             {key: 'scores', title: 'Очки', size: 5, active: false},
@@ -527,7 +539,7 @@
                 var isRelay = race.data.race_type === 3
                 this.getField('all_splits').active = location.href.indexOf('all_splits=1') > -1;
                 this.getField('scores').active = location.href.indexOf('scores=1') > -1;
-                this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
+                //this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
 
                 this.getField('result_relay').active = isRelay
             } catch (e){}
