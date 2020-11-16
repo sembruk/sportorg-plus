@@ -55,7 +55,7 @@
                     bib: result.person.bib,
                     year: result.person.birth_date ? (new Date(result.person.birth_date)).getFullYear() : '',
                     time: toHHMMSS(time),
-                    penalty_time: toHHMMSS(result.penalty_time),
+                    penalty_time: result.penalty_time > 0 ? toHHMMSS(result.penalty_time) : '',
                     penalty_laps: result.penalty_laps,
                     result: result.result,
                     result_relay: result.result_relay,
