@@ -131,13 +131,16 @@ class ReportDialog(QDialog):
         ScoreCalculation(obj).calculate_scores()
 
         races_dict = [r.to_dict() for r in races()]
+        current_race = races_dict[get_current_race_index()]
+        if selected_items['groups']:
+            current_race['groups'] = selected_items['groups']
 
         if template_path.endswith('.docx'):
             # DOCX template processing
             full_path = config.template_dir() + template_path
             doc = DocxTemplate(full_path)
             context = {}
-            context['race'] = races_dict[get_current_race_index()]
+            context['race'] = current_race
             context['name'] = config.NAME
             context['version'] = str(config.VERSION)
             doc.render(context)
@@ -154,11 +157,11 @@ class ReportDialog(QDialog):
         else:
             template = get_text_from_file(
                 template_path,
-                race=races_dict[get_current_race_index()],
+                race=current_race,
                 races=races_dict,
                 rent_cards=list(RentCards().get()),
                 current_race=get_current_race_index(),
-                selected=selected_items
+                selected={}
             )
 
             if _settings['save_to_last_file']:
