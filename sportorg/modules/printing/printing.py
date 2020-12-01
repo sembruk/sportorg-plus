@@ -4,7 +4,7 @@ from multiprocessing import Process
 
 from PySide2.QtCore import QSizeF
 from PySide2.QtGui import QTextDocument
-from PySide2.QtPrintSupport import QPrinter
+from PySide2.QtPrintSupport import QPrinter, QPrinterInfo
 from PySide2.QtWidgets import QApplication
 
 from sportorg.common.fake_std import FakeStd
@@ -33,6 +33,9 @@ class PrintProcess(Process):
             printer = QPrinter()
             if self.printer_name:
                 printer.setPrinterName(self.printer_name)
+                printer_info = QPrinterInfo.printerInfo(self.printer_name)
+                if not printer_info.isNull():
+                    printer.setPageSize(printer_info.defaultPageSize())
 
             # printer.setResolution(96)
 
