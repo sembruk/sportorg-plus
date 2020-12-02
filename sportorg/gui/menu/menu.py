@@ -299,6 +299,7 @@ def menu_list():
                 },
                 {
                     'title': _('on/off Sportiduino readout'),
+                    'shortcut': 'F9',
                     'action': 'SportiduinoReadoutAction'
                 },
                 {
