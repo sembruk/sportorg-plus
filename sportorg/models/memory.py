@@ -433,6 +433,7 @@ class Result:
         self.penalty_time = None  # type: OTime
         self.credit_time = None  # type: OTime
         self.penalty_laps = 0  # count of penalty legs (marked route)
+        self.penalty_points = 0 # rogaining
         self.place = 0
         self.scores = 0
         self.assigned_rank = Qualification.NOT_QUALIFIED
@@ -511,6 +512,7 @@ class Result:
             'status': self.status.value,
             'status_comment': self.status_comment,
             'penalty_laps': self.penalty_laps,
+            'penalty_points': self.penalty_points,
             'place': self.place,
             'assigned_rank': self.assigned_rank.value,
 
@@ -546,6 +548,8 @@ class Result:
             self.penalty_time = OTime(msec=data['penalty_time'])
         if 'credit_time' in data and data['credit_time']:
             self.credit_time = OTime(msec=data['credit_time'])
+        if 'penalty_points' in data:
+            self.penalty_points = int(data['penalty_points'])
         if 'status_comment' in data:
             self.status_comment = data['status_comment']
         if 'days' in data:
