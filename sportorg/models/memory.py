@@ -441,7 +441,7 @@ class Result:
         self.diff_scores = 0  # readonly
         self.created_at = time.time()
         self.speed = ''
-        self.can_win_count = 0  # quantity of athletes who can win at current time
+        self.can_win_count = None  # quantity of athletes who can win at current time
         self.final_result_time = None  # type: OTime real time, when nobody can win
 
         self.card_number = 0

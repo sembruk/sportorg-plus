@@ -178,9 +178,9 @@
         <br> Результат: {{result.result}}
         {% if result.place > 0 %}
             <br> Место: {{result.place}} из {{group.count_finished}} (всего {{group.count_person}})
-            {% if "can_win_count" in result %}
+            {% if "can_win_count" in result and result.can_win_count is not none %}
                 {% if result.can_win_count > 0 %}
-                    <br>Вас могут выиграть: {{result.can_win_count}} чел.
+                    <br>У Вас могут выиграть: {{result.can_win_count}} чел.
                     <br>В {{result.final_result_time}} определится результат
                 {% else %}
                     <br>Вас уже никто не обгонит!

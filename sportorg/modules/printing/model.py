@@ -33,7 +33,8 @@ def split_printout(result):
         template_path = obj.get_setting('split_template', template_dir('split', '1_split_printout.html'))
 
         s = GroupSplits(obj, person.group).generate(True)
-        result.check_who_can_win()
+        if obj.get_setting('system_start_source') == 'protocol':
+            result.check_who_can_win()
 
         if not str(template_path).endswith('.html') and platform.system() == 'Windows':
             # Internal split printout, pure python. Works faster, than jinja2 template + pdf
