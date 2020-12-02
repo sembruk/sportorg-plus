@@ -4,7 +4,7 @@ from PySide2 import QtPrintSupport
 from PySide2.QtGui import QIcon
 from PySide2.QtPrintSupport import QPrinter, QPrintDialog, QAbstractPrintDialog
 from PySide2.QtWidgets import QFormLayout, QLabel, QDialog, QPushButton, QCheckBox, QDialogButtonBox, QGroupBox, \
-    QDoubleSpinBox
+    QDoubleSpinBox, QSpinBox
 
 from sportorg import config
 from sportorg.common.template import get_templates
@@ -80,6 +80,10 @@ class PrintPropertiesDialog(QDialog):
         self.margin_group_box.setLayout(self.margin_layout)
         self.layout.addRow(self.margin_group_box)
 
+        self.item_scale = QSpinBox()
+        self.item_scale.setRange(1, 100)
+        self.layout.addRow(QLabel(_('Scale (%)')), self.item_scale)
+
         self.set_values()
 
         def cancel_changes():
@@ -125,6 +129,7 @@ class PrintPropertiesDialog(QDialog):
         self.item_margin_top.setValue(obj.get_setting('print_margin_top', 5.0))
         self.item_margin_right.setValue(obj.get_setting('print_margin_right', 5.0))
         self.item_margin_bottom.setValue(obj.get_setting('print_margin_bottom', 5.0))
+        self.item_scale.setValue(obj.get_setting('print_scale', 100))
 
     def select_printer(self):
         try:
@@ -148,3 +153,4 @@ class PrintPropertiesDialog(QDialog):
         obj.set_setting('print_margin_top', self.item_margin_top.value())
         obj.set_setting('print_margin_right', self.item_margin_right.value())
         obj.set_setting('print_margin_bottom', self.item_margin_bottom.value())
+        obj.set_setting('print_scale', self.item_scale.value())

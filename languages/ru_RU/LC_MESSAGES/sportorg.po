@@ -1360,6 +1360,9 @@ msgstr "Стандартный шаблон"
 msgid "scale"
 msgstr "масштаб"
 
+msgid "Scale (%)"
+msgstr "Масштаб (%)"
+
 msgid "Clone relay legs"
 msgstr "Дублировать этапы для эстафет 2x2"
 

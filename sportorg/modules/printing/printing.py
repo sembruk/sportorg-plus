@@ -11,7 +11,7 @@ from sportorg.common.fake_std import FakeStd
 
 
 class PrintProcess(Process):
-    def __init__(self, printer_name, html, left=5.0, top=5.0, right=5.0, bottom=5.0):
+    def __init__(self, printer_name, html, left=5.0, top=5.0, right=5.0, bottom=5.0, scale=1.0):
         super().__init__()
         self.printer_name = printer_name
         self.html = html
@@ -19,6 +19,9 @@ class PrintProcess(Process):
         self.margin_top = top
         self.margin_right = right
         self.margin_bottom = bottom
+        self.scale = 1
+        if scale > 0:
+            self.scale = scale
 
     def run(self):
         try:
@@ -51,8 +54,8 @@ class PrintProcess(Process):
             )
 
             page_size = QSizeF()
-            page_size.setHeight(printer.height())
-            page_size.setWidth(printer.width())
+            page_size.setHeight(printer.height()/self.scale)
+            page_size.setWidth(printer.width()/self.scale)
             text_document.setPageSize(page_size)
             text_document.setDocumentMargin(0.0)
 
@@ -62,7 +65,7 @@ class PrintProcess(Process):
             logging.error(str(e))
 
 
-def print_html(printer_name, html, left=5.0, top=5.0, right=5.0, bottom=5.0):
-    thread = PrintProcess(printer_name, html, left, top, right, bottom)
+def print_html(printer_name, html, left=5.0, top=5.0, right=5.0, bottom=5.0, scale=100):
+    thread = PrintProcess(printer_name, html, left, top, right, bottom, scale/100.0)
     thread.start()
     logging.info('printing poccess started')

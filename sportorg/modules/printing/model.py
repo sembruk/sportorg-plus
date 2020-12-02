@@ -79,4 +79,5 @@ def split_printout(result):
             obj.get_setting('print_margin_top', 5.0),
             obj.get_setting('print_margin_right', 5.0),
             obj.get_setting('print_margin_bottom', 5.0),
+            obj.get_setting('print_scale', 100),
         )
