@@ -202,6 +202,7 @@ class MainWindow(QMainWindow):
     def _setup_menu(self):
         self.menubar = QtWidgets.QMenuBar(self)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 880, 21))
+        self.menubar.setNativeMenuBar(False)
         self.setMenuBar(self.menubar)
         self._create_menu(self.menubar, menu_list())
 
