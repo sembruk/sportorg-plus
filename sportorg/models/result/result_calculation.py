@@ -3,7 +3,7 @@ import logging
 from sportorg.common.otime import OTime
 from sportorg.models.constant import RankingTable
 from sportorg.models.memory import Result, Person, Group, Qualification, RankingItem, \
-    RelayTeam, RaceType, find
+    RelayTeam, Team, RaceType, find
 from sportorg.modules.configs.configs import Config
 
 
@@ -14,21 +14,26 @@ class ResultCalculation(object):
     def process_results(self):
         logging.debug('Process results')
         self.race.relay_teams.clear()
+        if self.race.is_team_race():
+            self.race.teams.clear()
         for person in self.race.persons:
             person.result_count = 0
         for result in self.race.results:
             if result.person:
                 result.person.result_count += 1
         for i in self.race.groups:
-            if not self.race.get_type(i) == RaceType.RELAY:
-                # single race
-                array = self.get_group_finishes(i)
-                self.set_places(array)
-            else:
-                # relay
+            if self.race.get_type(i) == RaceType.RELAY:
                 new_relays = self.process_relay_results(i)
                 for a in new_relays:
                     self.race.relay_teams.append(a)
+            elif self.race.get_type(i) == RaceType.TEAM_RACE:
+                teams = self.process_team_results(i)
+                for t in teams:
+                    self.race.teams.append(t)
+            else:
+                # single race
+                array = self.get_group_finishes(i)
+                self.set_places(array)
             self.set_rank(i)
 
     def get_group_finishes(self, group):
@@ -104,6 +109,29 @@ class ResultCalculation(object):
                 place += 1
                 cur_team.set_start_times()
             return relay_teams.values()
+
+    def process_team_results(self, group):
+        if group and isinstance(group, Group):
+            results = self.get_group_finishes(group)
+
+            teams = {}
+            for res in results:
+                bib = res.person.bib
+
+                if not str(bib) in teams:
+                    new_team = Team(self.race)
+                    new_team.group = group
+                    new_team.bib_number = bib
+                    teams[str(team_number)] = new_team
+
+                team = teams[str(team_number)]
+                team.add_result(res)
+            teams_sorted = sorted(teams.values())
+            place = 1
+            for cur_team in teams_sorted:
+                cur_team.set_place(place)
+                place += 1
+            return teams.values()
 
     def set_rank(self, group):
         ranking = group.ranking

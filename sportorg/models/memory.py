@@ -74,6 +74,7 @@ class RaceType(_TitleType):
     RELAY = 3
     # ONE_MAN_RELAY = 4
     # SPRINT_RELAY = 5
+    TEAM_RACE = 6
 
 
 class ResultStatus(_TitleType):
@@ -184,7 +185,7 @@ class CourseControl(Model):
 
 
 class ControlPoint(Model):
-    """Description of independent control point. Used for score calculation in rogain"""
+    """Description of independent control point. Used for score calculation in rogaining"""
 
     def __init__(self):
         self.code = ''
@@ -306,6 +307,9 @@ class Group(Model):
 
     def is_relay(self):
         return self.get_type() == RaceType.RELAY
+
+    def is_team_race(self):
+        return self.get_type() == RaceType.TEAM_RACE
 
     def to_dict(self):
         return {
@@ -465,7 +469,7 @@ class Result:
                 eq = eq and self.get_finish_time() == other.get_finish_time()
             else:
                 return False
-        else:  # process by score (rogain)
+        else:  # process by score (rogaining)
             eq = eq and self.scores == other.scores
             if eq and self.get_start_time() and other.get_start_time():
                 eq = eq and self.get_start_time() == other.get_start_time()
@@ -484,7 +488,7 @@ class Result:
 
         if race().get_setting('result_processing_mode', 'time') == 'time':
             return self.get_result_otime() > other.get_result_otime()
-        else:  # process by score (rogain)
+        else:  # process by score (rogaining)
             if self.scores == other.scores:
                 return self.get_result_otime() > other.get_result_otime()
             else:
@@ -1499,6 +1503,9 @@ class Race(Model):
             return True
         return False
 
+    def is_team_race(self):
+        return self.data.race_type == RaceType.TEAM_RACE
+
     def get_lengths(self):
         return len(self.persons), len(self.results), len(self.groups), len(self.courses), len(self.organizations)
 
@@ -2047,3 +2054,62 @@ def race(i=None):
         return _event[i]
     else:
         return Race()
+
+class Team(object):
+    def __init__(self, r):
+        self.race = r
+        self.group = None  # type: Group
+        self.description = ''  # Name of team, optional
+        self.bib_number = None  # bib
+        self.members_results = []  # type: List[Result]
+        self.score = 0
+        self.finish_time = OTime()
+
+    def __eq__(self, other):
+        if self.get_is_status_ok() != other.get_is_status_ok():
+            return False
+        if race().get_setting('result_processing_mode', 'time') == 'time':
+            return self.get_time() == other.get_time()
+        else:  # process by score (rogaining)
+            if self.get_score() != other.get_score():
+                return False
+            if self.get_time() != other.get_time():
+                return False
+            return True
+
+    def __gt__(self, other):  # greater is worse
+        if self.is_status_ok() != other.is_status_ok():
+            return other.is_status_ok()
+
+        if race().get_setting('result_processing_mode', 'time') == 'scores':
+            if self.get_score() != other.get_score():
+                return self.get_score() < other.get_score()
+        return self.get_time() > other.get_time()
+
+    def get_score(self):
+        return self.score
+
+    def add_result(self, result):
+        """Add new result to the team"""
+        self.members_results.append(result)
+        self.finish_time = max(self.finish_time, result.get_finish_time())
+        if self.score == 0:
+            self.score = result.scores
+        else:
+            self.score = min(self.score, result.scores)
+
+    def get_time(self):
+        if len(self.members_results) > 0:
+            start_time = self.members_results[0].get_start_time()
+            return self.finish_time - start_time
+        return OTime()
+
+    def get_is_status_ok(self):
+        for r in self.members_results:
+            if not r.is_status_ok():
+                return False
+        return True
+
+    def set_place(self, place):
+        self.place = place
+
