@@ -34,6 +34,7 @@
 
     function getStartListByGroup(group) {
         var isRelay = group.__type ? group.__type === 3 : race.data.race_type === 3;
+        var isTeamRace = group.__type ? group.__type === 6 : race.data.race_type === 6;
         var results = [];
         for (var _i = 0, _a = race.persons; _i < _a.length; _i++) {
             var person = _a[_i];
@@ -81,6 +82,22 @@
                     index++;
                     results.push({index: index});
                     prevBib = r.bib % 1000;
+                }
+                results.push(r);
+            }
+        } else if (isTeamRace) {
+            index = 0;
+            var prevTeamBib = 0;
+            var resultsList = results.slice();
+            results = [];
+            for (var _i = 0, resultsList_ = resultsList; _i < resultsList_.length; _i++) {
+                var r = resultsList_[_i];
+                r.index = '';
+                var teamBib = r.bib
+                if (teamBib !== prevTeamBib) {
+                    index++;
+                    results.push({index: index});
+                    prevTeamBib = teamBib;
                 }
                 results.push(r);
             }
@@ -223,3 +240,4 @@
 </script>
 {% endraw %}
 {% endblock %}
+
