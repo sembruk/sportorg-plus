@@ -116,22 +116,16 @@ class ResultCalculation(object):
 
             teams = {}
             for res in results:
-                bib = res.person.bib
+                team_id = res.person.bib
+                res.person.team.result.add_result(res)
 
-                if not str(bib) in teams:
-                    new_team = Team(self.race)
-                    new_team.group = group
-                    new_team.bib_number = bib
-                    teams[str(bib)] = new_team
-
-                team = teams[str(bib)]
-                team.add_result(res)
-            teams_sorted = sorted(teams.values())
-            place = 1
-            for cur_team in teams_sorted:
-                cur_team.set_place(place)
-                place += 1
-            return teams.values()
+            # FIXME
+            #teams_sorted = sorted(teams.values())
+            #place = 1
+            #for cur_team in teams_sorted:
+            #    cur_team.set_place(place)
+            #    place += 1
+            #return teams.values()
 
     def set_rank(self, group):
         ranking = group.ranking

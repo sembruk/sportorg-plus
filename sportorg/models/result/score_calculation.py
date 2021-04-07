@@ -1,7 +1,7 @@
 import logging
 
 from sportorg.common.otime import OTime
-from sportorg.models.memory import Result, Organization, RaceType
+from sportorg.models.memory import Result, Team, RaceType
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.start.relay import get_team_result
 
@@ -86,7 +86,7 @@ class ScoreCalculation(object):
         ret = []
         for result in self.race.results:
             if result.person and result.person.group == group:
-                if result.person.organization == team:
+                if result.person.team == team:
                     ret.append(result)
         return ret
 
@@ -94,7 +94,7 @@ class ScoreCalculation(object):
         ret = []
         for result in self.race.results:
             if result.person and result.person.group == group:
-                if self.get_region_for_organization(result.person.organization) == region:
+                if self.get_region_for_team(result.person.team) == region:
                     ret.append(result)
         return ret
 

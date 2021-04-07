@@ -10,7 +10,7 @@ from sportorg.gui.global_access import GlobalAccess
 from sportorg.gui.utils.custom_controls import AdvComboBox
 from sportorg.language import _
 from sportorg.models.constant import get_names, get_race_groups, get_race_teams
-from sportorg.models.memory import race, Person, find, Qualification, Limit, Organization
+from sportorg.models.memory import race, Person, find, Qualification, Limit, Team
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.modules.configs.configs import Config
 from sportorg.modules.teamwork import Teamwork
@@ -237,8 +237,8 @@ class PersonEditDialog(QDialog):
             self.item_group.setCurrentText(self.current_object.group.name)
         else:
             self.item_group.setCurrentText(self.GROUP_NAME)
-        if self.current_object.organization:
-            self.item_team.setCurrentText(self.current_object.organization.name)
+        if self.current_object.team:
+            self.item_team.setCurrentText(self.current_object.team.id_and_name)
         else:
             self.item_team.setCurrentText(self.ORGANIZATION_NAME)
         if self.current_object.qual:
@@ -281,15 +281,15 @@ class PersonEditDialog(QDialog):
         if (person.group and person.group.name != self.item_group.currentText()) or\
                 (person.group is None and len(self.item_group.currentText()) > 0):
             person.group = find(race().groups, name=self.item_group.currentText())
-        if (person.organization and person.organization.name != self.item_team.currentText()) or \
-                (person.organization is None and len(self.item_team.currentText()) > 0):
-            organization = find(race().organizations, name=self.item_team.currentText())
-            if organization is None:
-                organization = Organization()
-                organization.name = self.item_team.currentText()
-                race().organizations.append(organization)
-                Teamwork().send(organization.to_dict())
-            person.organization = organization
+        if (person.team and person.team.id_and_name != self.item_team.currentText()) or \
+                (person.team is None and len(self.item_team.currentText()) > 0):
+            team = find(race().teams, id_and_name=self.item_team.currentText())
+            if team is None:
+                team = Team()
+                team.name = self.item_team.currentText()
+                race().team.append(team)
+                Teamwork().send(team.to_dict())
+            person.team = team
         if person.qual.get_title() != self.item_qual.currentText():
             person.qual = Qualification.get_qual_by_name(self.item_qual.currentText())
         if person.bib != self.item_bib.value():

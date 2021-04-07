@@ -1,6 +1,6 @@
 from sportorg.common.otime import OTime
 from sportorg.libs.winorient.wdb import WDB, WDBMan, WDBTeam, WDBGroup, WDBDistance, WDBPunch, WDBFinish, WDBChip
-from sportorg.models.memory import Race, Organization, Group, Person, race, find, Course, \
+from sportorg.models.memory import Race, Team, Group, Person, race, find, Course, \
     CourseControl, ResultStatus, Qualification, ResultSportident, Split
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.utils.time import int_to_otime, time_to_int
@@ -61,9 +61,9 @@ class WinOrientBinary:
         my_race.data.secretary = self.wdb_object.info.secretary
 
         for team in self.wdb_object.team:
-            new_team = Organization()
+            new_team = Team()
             new_team.name = team.name
-            my_race.organizations.append(new_team)
+            my_race.teams.append(new_team)
 
         for course in self.wdb_object.dist:
             new_course = Course()
@@ -119,7 +119,7 @@ class WinOrientBinary:
             found_team = man.get_team()
             if found_team:
                 team_name = found_team.name
-                new_person.organization = find(race().organizations, name=team_name)
+                new_person.team = find(race().teams, name=team_name)
 
             my_race.persons.append(new_person)
 
@@ -179,7 +179,7 @@ class WinOrientBinary:
         wdb_object.info.referee = my_race.data.chief_referee
         wdb_object.info.secretary = my_race.data.secretary
 
-        for team in my_race.organizations:
+        for team in my_race.teams:
             new_team = WDBTeam()
             new_team.name = team.name
 
@@ -254,8 +254,8 @@ class WinOrientBinary:
                 group_found = wdb_object.find_group_by_name(man.group.name)
                 if group_found:
                     new_person.group = group_found.id
-            if man.organization:
-                team_found = wdb_object.find_team_by_name(man.organization.name)
+            if man.team:
+                team_found = wdb_object.find_team_by_name(man.team.name)
                 if team_found:
                     new_person.team = team_found.id
 

@@ -8,14 +8,14 @@ from sportorg.gui.global_access import GlobalAccess
 from sportorg.gui.utils.custom_controls import AdvComboBox
 from sportorg.language import _
 from sportorg.models.constant import get_countries, get_regions
-from sportorg.models.memory import race, Organization, find
+from sportorg.models.memory import race, Team, find
 from sportorg.modules.teamwork import Teamwork
 
 
 class OrganizationEditDialog(QDialog):
-    def __init__(self, organization, is_new=False):
+    def __init__(self, team, is_new=False):
         super().__init__(GlobalAccess().get_main_window())
-        self.current_object = organization
+        self.current_object = team
         self.is_new = is_new
 
     def exec_(self):
@@ -79,7 +79,7 @@ class OrganizationEditDialog(QDialog):
         name = self.item_name.text()
         self.button_ok.setDisabled(False)
         if name and name != self.current_object.name:
-            org = find(race().organizations, name=name)
+            org = find(race().teams, name=name)
             if org:
                 self.button_ok.setDisabled(True)
 
@@ -96,7 +96,7 @@ class OrganizationEditDialog(QDialog):
     def apply_changes_impl(self):
         org = self.current_object
         if self.is_new:
-            race().organizations.insert(0, org)
+            race().team.insert(0, org)
 
         org.name = self.item_name.text()
         org.code = self.item_code.text()

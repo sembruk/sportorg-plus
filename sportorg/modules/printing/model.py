@@ -1,7 +1,7 @@
 import platform
 
 from sportorg.common.template import get_text_from_file
-from sportorg.models.memory import race, Organization
+from sportorg.models.memory import race, Team
 from sportorg.modules.configs.configs import Config
 from sportorg.modules.printing.printout_split import SportorgPrinter
 
@@ -57,9 +57,9 @@ def split_printout(result):
 
             return
 
-        organization = person.organization
-        if not organization:
-            organization = Organization()
+        team = person.team
+        if not team:
+            team = Team()
 
         template = get_text_from_file(
             template_path,
@@ -68,7 +68,7 @@ def split_printout(result):
             result=result.to_dict(),
             group=person.group.to_dict(),
             course=course.to_dict(),
-            organization=organization.to_dict(),
+            team=team.to_dict(),
             items=s.to_dict()
         )
         if not printer:

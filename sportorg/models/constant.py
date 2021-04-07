@@ -210,9 +210,10 @@ def get_teams():
 def get_race_teams():
     ret = ['']
     try:
-        for i in race().organizations:
+        for i in race().teams:
             if i.name:
-                ret.append(i.name)
+                ret.append(i.id_and_name())
+        ret.sort()
         return ret
     except Exception as e:
         logging.error(str(e))

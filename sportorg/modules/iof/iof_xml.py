@@ -9,7 +9,7 @@ from sportorg.language import _
 from sportorg.libs.iof.iof import ResultList
 from sportorg.libs.iof.parser import parse
 
-from sportorg.models.memory import race, Group, find, Organization, Person, Qualification, create, Course, CourseControl
+from sportorg.models.memory import race, Group, find, Team, Person, Qualification, create, Course, CourseControl
 
 
 def export_result_list(file):
@@ -78,13 +78,13 @@ def import_from_entry_list(entries):
                 group.name = group.long_name
             obj.groups.append(group)
 
-        org = find(obj.organizations, name=person_entry['organization']['name'])
+        org = find(obj.teams, name=person_entry['team']['name'])
         if org is None:
-            org = Organization()
-            org.name = person_entry['organization']['name']
-            if 'role_person' in person_entry['organization']:
-                org.contact = person_entry['organization']['role_person']
-            obj.organizations.append(org)
+            org = Team()
+            org.name = person_entry['team']['name']
+            if 'role_person' in person_entry['team']:
+                org.contact = person_entry['team']['role_person']
+            obj.teams.append(org)
 
     for person_entry in entries:
         person = Person()
@@ -94,7 +94,7 @@ def import_from_entry_list(entries):
         if 'short_name' in person_entry['group']:
             name = person_entry['group']['short_name']
         person.group = find(obj.groups, name=name)
-        person.organization = find(obj.organizations, name=person_entry['organization']['name'])
+        person.team = find(obj.teams, name=person_entry['team']['name'])
         if 'birth_date' in person_entry['person']:
             person.birth_date = dateutil.parser.parse(person_entry['person']['birth_date']).date()
         if len(person_entry['race_numbers']):
@@ -116,7 +116,7 @@ def import_from_entry_list(entries):
             logging.info('{} {} {} {}'.format(
                 person.full_name,
                 person.group.name if person.group else '',
-                person.organization.name if person.organization else '',
+                person.team.name if person.team else '',
                 person.card_number
             ))
             person.card_number = 0
@@ -128,5 +128,5 @@ def import_from_entry_list(entries):
                 person.full_name,
                 person.get_year(),
                 person.group.name if person.group else '',
-                person.organization.name if person.organization else ''
+                person.team.name if person.team else ''
             ))

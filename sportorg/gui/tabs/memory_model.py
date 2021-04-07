@@ -255,8 +255,8 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
             ret.append(person.group.name)
         else:
             ret.append('')
-        if person.organization:
-            ret.append(person.organization.name)
+        if person.team:
+            ret.append(person.team.name)
         else:
             ret.append('')
         ret.append(person.get_year())
@@ -332,8 +332,8 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
             if person.group:
                 group = person.group.name
 
-            if person.organization:
-                team = person.organization.name
+            if person.team:
+                team = person.team.name
 
             rented_card = _('Rented card') if is_rented_card else _('Rented stub')
 
@@ -477,31 +477,32 @@ class OrganizationMemoryModel(AbstractSportOrgMemoryModel):
 
     def init_cache(self):
         self.cache.clear()
-        for i in range(len(self.race.organizations)):
+        for i in range(len(self.race.teams)):
             self.cache.append(self.get_data(i))
 
     def get_data(self, position):
-        ret = self.get_values_from_object(self.race.organizations[position])
+        ret = self.get_values_from_object(self.race.teams[position])
         return ret
 
     def duplicate(self, position):
-        organization = self.race.organizations[position]
-        new_organization = copy(organization)
-        new_organization.id = uuid.uuid4()
-        new_organization.name = new_organization.name + '_'
-        self.race.organizations.insert(position, new_organization)
+        team = self.race.teams[position]
+        new_team = copy(team)
+        # FIXME
+        new_team.id = uuid.uuid4()
+        new_team.name = new_team.name + '_'
+        self.race.teams.insert(position, new_team)
 
-    def get_values_from_object(self, organization):
+    def get_values_from_object(self, team):
         return [
-            organization.name,
-            organization.code,
-            organization.country,
-            organization.region,
-            organization.contact
+            team.name,
+            team.code,
+            team.country,
+            team.region,
+            team.contact
         ]
 
     def get_source_array(self):
-        return self.race.organizations
+        return self.race.teams
 
     def set_source_array(self, array):
-        self.race.organizations = array
+        self.race.teams = array

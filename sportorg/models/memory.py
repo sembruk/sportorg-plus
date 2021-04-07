@@ -97,40 +97,42 @@ class ResultStatus(_TitleType):
     RESTORED = 16
 
 
-class Organization(Model):
+class Team(Model):
     def __init__(self):
-        self.id = uuid.uuid4()
+        self.id = None
         self.name = ''
         self.country = ''
         self.region = ''
         self.contact = ''
         self.code = ''
-        self.count_person = 0
+        self.group = None  # type: Group
+        self.result = None  # type: TeamResult
 
     def __str__(self):
         return self.name
 
-    def __repr__(self):
-        return 'Organization {}'.format(self.name)
+    @property
+    def id_and_name(self):
+        return "{} {}".format(self.id, self.name)
 
-    def to_dict(self):
-        return {
-            'object': self.__class__.__name__,
-            'id': str(self.id),
-            'name': self.name,
-            'country': self.country,
-            'region': self.region,
-            'contact': self.contact,
-            'code': self.code,
-            'count_person': self.count_person,  # readonly
-        }
+    #def to_dict(self):
+    #    return {
+    #        'object': self.__class__.__name__,
+    #        'id': str(self.id),
+    #        'name': self.name,
+    #        'country': self.country,
+    #        'region': self.region,
+    #        'contact': self.contact,
+    #        'code': self.code,
+    #        'count_person': self.count_person,  # readonly
+    #    }
 
-    def update_data(self, data):
-        self.name = str(data['name']) if 'name' in data else ''
-        self.country = str(data['country']) if 'country' in data else ''
-        self.region = str(data['region']) if 'region' in data else ''
-        self.code = str(data['code']) if 'code' in data else ''
-        self.contact = str(data['contact']) if 'contact' in data else ''
+    #def update_data(self, data):
+    #    self.name = str(data['name']) if 'name' in data else ''
+    #    self.country = str(data['country']) if 'country' in data else ''
+    #    self.region = str(data['region']) if 'region' in data else ''
+    #    self.code = str(data['code']) if 'code' in data else ''
+    #    self.contact = str(data['contact']) if 'contact' in data else ''
 
 
 class CourseControl(Model):
@@ -671,9 +673,9 @@ class Result:
     def get_result_otime_team(self):
         if self.person:
             team_id = self.person.team_id
-            team = find(race().teams, team_id=team_id)
+            team = find(race().teams, id=team_id)
             if team:
-                return team.get_time()
+                return team.result.get_time()
         return OTime()
 
     def get_start_time(self):
@@ -1036,10 +1038,9 @@ class Person(Model):
 
         self.card_number = 0
         self.bib = 0
-        self.team_id = 0 # for TEAM_RACE
 
         self.birth_date = None  # type: date
-        self.organization = None  # type: Organization
+        self.team = None  # type: Team
         self.group = None  # type: Group
         self.world_code = None  # WRE ID for orienteering and the same
         self.national_code = None
@@ -1093,7 +1094,7 @@ class Person(Model):
             'birth_date': str(self.birth_date) if self.birth_date else None,
             'year': self.get_year() if self.get_year() else 0,  # back compatibility with 1.0
             'group_id': str(self.group.id) if self.group else None,
-            'organization_id': str(self.organization.id) if self.organization else None,
+            'team_id': str(self.team.id) if self.team else None,
             'world_code': self.world_code,
             'national_code': self.national_code,
             'qual': self.qual.value,
@@ -1202,13 +1203,12 @@ class Race(Model):
         'ResultSportiduino': ResultSportiduino,
         'Group': Group,
         'Course': Course,
-        'Organization': Organization,
+        'Team': Team,
     }
 
     def __init__(self):
         self.id = uuid.uuid4()
         self.data = RaceData()
-        self.organizations = []  # type: List[Organization]
         self.courses = []  # type: List[Course]
         self.groups = []  # type: List[Group]
         self.results = []  # type: List[Result]
@@ -1232,7 +1232,7 @@ class Race(Model):
             'ResultSportiduino': self.results,
             'Group': self.groups,
             'Course': self.courses,
-            'Organization': self.organizations,
+            'Team': self.teams,
         }
 
     def to_dict(self):
@@ -1280,7 +1280,7 @@ class Race(Model):
         obj.update_data(dict_obj)
         if dict_obj['object'] == 'Person':
             obj.group = self.get_obj('Group', dict_obj['group_id'])
-            obj.organization = self.get_obj('Organization', dict_obj['organization_id'])
+            obj.team = self.get_obj('Team', dict_obj['id'])
         elif dict_obj['object'] in ['Result', 'ResultManual', 'ResultSportident', 'ResultSFR', 'ResultSportiduino']:
             obj.person = self.get_obj('Person', dict_obj['person_id'])
         elif dict_obj['object'] == 'Group':
@@ -1367,19 +1367,19 @@ class Race(Model):
             del self.courses[i]
         return courses
 
-    def delete_organizations(self, indexes):
-        self.update_counters()
-        organizations = []
-        for i in indexes:
-            organization = self.organizations[i]  # type: Organization
-            if organization.count_person > 0:
-                raise NotEmptyException('Cannot remove organization')
-            organizations.append(organization)
-        indexes = sorted(indexes, reverse=True)
+    #def delete_organizations(self, indexes):
+    #    self.update_counters()
+    #    organizations = []
+    #    for i in indexes:
+    #        organization = self.organizations[i]  # type: Organization
+    #        if organization.count_person > 0:
+    #            raise NotEmptyException('Cannot remove organization')
+    #        organizations.append(organization)
+    #    indexes = sorted(indexes, reverse=True)
 
-        for i in indexes:
-            del self.organizations[i]
-        return organizations
+    #    for i in indexes:
+    #        del self.organizations[i]
+    #    return organizations
 
     def find_person_result(self, person):
         for i in self.results:
@@ -1411,13 +1411,10 @@ class Race(Model):
         ret = find(self.groups, name=str(group_name))
         return ret
 
-    def find_organization(self, org_name):
-        # get organization by name
-        ret = find(self.organizations, name=str(org_name))
+    def find_team(self, name):
+        # get team by name
+        ret = find(self.teams, name=str(name))
         return ret
-
-    def find_team(self, team_name):
-        return self.find_organization(team_name)
 
     def get_course_splits(self, result):
         """List[Split]"""
@@ -1451,11 +1448,11 @@ class Race(Model):
             self.courses.insert(0, new_course)
         return new_course
 
-    def add_new_organization(self, append_to_race=False):
-        new_organization = Organization()
+    def add_new_team(self, append_to_race=False):
+        new_team = Team()
         if append_to_race:
-            self.organizations.insert(0, new_organization)
-        return new_organization
+            self.organizations.insert(0, new_team)
+        return new_team
 
     def update_counters(self):
         # recalculate group counters
@@ -1477,12 +1474,12 @@ class Race(Model):
                 i.course.count_group += 1
 
         # recalculate team counters
-        for i in self.organizations:
-            i.count_person = 0
+        #for i in self.teams:
+        #    i.count_person = 0
 
-        for i in self.persons:
-            if i.organization:
-                i.organization.count_person += 1
+        #for i in self.persons:
+        #    if i.team:
+        #        i.team.count_person += 1
 
     def get_persons_by_group(self, group):
         return find(self.persons, group=group, return_all=True)
@@ -2068,12 +2065,9 @@ def race(i=None):
     else:
         return Race()
 
-class Team(object):
-    def __init__(self, r):
-        self.race = r
-        self.group = None  # type: Group
-        self.description = ''  # Name of team, optional
-        self.team_id = None  # bib
+
+class TeamResult(object):
+    def __init__(self):
         self.members_results = []  # type: List[Result]
         self.score = 0
         self.finish_time = OTime()
