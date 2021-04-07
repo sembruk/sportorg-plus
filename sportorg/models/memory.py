@@ -1213,6 +1213,7 @@ class Race(Model):
         self.results = []  # type: List[Result]
         self.persons = []  # type: List[Person]
         self.relay_teams = []  # type: List[RelayTeam]
+        self.teams = []  # type: List[Team]
         self.settings = {}  # type: Dict[str, Any]
         self.controls = []  # type: List[ControlPoint]
 
@@ -2089,8 +2090,8 @@ class Team(object):
             return True
 
     def __gt__(self, other):  # greater is worse
-        if self.is_status_ok() != other.is_status_ok():
-            return other.is_status_ok()
+        if self.get_is_status_ok() != other.get_is_status_ok():
+            return other.get_is_status_ok()
 
         if race().get_setting('result_processing_mode', 'time') == 'scores':
             if self.get_score() != other.get_score():

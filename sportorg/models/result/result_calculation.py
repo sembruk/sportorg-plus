@@ -122,9 +122,9 @@ class ResultCalculation(object):
                     new_team = Team(self.race)
                     new_team.group = group
                     new_team.bib_number = bib
-                    teams[str(team_number)] = new_team
+                    teams[str(bib)] = new_team
 
-                team = teams[str(team_number)]
+                team = teams[str(bib)]
                 team.add_result(res)
             teams_sorted = sorted(teams.values())
             place = 1

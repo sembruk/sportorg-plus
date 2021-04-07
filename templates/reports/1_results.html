@@ -546,7 +546,7 @@
         init: function () {
             try {
                 var isRelay = race.data.race_type === 3
-                vat isTeamRace = race.data.race_type === 6
+                var isTeamRace = race.data.race_type === 6
                 this.getField('all_splits').active = location.href.indexOf('all_splits=1') > -1;
                 this.getField('scores').active = location.href.indexOf('scores=1') > -1;
                 this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
