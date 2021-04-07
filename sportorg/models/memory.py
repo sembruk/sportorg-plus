@@ -670,8 +670,8 @@ class Result:
 
     def get_result_otime_team(self):
         if self.person:
-            team_bib = self.person.bib
-            team = find(race().teams, bib_number=team_bib)
+            team_id = self.person.team_id
+            team = find(race().teams, team_id=team_id)
             if team:
                 return team.get_time()
         return OTime()
@@ -1036,6 +1036,7 @@ class Person(Model):
 
         self.card_number = 0
         self.bib = 0
+        self.team_id = 0 # for TEAM_RACE
 
         self.birth_date = None  # type: date
         self.organization = None  # type: Organization
@@ -2072,7 +2073,7 @@ class Team(object):
         self.race = r
         self.group = None  # type: Group
         self.description = ''  # Name of team, optional
-        self.bib_number = None  # bib
+        self.team_id = None  # bib
         self.members_results = []  # type: List[Result]
         self.score = 0
         self.finish_time = OTime()
