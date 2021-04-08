@@ -19,7 +19,7 @@ from sportorg.utils.time import time_to_qtime, time_to_otime, qdate_to_date
 
 class PersonEditDialog(QDialog):
     GROUP_NAME = ''
-    ORGANIZATION_NAME = ''
+    TEAM_NAME = ''
 
     def __init__(self, person, is_new=False):
         super().__init__(GlobalAccess().get_main_window())
@@ -238,9 +238,9 @@ class PersonEditDialog(QDialog):
         else:
             self.item_group.setCurrentText(self.GROUP_NAME)
         if self.current_object.team:
-            self.item_team.setCurrentText(self.current_object.team.id_and_name)
+            self.item_team.setCurrentText(self.current_object.team.full_name)
         else:
-            self.item_team.setCurrentText(self.ORGANIZATION_NAME)
+            self.item_team.setCurrentText(self.TEAM_NAME)
         if self.current_object.qual:
             self.item_qual.setCurrentText(self.current_object.qual.get_title())
         if self.current_object.bib:
@@ -281,9 +281,9 @@ class PersonEditDialog(QDialog):
         if (person.group and person.group.name != self.item_group.currentText()) or\
                 (person.group is None and len(self.item_group.currentText()) > 0):
             person.group = find(race().groups, name=self.item_group.currentText())
-        if (person.team and person.team.id_and_name != self.item_team.currentText()) or \
+        if (person.team and person.team.full_name != self.item_team.currentText()) or \
                 (person.team is None and len(self.item_team.currentText()) > 0):
-            team = find(race().teams, id_and_name=self.item_team.currentText())
+            team = find(race().teams, full_name=self.item_team.currentText())
             if team is None:
                 team = Team()
                 team.name = self.item_team.currentText()

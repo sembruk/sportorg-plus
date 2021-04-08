@@ -117,7 +117,7 @@ class MassEditDialog(QDialog):
                 obj = race()
 
                 change_group = find(obj.groups, name=self.group_combo.currentText())
-                change_team = find(obj.organizations, name=self.team_combo.currentText())
+                change_team = find(obj.teams, name=self.team_combo.currentText())
                 start_group = int(self.start_group_spinbox.value())
                 change_comment = self.comment_text.toPlainText()
                 change_rented = self.rented_combobox.currentText() == yes
@@ -133,7 +133,7 @@ class MassEditDialog(QDialog):
                             cur_person.group = change_group
 
                         if self.team_checkbox.isChecked():
-                            cur_person.organization = change_team
+                            cur_person.team = change_team
 
                         if self.start_group_checkbox.isChecked():
                             cur_person.start_group = start_group

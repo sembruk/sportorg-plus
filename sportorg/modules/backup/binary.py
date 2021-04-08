@@ -15,7 +15,7 @@ def dump(file):
     data['groups'] = obj.groups
     data['persons'] = obj.persons
     data['results'] = obj.results
-    data['organizations'] = obj.organizations
+    data['teams'] = obj.teams
     data['settings'] = obj.settings
     pickle.dump(data, file)
 
@@ -34,5 +34,5 @@ def load(file):
         obj.groups = data['groups']
         obj.persons = data['persons']
         obj.results = data['results']
-        obj.organizations = data['organizations']
+        obj.teams = data['teams']
         obj.settings = data['settings']

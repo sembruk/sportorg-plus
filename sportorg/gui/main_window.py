@@ -12,7 +12,7 @@ from sportorg.common.singleton import singleton
 from sportorg.gui.dialogs.course_edit import CourseEditDialog
 from sportorg.gui.dialogs.person_edit import PersonEditDialog
 from sportorg.gui.dialogs.group_edit import GroupEditDialog
-from sportorg.gui.dialogs.organization_edit import OrganizationEditDialog
+from sportorg.gui.dialogs.organization_edit import TeamEditDialog
 from sportorg.models.constant import RentCards
 from sportorg.models.memory import Race, race, NotEmptyException, new_event, set_current_race_index
 from sportorg.models.result.result_calculation import ResultCalculation
@@ -27,9 +27,9 @@ from sportorg.modules.sportident.result_generation import ResultSportidentGenera
 from sportorg.common.broker import Broker
 from sportorg.gui.dialogs.file_dialog import get_save_file_name
 from sportorg.gui.menu import menu_list, Factory
-from sportorg.gui.tabs import persons, groups, organizations, results, courses
+from sportorg.gui.tabs import persons, groups, teams, results, courses
 from sportorg.gui.tabs.memory_model import PersonMemoryModel, ResultMemoryModel, GroupMemoryModel, \
-    CourseMemoryModel, OrganizationMemoryModel
+    CourseMemoryModel, TeamMemoryModel
 from sportorg.gui.toolbar import toolbar_list
 from sportorg.gui.utils.custom_controls import messageBoxQuestion
 from sportorg.language import _
@@ -221,7 +221,7 @@ class MainWindow(QMainWindow):
         self.tabwidget.addTab(results.Widget(), _('Race Results'))
         self.tabwidget.addTab(groups.Widget(), _('Groups'))
         self.tabwidget.addTab(courses.Widget(), _('Courses'))
-        self.tabwidget.addTab(organizations.Widget(), _('Teams'))
+        self.tabwidget.addTab(teams.Widget(), _('Teams'))
         self.tabwidget.currentChanged.connect(self._menu_disable)
 
     def _menu_disable(self, tab_index):
@@ -290,8 +290,8 @@ class MainWindow(QMainWindow):
             table.setModel(GroupMemoryModel())
             table = self.get_course_table()
             table.setModel(CourseMemoryModel())
-            table = self.get_organization_table()
-            table.setModel(OrganizationMemoryModel())
+            table = self.get_team_table()
+            table.setModel(TeamMemoryModel())
             Broker().produce('init_model')
         except Exception as e:
             logging.error(str(e))
@@ -316,7 +316,7 @@ class MainWindow(QMainWindow):
             table.model().init_cache()
             table.model().layoutChanged.emit()
 
-            table = self.get_organization_table()
+            table = self.get_team_table()
             table.model().init_cache()
             table.model().layoutChanged.emit()
             self.set_title()
@@ -332,7 +332,7 @@ class MainWindow(QMainWindow):
             self.get_result_table().model().clear_filter(remove_condition)
             self.get_person_table().model().clear_filter(remove_condition)
             self.get_course_table().model().clear_filter(remove_condition)
-            self.get_organization_table().model().clear_filter(remove_condition)
+            self.get_team_table().model().clear_filter(remove_condition)
 
     def apply_filters(self):
         if self.get_person_table():
@@ -340,7 +340,7 @@ class MainWindow(QMainWindow):
             self.get_result_table().model().apply_filter()
             self.get_person_table().model().apply_filter()
             self.get_course_table().model().apply_filter()
-            self.get_organization_table().model().apply_filter()
+            self.get_team_table().model().apply_filter()
 
     def add_recent_file(self, file):
         self.delete_from_recent_files(file)
@@ -368,11 +368,11 @@ class MainWindow(QMainWindow):
     def get_course_table(self):
         return self.get_table_by_name('CourseTable')
 
-    def get_organization_table(self):
-        return self.get_table_by_name('OrganizationTable')
+    def get_team_table(self):
+        return self.get_table_by_name('TeamTable')
 
     def get_current_table(self):
-        map_ = ['PersonTable', 'ResultTable', 'GroupTable', 'CourseTable', 'OrganizationTable']
+        map_ = ['PersonTable', 'ResultTable', 'GroupTable', 'CourseTable', 'TeamTable']
         idx = self.current_tab
         if idx < len(map_):
             return self.get_table_by_name(map_[idx])
@@ -563,8 +563,8 @@ class MainWindow(QMainWindow):
                 CourseEditDialog(c, True).exec_()
                 self.refresh()
             elif tab == 4:
-                o = race().add_new_organization()
-                OrganizationEditDialog(o, True).exec_()
+                o = race().add_new_team()
+                TeamEditDialog(o, True).exec_()
                 self.refresh()
         except Exception as e:
             logging.error(str(e))
@@ -615,12 +615,12 @@ class MainWindow(QMainWindow):
             self.refresh()
         elif tab == 4:
             try:
-                res = race().delete_organizations(indexes)
+                res = race().delete_teams(indexes)
             except NotEmptyException as e:
                 logging.warning(str(e))
-                QMessageBox.question(self.get_organization_table(),
+                QMessageBox.question(self.get_team_table(),
                                      _('Error'),
-                                     _('Cannot remove organization'))
+                                     _('Cannot remove team'))
             self.refresh()
         if len(res):
             Teamwork().delete([r.to_dict() for r in res])

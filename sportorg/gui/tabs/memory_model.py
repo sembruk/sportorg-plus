@@ -468,7 +468,7 @@ class CourseMemoryModel(AbstractSportOrgMemoryModel):
         self.race.courses = array
 
 
-class OrganizationMemoryModel(AbstractSportOrgMemoryModel):
+class TeamMemoryModel(AbstractSportOrgMemoryModel):
     def __init__(self):
         super().__init__()
 

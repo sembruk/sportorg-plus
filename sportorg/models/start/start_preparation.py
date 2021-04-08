@@ -70,9 +70,9 @@ class DrawManager(object):
             start_group = current_person.start_group
             team = ''
             region = ''
-            if current_person.organization:
-                team = current_person.organization.name
-                region = current_person.organization.region
+            if current_person.team:
+                team = current_person.team.name
+                region = current_person.team.region
 
             self.person_array.append([index, group, '{:03}'.format(start_group), team, region])
 

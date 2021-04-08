@@ -129,7 +129,7 @@ class EventSettingsAction(Action, metaclass=ActionFactory):
 class CSVWinorientImportAction(Action, metaclass=ActionFactory):
     def execute(self):
         file_name = get_open_file_name(_('Open CSV Winorient file'), _("CSV Winorient (*.csv)"))
-        if file_name is not '':
+        if file_name:
             try:
                 winorient.import_csv(file_name)
             except Exception as e:
@@ -141,7 +141,7 @@ class CSVWinorientImportAction(Action, metaclass=ActionFactory):
 class WDBWinorientImportAction(Action, metaclass=ActionFactory):
     def execute(self):
         file_name = get_open_file_name(_('Open WDB Winorient file'), _("WDB Winorient (*.wdb)"))
-        if file_name is not '':
+        if file_name:
             try:
                 winorient.import_wo_wdb(file_name)
             except WDBImportError as e:
@@ -154,7 +154,7 @@ class WDBWinorientImportAction(Action, metaclass=ActionFactory):
 class OcadTXTv8ImportAction(Action, metaclass=ActionFactory):
     def execute(self):
         file_name = get_open_file_name(_('Open Ocad txt v8 file'), _("Ocad classes v8 (*.txt)"))
-        if file_name is not '':
+        if file_name:
             try:
                 ocad.import_txt_v8(file_name)
             except OcadImportException as e:
@@ -167,7 +167,7 @@ class WDBWinorientExportAction(Action, metaclass=ActionFactory):
     def execute(self):
         file_name = get_save_file_name(_('Save As WDB file'), _("WDB file (*.wdb)"),
                                        '{}_sportorg_export'.format(race().data.get_start_datetime().strftime("%Y%m%d")))
-        if file_name is not '':
+        if file_name:
             try:
                 wb = WinOrientBinary()
 
@@ -185,7 +185,7 @@ class IOFResultListExportAction(Action, metaclass=ActionFactory):
     def execute(self):
         file_name = get_save_file_name(_('Save As IOF xml'), _('IOF xml (*.xml)'),
                                        '{}_resultList'.format(race().data.get_start_datetime().strftime("%Y%m%d")))
-        if file_name is not '':
+        if file_name:
             try:
                 iof_xml.export_result_list(file_name)
             except Exception as e:
@@ -196,7 +196,7 @@ class IOFResultListExportAction(Action, metaclass=ActionFactory):
 class IOFEntryListImportAction(Action, metaclass=ActionFactory):
     def execute(self):
         file_name = get_open_file_name(_('Open IOF xml'), _('IOF xml (*.xml)'))
-        if file_name is not '':
+        if file_name:
             try:
                 iof_xml.import_from_iof(file_name)
             except Exception as e:
@@ -512,7 +512,7 @@ class TeamworkSendAction(Action, metaclass=ActionFactory):
     def execute(self):
         try:
             obj = race()
-            data_list = [obj.persons, obj.results, obj.groups, obj.courses, obj.organizations]
+            data_list = [obj.persons, obj.results, obj.groups, obj.courses, obj.teams]
             if not self.app.current_tab < len(data_list):
                 return
             items = data_list[self.app.current_tab]
@@ -601,7 +601,7 @@ class AssignResultByCardNumberAction(Action, metaclass=ActionFactory):
 class ImportSportOrgAction(Action, metaclass=ActionFactory):
     def execute(self):
         file_name = get_open_file_name(_('Open SportOrg json'), _('SportOrg (*.json)'))
-        if file_name is not '':
+        if file_name:
             with open(file_name) as f:
                 attr = get_races_from_file(f)
             SportOrgImportDialog(*attr).exec_()

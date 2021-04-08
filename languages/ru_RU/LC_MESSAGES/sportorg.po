@@ -281,7 +281,7 @@ msgid "Replace source with reserve"
 msgstr "Создать резервного участника для исходного номера"
 
 msgid "Team properties"
-msgstr "Свойства коллектива"
+msgstr "Свойства команды"
 
 msgid "Country"
 msgstr "Страна"
@@ -746,7 +746,7 @@ msgid "Groups"
 msgstr "Группы"
 
 msgid "Teams"
-msgstr "Коллективы"
+msgstr "Команды"
 
 msgid "Logs"
 msgstr "Логи"

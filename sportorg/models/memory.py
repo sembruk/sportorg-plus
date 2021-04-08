@@ -99,7 +99,8 @@ class ResultStatus(_TitleType):
 
 class Team(Model):
     def __init__(self):
-        self.id = None
+        self.id = uuid.uuid4()
+        self.number = 0
         self.name = ''
         self.country = ''
         self.region = ''
@@ -107,32 +108,35 @@ class Team(Model):
         self.code = ''
         self.group = None  # type: Group
         self.result = None  # type: TeamResult
+        self.count_person = 0
 
     def __str__(self):
         return self.name
 
     @property
-    def id_and_name(self):
-        return "{} {}".format(self.id, self.name)
+    def full_name(self):
+        return "{} {}".format(self.number, self.name)
 
-    #def to_dict(self):
-    #    return {
-    #        'object': self.__class__.__name__,
-    #        'id': str(self.id),
-    #        'name': self.name,
-    #        'country': self.country,
-    #        'region': self.region,
-    #        'contact': self.contact,
-    #        'code': self.code,
-    #        'count_person': self.count_person,  # readonly
-    #    }
+    def to_dict(self):
+        return {
+            'object': self.__class__.__name__,
+            'id': str(self.id),
+            'number': self.number,
+            'name': self.name,
+            'country': self.country,
+            'region': self.region,
+            'contact': self.contact,
+            'code': self.code,
+            'count_person': self.count_person,  # readonly
+        }
 
-    #def update_data(self, data):
-    #    self.name = str(data['name']) if 'name' in data else ''
-    #    self.country = str(data['country']) if 'country' in data else ''
-    #    self.region = str(data['region']) if 'region' in data else ''
-    #    self.code = str(data['code']) if 'code' in data else ''
-    #    self.contact = str(data['contact']) if 'contact' in data else ''
+    def update_data(self, data):
+        self.number = int(data['number']) if 'number' in data else 0
+        self.name = str(data['name']) if 'name' in data else ''
+        self.country = str(data['country']) if 'country' in data else ''
+        self.region = str(data['region']) if 'region' in data else ''
+        self.code = str(data['code']) if 'code' in data else ''
+        self.contact = str(data['contact']) if 'contact' in data else ''
 
 
 class CourseControl(Model):
@@ -1241,7 +1245,7 @@ class Race(Model):
             'id': str(self.id),
             'data': self.data.to_dict(),
             'settings': self.settings,
-            'organizations': [item.to_dict() for item in self.organizations],
+            'teams': [item.to_dict() for item in self.teams],
             'courses': [item.to_dict() for item in self.courses],
             'groups': [item.to_dict() for item in self.groups],
             'results': [item.to_dict() for item in self.results],
@@ -1256,7 +1260,7 @@ class Race(Model):
                 self.data.update_data(dict_obj['data'])
             if 'settings' in dict_obj:
                 self.settings = dict_obj['settings']
-            key_list = ['organizations', 'courses', 'groups', 'persons', 'results']
+            key_list = ['teams', 'courses', 'groups', 'persons', 'results']
             for key in key_list:
                 if key in dict_obj:
                     for item_obj in dict_obj[key]:
@@ -1367,19 +1371,19 @@ class Race(Model):
             del self.courses[i]
         return courses
 
-    #def delete_organizations(self, indexes):
-    #    self.update_counters()
-    #    organizations = []
-    #    for i in indexes:
-    #        organization = self.organizations[i]  # type: Organization
-    #        if organization.count_person > 0:
-    #            raise NotEmptyException('Cannot remove organization')
-    #        organizations.append(organization)
-    #    indexes = sorted(indexes, reverse=True)
+    def delete_teams(self, indexes):
+        self.update_counters()
+        teams = []
+        for i in indexes:
+            team = self.team[i]  # type: Team
+            if team.count_person > 0:
+                raise NotEmptyException('Cannot remove team')
+            teams.append(team)
+        indexes = sorted(indexes, reverse=True)
 
-    #    for i in indexes:
-    #        del self.organizations[i]
-    #    return organizations
+        for i in indexes:
+            del self.teams[i]
+        return teams
 
     def find_person_result(self, person):
         for i in self.results:
@@ -1451,7 +1455,7 @@ class Race(Model):
     def add_new_team(self, append_to_race=False):
         new_team = Team()
         if append_to_race:
-            self.organizations.insert(0, new_team)
+            self.teams.insert(0, new_team)
         return new_team
 
     def update_counters(self):
@@ -1517,7 +1521,7 @@ class Race(Model):
         return self.data.race_type == RaceType.TEAM_RACE
 
     def get_lengths(self):
-        return len(self.persons), len(self.results), len(self.groups), len(self.courses), len(self.organizations)
+        return len(self.persons), len(self.results), len(self.groups), len(self.courses), len(self.teams)
 
     def get_duplicate_card_numbers(self):
         ret = []

@@ -27,9 +27,11 @@ class ResultCalculation(object):
                 for a in new_relays:
                     self.race.relay_teams.append(a)
             elif self.race.get_type(i) == RaceType.TEAM_RACE:
-                teams = self.process_team_results(i)
-                for t in teams:
-                    self.race.teams.append(t)
+                # FIXME
+                pass
+                #teams = self.process_team_results(i)
+                #for t in teams:
+                #    self.race.teams.append(t)
             else:
                 # single race
                 array = self.get_group_finishes(i)

@@ -103,14 +103,14 @@ class ReportDialog(QDialog):
     def apply_changes_impl(self):
         obj = race()
         mw = GlobalAccess().get_main_window()
-        map_items = [obj.persons, obj.results, obj.groups, obj.courses, obj.organizations]
-        map_names = ['persons', 'results', 'groups', 'courses', 'organizations']
+        map_items = [obj.persons, obj.results, obj.groups, obj.courses, obj.teams]
+        map_names = ['persons', 'results', 'groups', 'courses', 'teams']
         selected_items = {
             'persons': [],
             'results': [],
             'groups': [],
             'courses': [],
-            'organizations': [],
+            'teams': [],
         }
 
         template_path = self.item_template.currentText()

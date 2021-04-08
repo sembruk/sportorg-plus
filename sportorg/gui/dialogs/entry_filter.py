@@ -86,7 +86,7 @@ class DialogFilter(QDialog):
                 proxy_model.apply_filter()
 
                 PersonEditDialog.GROUP_NAME = self.group_combo.currentText()
-                PersonEditDialog.ORGANIZATION_NAME = self.team_combo.currentText()
+                PersonEditDialog.TEAM_NAME = self.team_combo.currentText()
         except Exception as e:
             logging.error(str(e))
 

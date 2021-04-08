@@ -292,8 +292,8 @@ def get_property(person, key):
         if person.group:
             return person.group.name
     elif key == _('Team'):
-        if person.organization:
-            return person.organization.name
+        if person.team:
+            return person.team.name
     elif key == _('Qualification'):
         return person.qual.get_title()
     elif key == _('Bib'):
@@ -345,7 +345,7 @@ def set_property(person, key, value, **options):
     elif key == _('Team'):
         team = race().find_team(value)
         if team:
-            person.organization = team
+            person.team = team
     elif key == _('Qualification'):
         qual = Qualification.get_qual_by_name(value)
         if qual:

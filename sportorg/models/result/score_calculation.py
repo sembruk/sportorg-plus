@@ -99,7 +99,7 @@ class ScoreCalculation(object):
         return ret
 
     @staticmethod
-    def get_region_for_organization(org):
+    def get_region_for_team(org):
         if org:
             if org.region:
                 return org.region
@@ -107,8 +107,8 @@ class ScoreCalculation(object):
 
     def get_all_regions(self):
         ret = []
-        for i in self.race.organizations:
-            region = self.get_region_for_organization(i)
+        for i in self.race.teams:
+            region = self.get_region_for_team(i)
             if region and region not in ret:
                 ret.append(region)
         return ret

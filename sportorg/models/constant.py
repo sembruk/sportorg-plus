@@ -212,7 +212,7 @@ def get_race_teams():
     try:
         for i in race().teams:
             if i.name:
-                ret.append(i.id_and_name())
+                ret.append(i.full_name)
         ret.sort()
         return ret
     except Exception as e:

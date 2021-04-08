@@ -79,8 +79,8 @@ class SportorgPrinter(object):
         # Athlete info, bib, card number, start time
         self.print_line(person.full_name,  fn, fs_large, 700)
         self.print_line(_('Group') + ': ' + group.name, fn, fs_main)
-        if person.organization:
-            self.print_line(_('Team') + ': ' + person.organization.name,  fn, fs_main)
+        if person.team:
+            self.print_line(_('Team') + ': ' + person.team.name,  fn, fs_main)
         self.print_line(_('Bib') + ': ' + str(person.bib) + ' '*5 +
                         _('Card') + ': ' + str(person.card_number), fn, fs_main)
         self.print_line(_('Start') + ': ' + result.get_start_time().to_str(), fn, fs_main)

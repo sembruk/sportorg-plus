@@ -94,15 +94,15 @@ class SportOrgImportDialog(QDialog):
             return
 
         if unique_id == 'id' and action == 'add':
-            organizations = []
-            for org in import_race.organizations:
-                old_org = find(obj.organizations, id=org.id)
-                old_org_by_name = find(obj.organizations, name=org.name)
+            teams = []
+            for org in import_race.teams:
+                old_org = find(obj.teams, id=org.id)
+                old_org_by_name = find(obj.teams, name=org.name)
                 if old_org is None:
                     if old_org_by_name:
                         org.name = '_' + org.name
-                    organizations.append(org)
-            obj.organizations.extend(organizations)
+                    teams.append(org)
+            obj.teams.extend(teams)
 
             courses = []
             for course in import_race.courses:
@@ -131,8 +131,8 @@ class SportOrgImportDialog(QDialog):
                 if find(obj.persons, id=person.id) is None:
                     if person.group:
                         person.group = find(obj.groups, id=person.group.id)
-                    if person.organization:
-                        person.organization = find(obj.organizations, id=person.organization.id)
+                    if person.team:
+                        person.team = find(obj.teams, id=person.team.id)
                     persons.append(person)
             obj.persons.extend(persons)
 

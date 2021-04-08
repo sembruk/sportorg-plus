@@ -63,12 +63,13 @@ def race_migrate(data):
             group['min_year'] = 0
         if 'max_year' not in group:
             group['max_year'] = 0
-    for org in data['organizations']:
-        if 'address' in org and org['address']:
-            org['country'] = org['address']['country']['name']
-            org['region'] = org['address']['state']
-            if org['contact']:
-                org['contact'] = org['contact']['value']
+    if 'teams' not in data and 'organizations' in data:
+        for org in data['organizations']:
+            if 'address' in org and org['address']:
+                org['country'] = org['address']['country']['name']
+                org['region'] = org['address']['state']
+                if org['contact']:
+                    org['contact'] = org['contact']['value']
     settings = data['settings']
     if 'sportident_zero_time' in settings:
         settings['system_zero_time'] = settings['sportident_zero_time']
