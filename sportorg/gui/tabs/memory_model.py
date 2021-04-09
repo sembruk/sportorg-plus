@@ -294,6 +294,10 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
         self.count = None
 
     def get_headers(self):
+        if self.race.get_setting('marked_route_mode', 'off') == 'off':
+            return [_('Last name'), _('First name'), _('Group'), _('Team'), _('Bib'), _('Card title'),
+                    _('Start'), _('Finish'), _('Result'), _('Status'), _('Penalty'),
+                    _('Place'), _('Type'), _('Rented card')]
         return [_('Last name'), _('First name'), _('Group'), _('Team'), _('Bib'), _('Card title'),
                 _('Start'), _('Finish'), _('Result'), _('Status'), _('Credit'), _('Penalty'), _('Penalty legs title'),
                 _('Place'), _('Type'), _('Rented card')]
@@ -347,6 +351,27 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
             time_accuracy = self.race.get_setting('time_accuracy', 0)
             finish = i.get_finish_time().to_str(time_accuracy)
 
+        penalty = time_to_hhmmss(i.get_penalty_time())
+        if self.race.get_setting('result_processing_mode', 'time') == 'scores':
+            penalty = i.penalty_points
+
+        if self.race.get_setting('marked_route_mode', 'off') == 'off':
+            return [
+                last_name,
+                first_name,
+                group,
+                team,
+                bib,
+                i.card_number,
+                start,
+                finish,
+                i.get_result(),
+                i.status.get_title(),
+                penalty,
+                i.get_place(),
+                str(i.system_type),
+                rented_card
+            ]
         return [
             last_name,
             first_name,
@@ -359,7 +384,7 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
             i.get_result(),
             i.status.get_title(),
             time_to_hhmmss(i.get_credit_time()),
-            time_to_hhmmss(i.get_penalty_time()),
+            penalty,
             i.penalty_laps,
             i.get_place(),
             str(i.system_type),

@@ -8,6 +8,7 @@ from PySide2.QtWidgets import QFormLayout, QLabel, QLineEdit, QSpinBox, QTimeEdi
 from sportorg import config
 from sportorg.gui.global_access import GlobalAccess
 from sportorg.gui.utils.custom_controls import AdvComboBox
+from sportorg.gui.dialogs.organization_edit import TeamEditDialog
 from sportorg.language import _
 from sportorg.models.constant import get_names, get_race_groups, get_race_teams
 from sportorg.models.memory import race, Person, find, Qualification, Limit, Team
@@ -146,6 +147,11 @@ class PersonEditDialog(QDialog):
         self.button_cancel = button_box.button(QDialogButtonBox.Cancel)
         self.button_cancel.setText(_('Cancel'))
         self.button_cancel.clicked.connect(cancel_changes)
+
+        if self.current_object.team:
+            button_team = button_box.addButton(_('Team properties'), QDialogButtonBox.ActionRole)
+            button_team.clicked.connect(self.open_team_dialog)
+
         self.layout.addRow(button_box)
 
         self.show()
@@ -269,6 +275,14 @@ class PersonEditDialog(QDialog):
         else:
             if self.current_object.get_year():
                 self.item_year.setValue(self.current_object.get_year())
+
+    def open_team_dialog(self):
+        try:
+            TeamEditDialog(self.current_object.team).exec_()
+            if self.current_object.team:
+                self.item_team.setCurrentText(self.current_object.team.full_name)
+        except Exception as e:
+            logging.error(str(e))
 
     def apply_changes_impl(self):
         person = self.current_object
