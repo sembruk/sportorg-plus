@@ -14,8 +14,6 @@ class ResultCalculation(object):
     def process_results(self):
         logging.debug('Process results')
         self.race.relay_teams.clear()
-        if self.race.is_team_race():
-            self.race.teams.clear()
         for person in self.race.persons:
             person.result_count = 0
         for result in self.race.results:
@@ -27,11 +25,8 @@ class ResultCalculation(object):
                 for a in new_relays:
                     self.race.relay_teams.append(a)
             elif self.race.get_type(i) == RaceType.TEAM_RACE:
-                # FIXME
                 pass
-                #teams = self.process_team_results(i)
-                #for t in teams:
-                #    self.race.teams.append(t)
+                self.process_team_results(i)
             else:
                 # single race
                 array = self.get_group_finishes(i)
@@ -114,20 +109,19 @@ class ResultCalculation(object):
 
     def process_team_results(self, group):
         if group and isinstance(group, Group):
-            results = self.get_group_finishes(group)
+            teams_results = {}
+            for res in self.race.results:
+                person = res.person
+                if person:
+                    if person.group is group and person.team:
+                        person.team.result.add_result(res)
+                        teams_results[person.team.id] = person.team.result
 
-            teams = {}
-            for res in results:
-                team_id = res.person.bib
-                res.person.team.result.add_result(res)
-
-            # FIXME
-            #teams_sorted = sorted(teams.values())
-            #place = 1
-            #for cur_team in teams_sorted:
-            #    cur_team.set_place(place)
-            #    place += 1
-            #return teams.values()
+            res_sorted = sorted(teams_results.values())
+            place = 1
+            for res in res_sorted:
+                res.set_place(place)
+                place += 1
 
     def set_rank(self, group):
         ranking = group.ranking

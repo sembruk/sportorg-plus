@@ -287,7 +287,8 @@ class PersonEditDialog(QDialog):
             if team is None:
                 team = Team()
                 team.name = self.item_team.currentText()
-                race().team.append(team)
+                team.group = person.group
+                race().teams.append(team)
                 Teamwork().send(team.to_dict())
             person.team = team
         if person.qual.get_title() != self.item_qual.currentText():

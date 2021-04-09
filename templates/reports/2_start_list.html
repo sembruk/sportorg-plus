@@ -42,10 +42,11 @@
                 results.push({
                     index: 0,
                     name: person.surname + ' ' + person.name,
-                    org: (person.organization && String(person.organization.name).slice(0, MAX_ORG_NAME)) || '',
+                    team: (person.team && String(person.team.number) + ' ' + String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
                     qual: Qualification[person.qual],
                     bib: person.bib,
                     card_number: person.card_number,
+                    team_number: person.team && person.team.number || 0,
                     year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
                     start: toHHMMSS(person.start_time),
                     start_time: person.start_time
@@ -60,8 +61,14 @@
                     return a.bib % 1000 - b.bib % 1000
                 }
             }
+            if (isTeamRace) {
+                if (a.team.number === b.team.number) {
+                    return a.card_number - b.card_number
+                }
+                return a.team.number - b.team.number
+            }
             if (a.start_time === b.start_time) {
-                return a.bib - b.bib;
+                return a.bib - b.bib
             }
             return a.start_time - b.start_time
         });
@@ -93,11 +100,14 @@
             for (var _i = 0, resultsList_ = resultsList; _i < resultsList_.length; _i++) {
                 var r = resultsList_[_i];
                 r.index = '';
-                var teamBib = r.bib
-                if (teamBib !== prevTeamBib) {
+                var teamBib = r.team_number
+                if (teamBib == 0 || teamBib !== prevTeamBib) {
                     index++;
                     results.push({index: index});
                     prevTeamBib = teamBib;
+                } else {
+                    r.team = ''
+                    r.start = ''
                 }
                 results.push(r);
             }
@@ -109,7 +119,7 @@
         fields: [
             {key: 'index', title: '№', size: 4},
             {key: 'name', title: 'Фамилия, имя', size: 30},
-            {key: 'org', title: 'Коллектив', size: 20},
+            {key: 'team', title: 'Команда', size: 20},
             {key: 'year', title: 'ГР', size: 5},
             {key: 'qual', title: 'Разряд', size: 7},
             {key: 'bib', title: 'Номер', size: 6},
@@ -138,7 +148,19 @@
             }
             return false;
         },
+        getField: function (key) {
+            for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                if (key === obj.key) {
+                    return obj
+                }
+            }
+        },
         init: function () {
+            try {
+                var isTeamRace = race.data.race_type === 6
+                this.getField('bib').active = !isTeamRace
+            } catch (e){}
             return this;
         }
     }.init();

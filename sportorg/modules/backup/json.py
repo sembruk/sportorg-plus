@@ -50,11 +50,16 @@ def get_races_from_file(file):
 
 
 def race_migrate(data):
+    teams_groups = {}
     for person in data['persons']:
         if 'sportident_card' in person:
             person['card_number'] = person['sportident_card']
         if 'is_rented_sportident_card' in person:
             person['is_rented_card'] = person['is_rented_sportident_card']
+        if 'organization_id' in person:
+            person['team_id'] = person['organization_id']
+            if 'organizations' in data:
+                teams_groups[person['team_id']] = person['group_id']
     for result in data['results']:
         if 'sportident_card' in result:
             result['card_number'] = result['sportident_card']
@@ -65,11 +70,15 @@ def race_migrate(data):
             group['max_year'] = 0
     if 'teams' not in data and 'organizations' in data:
         for org in data['organizations']:
+            org['object'] = 'Team'
             if 'address' in org and org['address']:
                 org['country'] = org['address']['country']['name']
                 org['region'] = org['address']['state']
                 if org['contact']:
                     org['contact'] = org['contact']['value']
+            if org['id'] in teams_groups:
+                org['group_id'] = teams_groups[org['id']]
+        data['teams'] = data['organizations']
     settings = data['settings']
     if 'sportident_zero_time' in settings:
         settings['system_zero_time'] = settings['sportident_zero_time']

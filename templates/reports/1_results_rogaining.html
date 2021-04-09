@@ -49,7 +49,7 @@
                 var r = {
                     index: 0,
                     name: (result.person.surname + ' ' + result.person.name).slice(0, MAX_PERSON_NAME),
-                    org: (result.person.organization && String(result.person.organization.name).slice(0, MAX_ORG_NAME)) || '',
+                    team: (result.person.team && String(result.person.team.number) + ' ' + String(result.person.team.name).slice(0, MAX_ORG_NAME)) || '',
                     qual: Qualification[result.person.qual],
                     bib: result.person.bib,
                     year: result.person.birth_date ? (new Date(result.person.birth_date)).getFullYear() : '',
@@ -192,7 +192,7 @@
                 var r = {
                     index: 0,
                     name: (result.person.surname + ' ' + result.person.name).slice(0, MAX_PERSON_NAME),
-                    org: (result.person.organization && String(result.person.organization.name).slice(0, MAX_ORG_NAME)) || '',
+                    team: (result.person.team && String(result.person.team.number) + ' ' + String(result.person.team.name).slice(0, MAX_ORG_NAME)) || '',
                     qual: Qualification[result.person.qual],
                     bib: result.person.bib,
                     year: result.person.birth_date ? (new Date(result.person.birth_date)).getFullYear() : '',
@@ -305,7 +305,7 @@
             {key: 'index', title: '№', size: 4},
             {key: 'group', title: 'Группа', size: 10, active: false},
             {key: 'name', title: 'Фамилия, имя', size: 30},
-            {key: 'org', title: 'Коллектив', size: 20},
+            {key: 'team', title: 'Команда', size: 20},
             {key: 'year', title: 'ГР', size: 5},
             {key: 'qual', title: 'Разряд', size: 7, active: false},
             {key: 'bib', title: 'Номер', size: 6},

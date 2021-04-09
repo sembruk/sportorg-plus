@@ -43,14 +43,16 @@
         var results = [];
         for (var _i = 0, _a = race.results; _i < _a.length; _i++) {
             var result = _a[_i];
-            if (result.status !== 13 && result.person && result.person.group && result.person.group.id === group.id && (count ? result.place <= count && result.place > 0 : 1)) {
+            var person = result.person
+            if (result.status !== 13 && person && person.group && person.group.id === group.id && (count ? result.place <= count && result.place > 0 : 1)) {
                 var r = {
                     index: 0,
-                    name: (result.person.surname + ' ' + result.person.name).slice(0, MAX_PERSON_NAME),
-                    org: (result.person.organization && String(result.person.organization.name).slice(0, MAX_ORG_NAME)) || '',
-                    qual: Qualification[result.person.qual],
-                    bib: result.person.bib,
-                    year: result.person.birth_date ? (new Date(result.person.birth_date)).getFullYear() : '',
+                    name: (person.surname + ' ' + person.name).slice(0, MAX_PERSON_NAME),
+                    team: (person.team && String(person.team.number) + ' ' + String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
+                    team_number: person.team && person.team.number || 0,
+                    qual: Qualification[person.qual],
+                    bib: person.bib,
+                    year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
                     penalty_time: toHHMMSS(result.penalty_time),
                     penalty_time: result.penalty_time > 0 ? toHHMMSS(result.penalty_time) : '',
                     penalty_laps: result.penalty_laps,
@@ -61,8 +63,8 @@
                     place: result.place,
                     status: result.status,
                     scores: result.scores,
-                    place_show: result.person.is_out_of_competition ? 'в/к' : result.place === 0 ? '' : result.place === -1 ? '' : result.place,
-                    is_out_of_competition: result.person.is_out_of_competition,
+                    place_show: person.is_out_of_competition ? 'в/к' : result.place === 0 ? '' : result.place === -1 ? '' : result.place,
+                    is_out_of_competition: person.is_out_of_competition,
                     speed: result.speed,
                     data: result
                 };
@@ -204,8 +206,8 @@
             for (var _i = 0, resultsList_ = resultsList; _i < resultsList_.length; _i++) {
                 var r = resultsList_[_i];
                 r.index = '';
-                var teamBib = r.bib
-                if (teamBib !== prevTeamBib) {
+                var teamBib = r.team_number
+                if (teamBib == 0 || teamBib !== prevTeamBib) {
                     index++;
                     results.push({index: index});
                     prevTeamBib = teamBib;
@@ -213,6 +215,7 @@
                     r.result = ''
                     r.scores = ''
                     r.place_show = ''
+                    r.team = ''
                 }
                 results.push(r);
             }
@@ -236,14 +239,16 @@
         });
         for (var _i = 0, _a = race.results; _i < _a.length; _i++) {
             var result = _a[_i];
-            if (result.status !== 13 && result.person && result.person.group && result.person.group.course && result.person.group.course.id === group.id) { //} && (count ? result.place <= count && result.place > 0 : 1)) {
+            var person = result.person
+            if (result.status !== 13 && person && person.group && person.group.course && person.group.course.id === group.id) { //} && (count ? result.place <= count && result.place > 0 : 1)) {
                 var r = {
                     index: 0,
-                    name: (result.person.surname + ' ' + result.person.name).slice(0, MAX_PERSON_NAME),
-                    org: (result.person.organization && String(result.person.organization.name).slice(0, MAX_ORG_NAME)) || '',
-                    qual: Qualification[result.person.qual],
-                    bib: result.person.bib,
-                    year: result.person.birth_date ? (new Date(result.person.birth_date)).getFullYear() : '',
+                    name: (person.surname + ' ' + person.name).slice(0, MAX_PERSON_NAME),
+                    team: (person.team && String(person.team.number) + ' ' + String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
+                    team_number: person.team && person.team.number || 0,
+                    qual: Qualification[person.qual],
+                    bib: person.bib,
+                    year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
                     penalty_time: toHHMMSS(result.penalty_time),
                     penalty_laps: result.penalty_laps,
                     result: result.result,
@@ -252,10 +257,10 @@
                     place: result.place,
                     status: result.status,
                     scores: result.scores,
-                    place_show: result.person.is_out_of_competition ? 'в/к' : result.place === 0 ? '' : result.place === -1 ? '' : result.place,
-                    is_out_of_competition: result.person.is_out_of_competition,
+                    place_show: person.is_out_of_competition ? 'в/к' : result.place === 0 ? '' : result.place === -1 ? '' : result.place,
+                    is_out_of_competition: person.is_out_of_competition,
                     speed: result.speed,
-					group: result.person.group.name,
+					group: person.group.name,
                     data: result
                 };
                 if (result.status !== 1) {
@@ -496,7 +501,7 @@
             {key: 'index', title: '№', size: 4},
             {key: 'group', title: 'Группа', size: 10, active: false},
             {key: 'name', title: 'Фамилия, имя', size: 30},
-            {key: 'org', title: 'Коллектив', size: 20},
+            {key: 'team', title: 'Команда', size: 20},
             {key: 'year', title: 'ГР', size: 5},
             {key: 'qual', title: 'Разряд', size: 7},
             {key: 'bib', title: 'Номер', size: 6},

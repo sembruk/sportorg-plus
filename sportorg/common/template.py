@@ -17,13 +17,12 @@ def get_templates(path='', exclude_path=''):
             for f in fs:
                 f = f.replace(exclude_path, '')
                 f = f.replace('\\', '/')
-                files.append(f)
         else:
             full_path = full_path.replace(exclude_path, '')
             full_path = full_path.replace('\\', '/')
             files.append(full_path)
 
-    return files
+    return sorted(files)
 
 
 def get_text_from_file(path, **kwargs):

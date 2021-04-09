@@ -276,18 +276,19 @@ class StartNumberManager(object):
 
     def set_numbers_by_order(self, persons, first_number=1, interval=1):
         cur_number = first_number
-        cur_team_id = first_number
+        cur_team_number = first_number
+        known_teams = {}
         if persons and len(persons) > 0:
-            remap = {}
             for current_person in persons:
-                if self.race.is_team_race():
-                    old_team_id = current_person.team_id
-                    if old_team_id not in remap:
-                        remap[old_team_id] = cur_team_id
-                        cur_team_id += interval
-                    current_person.team_id = remap[old_team_bib]
                 current_person.bib = cur_number
                 cur_number += interval
+                if self.race.is_team_race():
+                    if current_person.team.id in known_teams:
+                        current_person.team.number = known_teams[current_person.team.id]
+                    else:
+                        current_person.team.number = cur_team_number
+                        known_teams[current_person.team.id] = cur_team_number
+                        cur_team_number += interval
         return cur_number
 
 class StartTimeManager(object):

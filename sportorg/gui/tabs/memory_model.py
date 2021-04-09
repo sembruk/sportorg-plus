@@ -256,7 +256,7 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         else:
             ret.append('')
         if person.team:
-            ret.append(person.team.name)
+            ret.append(person.team.full_name)
         else:
             ret.append('')
         ret.append(person.get_year())
@@ -333,7 +333,7 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
                 group = person.group.name
 
             if person.team:
-                team = person.team.name
+                team = person.team.full_name
 
             rented_card = _('Rented card') if is_rented_card else _('Rented stub')
 
@@ -473,7 +473,7 @@ class TeamMemoryModel(AbstractSportOrgMemoryModel):
         super().__init__()
 
     def get_headers(self):
-        return [_('Name'), _('Code'), _('Country'), _('Region'), _('Contact')]
+        return [_('Name'), _('Number'), _('Group'), _('Code'), _('Country'), _('Region'), _('Contact')]
 
     def init_cache(self):
         self.cache.clear()
@@ -487,14 +487,16 @@ class TeamMemoryModel(AbstractSportOrgMemoryModel):
     def duplicate(self, position):
         team = self.race.teams[position]
         new_team = copy(team)
-        # FIXME
         new_team.id = uuid.uuid4()
         new_team.name = new_team.name + '_'
+        new_team.number = 0
         self.race.teams.insert(position, new_team)
 
     def get_values_from_object(self, team):
         return [
             team.name,
+            team.number,
+            team.group.name if team.group else '',
             team.code,
             team.country,
             team.region,

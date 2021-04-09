@@ -97,48 +97,6 @@ class ResultStatus(_TitleType):
     RESTORED = 16
 
 
-class Team(Model):
-    def __init__(self):
-        self.id = uuid.uuid4()
-        self.number = 0
-        self.name = ''
-        self.country = ''
-        self.region = ''
-        self.contact = ''
-        self.code = ''
-        self.group = None  # type: Group
-        self.result = None  # type: TeamResult
-        self.count_person = 0
-
-    def __str__(self):
-        return self.name
-
-    @property
-    def full_name(self):
-        return "{} {}".format(self.number, self.name)
-
-    def to_dict(self):
-        return {
-            'object': self.__class__.__name__,
-            'id': str(self.id),
-            'number': self.number,
-            'name': self.name,
-            'country': self.country,
-            'region': self.region,
-            'contact': self.contact,
-            'code': self.code,
-            'count_person': self.count_person,  # readonly
-        }
-
-    def update_data(self, data):
-        self.number = int(data['number']) if 'number' in data else 0
-        self.name = str(data['name']) if 'name' in data else ''
-        self.country = str(data['country']) if 'country' in data else ''
-        self.region = str(data['region']) if 'region' in data else ''
-        self.code = str(data['code']) if 'code' in data else ''
-        self.contact = str(data['contact']) if 'contact' in data else ''
-
-
 class CourseControl(Model):
     def __init__(self):
         self.code = ''
@@ -367,6 +325,49 @@ class Group(Model):
             self.is_any_course = bool(data['is_any_course'])
         if data['__type']:
             self.__type = RaceType(int(data['__type']))
+
+
+class Team(Model):
+    def __init__(self):
+        self.id = uuid.uuid4()
+        self.number = 0
+        self.name = ''
+        self.country = ''
+        self.region = ''
+        self.contact = ''
+        self.code = ''
+        self.group = None  # type: Group
+        self.result = TeamResult()
+        self.count_person = 0
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def full_name(self):
+        return "{} {}".format(self.name, self.number)
+
+    def to_dict(self):
+        return {
+            'object': self.__class__.__name__,
+            'id': str(self.id),
+            'number': self.number,
+            'name': self.name,
+            'group_id': str(self.group.id) if self.group else None,
+            'country': self.country,
+            'region': self.region,
+            'contact': self.contact,
+            'code': self.code,
+            'count_person': self.count_person,  # readonly
+        }
+
+    def update_data(self, data):
+        self.number = int(data['number']) if 'number' in data else 0
+        self.name = str(data['name']) if 'name' in data else ''
+        self.country = str(data['country']) if 'country' in data else ''
+        self.region = str(data['region']) if 'region' in data else ''
+        self.code = str(data['code']) if 'code' in data else ''
+        self.contact = str(data['contact']) if 'contact' in data else ''
 
 
 class Split(Model):
@@ -603,6 +604,8 @@ class Result:
             ret += str(self.scores) + ' ' + _('points') + ' '
 
         time_accuracy = race().get_setting('time_accuracy', 0)
+        if self.person.group is None:
+            print(self.person)
         if self.person.group.is_team_race():
             ret += self.get_result_otime_team().to_str(time_accuracy)
         else:
@@ -676,8 +679,7 @@ class Result:
 
     def get_result_otime_team(self):
         if self.person:
-            team_id = self.person.team_id
-            team = find(race().teams, id=team_id)
+            team = self.person.team
             if team:
                 return team.result.get_time()
         return OTime()
@@ -1045,7 +1047,7 @@ class Person(Model):
 
         self.birth_date = None  # type: date
         self.team = None  # type: Team
-        self.group = None  # type: Group
+        self._group = None  # type: Group
         self.world_code = None  # WRE ID for orienteering and the same
         self.national_code = None
         self.qual = Qualification.NOT_QUALIFIED  # type: Qualification # 'qualification, used in Russia only'
@@ -1058,6 +1060,20 @@ class Person(Model):
         self.start_time = None  # type: OTime
         self.start_group = 0
         self.result_count = 0
+
+    @property
+    def group(self):
+        if race().is_team_race() and self.team:
+            return self.team.group
+        else:
+            return self._group
+
+    @group.setter
+    def group(self, group):
+        if race().is_team_race() and self.team:
+            self.team.group = group
+        else:
+            self._group = group
 
     def __repr__(self):
         return '{} {} {}'.format(self.full_name, self.bib, self.group)
@@ -1260,7 +1276,7 @@ class Race(Model):
                 self.data.update_data(dict_obj['data'])
             if 'settings' in dict_obj:
                 self.settings = dict_obj['settings']
-            key_list = ['teams', 'courses', 'groups', 'persons', 'results']
+            key_list = ['courses', 'groups', 'teams', 'persons', 'results']
             for key in key_list:
                 if key in dict_obj:
                     for item_obj in dict_obj[key]:
@@ -1284,11 +1300,14 @@ class Race(Model):
         obj.update_data(dict_obj)
         if dict_obj['object'] == 'Person':
             obj.group = self.get_obj('Group', dict_obj['group_id'])
-            obj.team = self.get_obj('Team', dict_obj['id'])
+            obj.team = self.get_obj('Team', dict_obj['team_id'])
         elif dict_obj['object'] in ['Result', 'ResultManual', 'ResultSportident', 'ResultSFR', 'ResultSportiduino']:
             obj.person = self.get_obj('Person', dict_obj['person_id'])
         elif dict_obj['object'] == 'Group':
             obj.course = self.get_obj('Course', dict_obj['course_id'])
+        elif dict_obj['object'] == "Team":
+            if 'group_id' in dict_obj:
+                obj.group = self.get_obj('Group', dict_obj['group_id'])
 
     def create_obj(self, dict_obj):
         obj = self.support_obj[dict_obj['object']]()
@@ -1375,7 +1394,7 @@ class Race(Model):
         self.update_counters()
         teams = []
         for i in indexes:
-            team = self.team[i]  # type: Team
+            team = self.teams[i]  # type: Team
             if team.count_person > 0:
                 raise NotEmptyException('Cannot remove team')
             teams.append(team)
@@ -2089,8 +2108,8 @@ class TeamResult(object):
             return True
 
     def __gt__(self, other):  # greater is worse
-        if self.get_is_status_ok() != other.get_is_status_ok():
-            return other.get_is_status_ok()
+        if self.is_status_ok() != other.is_status_ok():
+            return other.is_status_ok()
 
         if race().get_setting('result_processing_mode', 'time') == 'scores':
             if self.get_score() != other.get_score():
@@ -2117,7 +2136,7 @@ class TeamResult(object):
             return self.finish_time - start_time
         return OTime()
 
-    def get_is_status_ok(self):
+    def is_status_ok(self):
         for r in self.members_results:
             if not r.is_status_ok():
                 return False

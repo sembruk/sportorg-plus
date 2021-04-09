@@ -428,7 +428,7 @@
     function racePreparation(race) {
         for (var _i = 0, _a = race.persons; _i < _a.length; _i++) {
             var obj = _a[_i];
-            obj.organization = getById(race.organizations, obj.organization_id);
+            obj.team = getById(race.teams, obj.team_id);
             obj.group = getById(race.groups, obj.group_id);
         }
         for (var _b = 0, _c = race.results; _b < _c.length; _b++) {
@@ -440,7 +440,7 @@
             var obj = _e[_d];
             obj.course = getById(race.courses, obj.course_id);
         }
-        for (var _f = 0, _g = ['groups', 'courses', 'organizations']; _f < _g.length; _f++) {
+        for (var _f = 0, _g = ['groups', 'courses', 'teams']; _f < _g.length; _f++) {
             var itemName = _g[_f];
             race[itemName].sort(function (a, b) {
                 if (a.name.toUpperCase() < b.name.toUpperCase())

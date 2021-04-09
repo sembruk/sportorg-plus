@@ -7,7 +7,7 @@ from sportorg import config
 from sportorg.gui.global_access import GlobalAccess
 from sportorg.gui.utils.custom_controls import AdvComboBox
 from sportorg.language import _
-from sportorg.models.constant import get_countries, get_regions
+from sportorg.models.constant import get_countries, get_regions, get_race_groups
 from sportorg.models.memory import race, Team, find, Limit
 from sportorg.modules.teamwork import Teamwork
 
@@ -33,14 +33,20 @@ class TeamEditDialog(QDialog):
 
         self.label_name = QLabel(_('Name'))
         self.item_name = QLineEdit()
-        self.item_name.textChanged.connect(self.check_name)
+        #self.item_name.textChanged.connect(self.check_name)
         self.layout.addRow(self.label_name, self.item_name)
 
         self.label_number = QLabel(_('Number'))
         self.item_number= QSpinBox()
         self.item_number.setMinimum(0)
         self.item_number.setMaximum(Limit.BIB)
+        self.item_number.valueChanged.connect(self.check_number)
         self.layout.addRow(self.label_number, self.item_number)
+
+        self.label_group = QLabel(_('Group'))
+        self.item_group = AdvComboBox()
+        self.item_group.addItems(get_race_groups())
+        self.layout.addRow(self.label_group, self.item_group)
 
         self.label_code = QLabel(_('Code'))
         self.item_code = QLineEdit()
@@ -89,12 +95,23 @@ class TeamEditDialog(QDialog):
             if org:
                 self.button_ok.setDisabled(True)
 
+    def check_number(self):
+        number = self.item_number.value()
+        self.button_ok.setDisabled(False)
+        if number and number != self.current_object.number:
+            org = find(race().teams, number=number)
+            if org:
+                self.button_ok.setDisabled(True)
+
     def set_values_from_model(self):
 
         self.item_name.setText(self.current_object.name)
         self.item_name.selectAll()
         self.item_number.setValue(self.current_object.number)
-
+        if self.current_object.group:
+            self.item_group.setCurrentText(self.current_object.group.name)
+        else:
+            self.item_group.setCurrentText('')
         self.item_code.setText(self.current_object.code)
         self.item_country.setCurrentText(self.current_object.country)
         self.item_region.setCurrentText(self.current_object.region)
@@ -107,6 +124,10 @@ class TeamEditDialog(QDialog):
 
         org.number = self.item_number.value()
         org.name = self.item_name.text()
+        if (org.group and org.group.name != self.item_group.currentText()) or\
+                (org.group is None and len(self.item_group.currentText()) > 0):
+            org.group = find(race().groups, name=self.item_group.currentText())
+
         org.code = self.item_code.text()
         org.country = self.item_country.currentText()
         org.region = self.item_region.currentText()
