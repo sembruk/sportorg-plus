@@ -454,6 +454,7 @@ class Result:
         self.speed = ''
         self.can_win_count = None  # quantity of athletes who can win at current time
         self.final_result_time = None  # type: OTime real time, when nobody can win
+        self.readout_time = None  # type: OTime
 
         self.card_number = 0
         self.splits = []  # type: List[Split]
@@ -542,6 +543,7 @@ class Result:
 
             'can_win_count': self.can_win_count,
             'final_result_time': self.final_result_time.to_str() if self.final_result_time else None,
+            'readout_time': self.readout_time.to_str() if self.readout_time else None,
         }
 
     def update_data(self, data):
@@ -569,12 +571,12 @@ class Result:
             self.created_at = float(data['created_at'])
         else:
             self.created_at = time.time()
-
         if 'bib' in data:
             self.bib = int(data['bib'])
-
         if 'card_number' in data:
             self.card_number = int(data['card_number'])
+        if data['readout_time']:
+            self.readout_time = OTime(msec=data['readout_time'])
         if 'splits' in data:
             self.splits = []
             for item in data['splits']:

@@ -103,6 +103,7 @@ class ResultThread(QThread):
             result.start_time = time_to_otime(card_data['start'])
         if 'finish' in card_data and card_data['finish']:
             result.finish_time = time_to_otime(card_data['finish'])
+        result.readout_time = time_to_otime(datetime.now())
 
         return result
 

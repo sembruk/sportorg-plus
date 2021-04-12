@@ -297,10 +297,10 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
         if self.race.get_setting('marked_route_mode', 'off') == 'off':
             return [_('Last name'), _('First name'), _('Group'), _('Team'), _('Bib'), _('Card title'),
                     _('Start'), _('Finish'), _('Result'), _('Status'), _('Penalty'),
-                    _('Place'), _('Type'), _('Rented card')]
+                    _('Place'), _('Type'), _('Readout'), _('Rented card')]
         return [_('Last name'), _('First name'), _('Group'), _('Team'), _('Bib'), _('Card title'),
                 _('Start'), _('Finish'), _('Result'), _('Status'), _('Credit'), _('Penalty'), _('Penalty legs title'),
-                _('Place'), _('Type'), _('Rented card')]
+                _('Place'), _('Type'), _('Readout'), _('Rented card')]
 
     def init_cache(self):
         self.cache.clear()
@@ -370,6 +370,7 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
                 penalty,
                 i.get_place(),
                 str(i.system_type),
+                time_to_hhmmss(i.readout_time),
                 rented_card
             ]
         return [
@@ -388,6 +389,7 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
             i.penalty_laps,
             i.get_place(),
             str(i.system_type),
+            time_to_hhmmss(i.readout_time),
             rented_card
         ]
 
