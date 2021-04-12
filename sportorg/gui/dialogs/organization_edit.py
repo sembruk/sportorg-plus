@@ -39,7 +39,7 @@ class TeamEditDialog(QDialog):
         self.label_number = QLabel(_('Number'))
         self.item_number= QSpinBox()
         self.item_number.setMinimum(0)
-        self.item_number.setMaximum(Limit.BIB)
+        self.item_number.setMaximum(1000000)
         self.item_number.valueChanged.connect(self.check_number)
         self.layout.addRow(self.label_number, self.item_number)
 
@@ -112,7 +112,7 @@ class TeamEditDialog(QDialog):
             self.item_group.setCurrentText(self.current_object.group.name)
         else:
             self.item_group.setCurrentText('')
-        self.item_code.setText(self.current_object.code)
+        self.item_code.setText(str(self.current_object.code))
         self.item_country.setCurrentText(self.current_object.country)
         self.item_region.setCurrentText(self.current_object.region)
         self.item_contact.setText(self.current_object.contact)

@@ -52,6 +52,7 @@ from sportorg.modules.telegram.telegram import TelegramClient
 from sportorg.modules.updater import checker
 from sportorg.modules.winorient import winorient
 from sportorg.modules.winorient.wdb import WDBImportError, WinOrientBinary
+from sportorg.modules.orgeo import orgeo
 from sportorg.language import _
 
 
@@ -132,6 +133,18 @@ class CSVWinorientImportAction(Action, metaclass=ActionFactory):
         if file_name:
             try:
                 winorient.import_csv(file_name)
+            except Exception as e:
+                logging.error(str(e))
+                QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
+            self.app.init_model()
+
+
+class CSVOrgeoImportAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        file_name = get_open_file_name(_('Open Orgeo CSV file'), _("Orgeo CSV (*.csv)"))
+        if file_name:
+            try:
+                orgeo.import_csv(file_name)
             except Exception as e:
                 logging.error(str(e))
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)

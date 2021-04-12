@@ -1554,7 +1554,7 @@ class Race(Model):
         ret = []
         for person in self.persons:
             for p in self.persons:
-                if person.id != p.id and person.full_name and person.full_name == p.full_name:
+                if person.id != p.id and person.full_name and person.full_name == p.full_name and person.birth_date == p.birth_date:
                     ret.append(person)
         return ret
 

@@ -58,6 +58,11 @@ def menu_list():
                             'action': 'WDBWinorientImportAction'
                         },
                         {
+                            'title': _('Orgeo CSV'),
+                            'action': 'CSVOrgeoImportAction'
+                        },
+
+                        {
                             'title': _('Ocad txt v8'),
                             'action': 'OcadTXTv8ImportAction'
                         },
