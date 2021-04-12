@@ -33,7 +33,7 @@ def split_printout(result):
         template_path = obj.get_setting('split_template', template_dir('split', '1_split_printout.html'))
 
         s = GroupSplits(obj, person.group).generate(True)
-        if obj.get_setting('system_start_source') == 'protocol':
+        if not obj.is_team_race() and obj.get_setting('system_start_source') == 'protocol':
             result.check_who_can_win()
 
         if not str(template_path).endswith('.html') and platform.system() == 'Windows':

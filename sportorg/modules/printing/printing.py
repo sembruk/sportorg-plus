@@ -39,10 +39,10 @@ class PrintProcess(Process):
                 printer_info = QPrinterInfo.printerInfo(self.printer_name)
                 if not printer_info.isNull():
                     printer.setPageSize(printer_info.defaultPageSize())
-            # Print to file
-            #printer.setOutputFileName('/tmp/print.pdf')
-
-            # printer.setResolution(96)
+            else:
+                # Print to file
+                printer.setOutputFileName('/tmp/print.pdf')
+                #printer.setResolution(96)
 
             text_document = QTextDocument()
 

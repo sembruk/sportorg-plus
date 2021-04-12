@@ -1482,9 +1482,14 @@ class Race(Model):
         for i in self.groups:
             i.count_person = 0
 
-        for i in self.persons:
-            if i.group:
-                i.group.count_person += 1
+        if self.is_team_race():
+            for i in self.teams:
+                if i.group:
+                    i.group.count_person += 1
+        else:
+            for i in self.persons:
+                if i.group:
+                    i.group.count_person += 1
 
         # recalculate course counters
         for i in self.courses:
@@ -1497,12 +1502,12 @@ class Race(Model):
                 i.course.count_group += 1
 
         # recalculate team counters
-        #for i in self.teams:
-        #    i.count_person = 0
+        for i in self.teams:
+            i.count_person = 0
 
-        #for i in self.persons:
-        #    if i.team:
-        #        i.team.count_person += 1
+        for i in self.persons:
+            if i.team:
+                i.team.count_person += 1
 
     def get_persons_by_group(self, group):
         return find(self.persons, group=group, return_all=True)
