@@ -34,6 +34,8 @@ def time_to_otime(t):
 
 
 def time_to_datetime(t):
+    if isinstance(t, datetime.datetime):
+        return t
     otime = time_to_otime(t)
     return datetime.datetime(2000, 1, 1, otime.hour, otime.minute, otime.sec, otime.msec * 1000)
 

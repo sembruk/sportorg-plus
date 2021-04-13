@@ -3,6 +3,7 @@ import re
 import uuid
 from abc import abstractmethod
 from copy import copy, deepcopy
+from datetime import datetime
 
 from PySide2.QtCore import QAbstractTableModel, Qt
 from typing import List
@@ -370,7 +371,7 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
                 penalty,
                 i.get_place(),
                 str(i.system_type),
-                time_to_hhmmss(i.readout_time),
+                time_to_hhmmss(datetime.fromtimestamp(i.created_at)),
                 rented_card
             ]
         return [
@@ -389,7 +390,7 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
             i.penalty_laps,
             i.get_place(),
             str(i.system_type),
-            time_to_hhmmss(i.readout_time),
+            time_to_hhmmss(datetime.fromtimestamp(i.created_at)),
             rented_card
         ]
 
