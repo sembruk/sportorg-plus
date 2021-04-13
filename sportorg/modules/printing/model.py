@@ -72,7 +72,7 @@ def split_printout(result):
             items=s.to_dict()
         )
         if not printer:
-            raise NoPrinterSelectedException('No printer selected')
+            print('No printer selected')
         print_html(
             printer,
             template,

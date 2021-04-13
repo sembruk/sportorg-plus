@@ -21,8 +21,8 @@ class ResultChecker:
 
         if race().get_setting('result_processing_mode', 'time') == 'scores':
             # process by score (rogain)
-            result.scores, result.penalty_points = self.calculate_scores_rogaining(result)
-            return True
+            result.scores, result.penalty_points, status = self.calculate_scores_zg2021(result)
+            return status
 
         course = race().find_course(result)
 
@@ -54,8 +54,9 @@ class ResultChecker:
                     result.status_comment = StatusComments().remove_hint(StatusComments().get())
             elif result.person.group and result.person.group.max_time.to_msec():
                 if result.get_result_otime() > result.person.group.max_time:
-                    if race().get_setting('result_processing_mode', 'time') == 'time':
-                        result.status = ResultStatus.OVERTIME
+                    result.status = ResultStatus.OVERTIME
+                    if not result.status_comment:
+                        result.status_comment = 'КВ'
 
         return o
 
@@ -196,27 +197,30 @@ class ResultChecker:
             return int(code) // 10  # score = code / 10
 
     @staticmethod
-    def calculate_scores_rogaining(result):
-        user_array = []
+    def calculate_scores_zg2021(result):
+        rocketBlocks = [
+            {7, 14, 24},
+            {6, 16, 29},
+            {4, 10, 17, 28},
+            {2, 3, 19, 21, 23},
+            {1,5,18,22,30,34},
+            {8,9,11,15,20,25,26,31,33}
+        ]
+        status = True
+        user_cps = set()
         points = 0
         for cur_split in result.splits:
-            code = str(cur_split.code)
-            if code not in user_array:
-                user_array.append(code)
-                points += ResultChecker.get_control_score(code)
-        penalty_points = 0
-        if result.person and result.person.group:
-            user_time = result.get_result_otime()
-            max_time = result.person.group.max_time
-            if OTime() < max_time < user_time:
-                time_diff = user_time - max_time
-                seconds_diff = time_diff.to_sec()
-                minutes_diff = (seconds_diff + 59) // 60  # note, 1:01 = 2 minutes
-                penalty_step = race().get_setting('result_processing_scores_minute_penalty', 1.0)
-                penalty_points = minutes_diff*penalty_step
-                points -= penalty_points
+            code = int(cur_split.code)
+            if code not in user_cps:
+                user_cps.add(code)
+                points += ResultChecker.get_control_score(str(code))
         if points < 0:
             points = 0
-        return points, penalty_points
+        for rb in rocketBlocks:
+            if not user_cps.intersection(rb):
+                result.status_comment = 'Ракета не собрана'
+                status = False
+                break
+        return points, 0, status
 
 

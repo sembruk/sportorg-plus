@@ -59,6 +59,7 @@
                     result: result.result,
                     result_relay: result.result_relay,
                     result_msec: result.result_msec,
+                    result_time_team: toHHMMSS(result.result_team_msec),
                     diff: race.settings.result_processing_mode === 'scores' ? result.diff_scores : toHHMMSS(result.diff),
                     place: result.place,
                     status: result.status,
@@ -69,10 +70,12 @@
                     data: result
                 };
                 if (result.status !== 1) {
-                    r.diff = '';
                     r.place_show = '';
+                    if (result.status === 4) {
+                        r.place_show = 'н/ракеты';
+                    }
+                    r.diff = '';
                     r.speed = '';
-                    r.scores = '';
                     r.penalty_time = '';
                     r.penalty_laps = '';
                 }
@@ -214,6 +217,7 @@
                 } else {
                     r.result = ''
                     r.scores = ''
+                    r.result_time_team = ''
                     r.place_show = ''
                     r.team = ''
                 }
@@ -253,6 +257,7 @@
                     penalty_laps: result.penalty_laps,
                     result: result.result,
                     result_msec: result.result_msec,
+                    result_time_team: toHHMMSS(result.result_team_msec),
                     diff: race.settings.result_processing_mode === 'scores' ? result.diff_scores : toHHMMSS(result.diff),
                     place: result.place,
                     status: result.status,
@@ -264,8 +269,11 @@
                     data: result
                 };
                 if (result.status !== 1) {
-                    r.diff = '';
                     r.place_show = '';
+                    if (result.status === 4) {
+                        r.place_show = 'н/ракеты';
+                    }
+                    r.diff = '';
                     r.speed = '';
                     r.scores = '';
                     r.penalty_time = '';
@@ -503,16 +511,17 @@
             {key: 'name', title: 'Фамилия, имя', size: 30},
             {key: 'team', title: 'Команда', size: 20},
             {key: 'year', title: 'ГР', size: 5},
-            {key: 'qual', title: 'Разряд', size: 7},
-            {key: 'bib', title: 'Номер', size: 6},
+            {key: 'qual', title: 'Разряд', size: 7, active: false},
+            {key: 'bib', title: 'Номер', size: 6, active: false},
             {key: 'penalty_time', title: 'Штраф', size: 9, active: false},
             {key: 'penalty_laps', title: 'Штраф', size: 9, active: false},
-            {key: 'result', title: 'Результат', size: 16},
+            {key: 'result', title: 'Результат', size: 17, active: false},
             {key: 'result_relay', title: 'Ком. рез-т', size: 14},
             {key: 'diff', title: 'Отставание', size: 11},
             {key: 'speed', title: 'Темп', size: 12, active: false},
-            {key: 'place_show', title: 'Место', size: 6},
-            {key: 'scores', title: 'Очки', size: 5, active: false},
+            {key: 'scores', title: 'КП', size: 5, active: true},
+            {key: 'result_time_team', title: 'Время', size: 9, active: true},
+            {key: 'place_show', title: 'Место', size: 17},
             {key: 'all_splits', title: 'Сплиты', active: false}
         ],
         active: function (key, val) {
@@ -553,8 +562,6 @@
                 var isRelay = race.data.race_type === 3
                 var isTeamRace = race.data.race_type === 6
                 this.getField('all_splits').active = location.href.indexOf('all_splits=1') > -1;
-                this.getField('scores').active = location.href.indexOf('scores=1') > -1;
-                this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
 
                 this.getField('result_relay').active = isRelay
                 this.getField('diff').active = !isTeamRace
@@ -730,66 +737,10 @@
             }
         },
         {
-            title: 'Штрафное время',
-            value: Fields.isActive('penalty_time'),
-            change: function (checked) {
-                Fields.active('penalty_time', checked);
-                render()
-            }
-        },
-        {
-            title: 'Кол-во штрафных кругов',
-            value: Fields.isActive('penalty_laps'),
-            change: function (checked) {
-                Fields.active('penalty_laps', checked);
-                render()
-            }
-        },
-        {
-            title: 'Отставание',
-            value: Fields.isActive('diff'),
-            change: function (checked) {
-                Fields.active('diff', checked);
-                render()
-            }
-        },
-        {
-            title: 'Темп',
-            value: Fields.isActive('speed'),
-            change: function (checked) {
-                Fields.active('speed', checked);
-                render()
-            }
-        },
-        {
-            title: 'Сплиты (заданное направление)',
-            value: !!store.splitsShow,
-            change: function (checked) {
-                store.splitsShow = checked;
-                render()
-            }
-        },
-        {
             title: 'Сплиты (все отметки)',
             value: Fields.isActive('all_splits'),
             change: function (checked) {
                 Fields.active('all_splits', checked);
-                render()
-            }
-        },
-        {
-            title: 'Очки',
-            value: Fields.isActive('scores'),
-            change: function (checked) {
-                Fields.active('scores', checked);
-                render()
-            }
-        },
-        {
-            title: 'Выполнение',
-            value: store.rankingShow,
-            change: function (checked) {
-                store.rankingShow = checked;
                 render()
             }
         },
