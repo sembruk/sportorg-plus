@@ -1,26 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Results{% endblock %}
+{% block title %}Результаты{% endblock %}
 {% block head %}{{ super() }}{% endblock %}
 {% block content %}
 <div class="text-center">
     <h3>{{ race.data.description }} <br>{{ race.data.start_datetime|date }} {{ race.data.location }}</h3>
-    <h2>ПРОТОКОЛ РЕЗУЛЬТАТОВ</h2>
+    <h2>Результаты</h2>
 </div>
 <div id="results-tables"></div>
-<div>
-    <table class="empty-table">
-        <tr>
-            <td><b>Главный судья:</b></td>
-            <td width="150px"></td>
-            <td><b>{{ race.data.chief_referee }}</b></td>
-        </tr>
-        <tr>
-            <td><b>Главный секретарь:</b></td>
-            <td width="150px"></td>
-            <td><b>{{ race.data.secretary }}</b></td>
-        </tr>
-    </table>
-</div>
 {% raw %}
 <style>
     table.table-split {
@@ -234,6 +220,7 @@
 	function getResultsByCourse(group, count) {
 		count = +count || 0;
         var isRelay = group.__type ? group.__type === 3 : race.data.race_type === 3;
+        var isTeamRace = group.__type ? group.__type === 6 : race.data.race_type === 6;
         var results = [];
         var splits_recalc_times = {};
         var splits_recalc_times_total = {};
@@ -275,7 +262,6 @@
                     }
                     r.diff = '';
                     r.speed = '';
-                    r.scores = '';
                     r.penalty_time = '';
                     r.penalty_laps = '';
                 }
@@ -383,6 +369,27 @@
                     index++;
                     results.push({index: index});
                     prevBib = r.bib % 1000;
+                }
+                results.push(r);
+            }
+        } else if (isTeamRace) {
+            var prevTeamBib = 0;
+            var resultsList = results.slice();
+            results = [];
+            for (var _i = 0, resultsList_ = resultsList; _i < resultsList_.length; _i++) {
+                var r = resultsList_[_i];
+                r.index = '';
+                var teamBib = r.team_number
+                if (teamBib == 0 || teamBib !== prevTeamBib) {
+                    index++;
+                    results.push({index: index});
+                    prevTeamBib = teamBib;
+                } else {
+                    r.result = ''
+                    r.scores = ''
+                    r.result_time_team = ''
+                    r.place_show = ''
+                    r.team = ''
                 }
                 results.push(r);
             }
@@ -645,16 +652,18 @@
             ranking: store.rankingShow ? 1 : 0,
             by_course: store.showProtocolByCourse ? 1 : 0,
             all_splits: Fields.isActive('all_splits') ? 1 : 0,
-            scores: Fields.isActive('scores') ? 1 : 0,
-            penalty_time: Fields.isActive('penalty_time') ? 1 : 0
         };
-        var queryString = '?';
+        var queryString = '';
         Object.keys(query).forEach(function (key) {
             if (query[key]) {
-                queryString += key + '=' + query[key] + '&';
+                if (queryString === '') {
+                    queryString += '?';
+                } else {
+                    queryString += '&'
+                }
+                queryString += key + '=' + query[key];
             }
         });
-        queryString += 'sportorg=1';
         try {
             var href = location.href.split('?')[0];
             history.pushState({}, null, href + queryString);
