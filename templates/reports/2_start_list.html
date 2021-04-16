@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Start List{% endblock %}
+{% block title %}Стартовый протокол{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -13,20 +13,6 @@
     <h2>ПРОТОКОЛ СТАРТА</h2>
 </div>
 <div id="start-list-tables"></div>
-<div>
-    <table class="empty-table">
-        <tr>
-            <td><b>Главный судья:</b></td>
-            <td width="150px"></td>
-            <td><b>{{ race.data.chief_referee }}</b></td>
-        </tr>
-        <tr>
-            <td><b>Главный секретарь:</b></td>
-            <td width="150px"></td>
-            <td><b>{{ race.data.secretary }}</b></td>
-        </tr>
-    </table>
-</div>
 {% raw %}
 <script>
     var race = {% endraw %}{{race|tojson}}{%raw %};
@@ -121,10 +107,8 @@
             {key: 'name', title: 'Фамилия, имя', size: 30},
             {key: 'team', title: 'Команда', size: 20},
             {key: 'year', title: 'ГР', size: 5},
-            {key: 'qual', title: 'Разряд', size: 7},
             {key: 'bib', title: 'Номер', size: 6},
             {key: 'card_number', title: 'Номер чипа', size: 11},
-            {key: 'start', title: 'Время старта', size: 13}
         ],
         active: function (key, val) {
             for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
