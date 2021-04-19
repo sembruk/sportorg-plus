@@ -364,6 +364,9 @@ msgstr "Старт"
 msgid "Finish"
 msgstr "Финиш"
 
+msgid "Time"
+msgstr "Время"
+
 msgid "Penalty"
 msgstr "Штраф"
 
@@ -654,6 +657,9 @@ msgstr "фиксированные баллы за КП"
 
 msgid "minute penalty"
 msgstr "Штраф за каждую просроченную минуту"
+
+msgid "Max delay, minutes"
+msgstr "Максимальное опоздание, минут"
 
 msgid "no penalty"
 msgstr "штраф не начисляется"

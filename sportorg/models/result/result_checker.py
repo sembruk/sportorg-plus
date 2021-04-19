@@ -56,6 +56,10 @@ class ResultChecker:
                 if result.get_result_otime() > result.person.group.max_time:
                     if race().get_setting('result_processing_mode', 'time') == 'time':
                         result.status = ResultStatus.OVERTIME
+                    elif race().get_setting('result_processing_mode', 'time') == 'scores':
+                        max_delay_ms = race().get_setting('result_processing_scores_max_delay', 30)*60000
+                        if result.get_result_otime().to_msec() > result.person.group.max_time.to_msec() + max_delay_ms: 
+                            result.status = ResultStatus.OVERTIME
 
         return o
 

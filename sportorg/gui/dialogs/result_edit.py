@@ -70,6 +70,10 @@ class ResultEditDialog(QDialog):
         self.item_start = QTimeEdit()
         self.item_start.setDisplayFormat(self.time_format)
 
+        self.item_time = QTimeEdit()
+        self.item_time.setDisplayFormat(self.time_format)
+        self.item_time.setEnabled(False)
+
         self.item_result = QLineEdit()
         self.item_result.setEnabled(False)
 
@@ -78,6 +82,9 @@ class ResultEditDialog(QDialog):
 
         self.item_penalty = QTimeEdit()
         self.item_penalty.setDisplayFormat(self.time_format)
+
+        self.item_penalty_points = QSpinBox()
+        self.item_penalty_points.setEnabled(False)
 
         self.item_penalty_laps = QSpinBox()
         self.item_penalty_laps.setMaximum(1000000)
@@ -104,9 +111,14 @@ class ResultEditDialog(QDialog):
             self.layout.addRow(QLabel(_('Days')), self.item_days)
         self.layout.addRow(QLabel(_('Start')), self.item_start)
         self.layout.addRow(QLabel(_('Finish')), self.item_finish)
+        if race().get_setting('result_processing_mode', 'time') == 'scores':
+            self.layout.addRow(QLabel(_('Time')), self.item_time)
         self.layout.addRow(QLabel(_('Credit')), self.item_credit)
         self.layout.addRow(QLabel(_('Penalty')), self.item_penalty)
-        self.layout.addRow(QLabel(_('Penalty legs')), self.item_penalty_laps)
+        if race().get_setting('result_processing_mode', 'time') == 'scores':
+            self.layout.addRow(QLabel(_('Penalty points')), self.item_penalty_points)
+        else:
+            self.layout.addRow(QLabel(_('Penalty legs')), self.item_penalty_laps)
         self.layout.addRow(QLabel(_('Result')), self.item_result)
         self.layout.addRow(QLabel(_('Status')), self.item_status)
         self.layout.addRow(QLabel(_('Comment')), self.item_status_comment)
@@ -174,12 +186,15 @@ class ResultEditDialog(QDialog):
             self.item_finish.setTime(time_to_qtime(self.current_object.finish_time))
         if self.current_object.start_time:
             self.item_start.setTime(time_to_qtime(self.current_object.start_time))
+        self.item_time.setTime(time_to_qtime(self.current_object.get_result_otime()))
         if self.current_object.finish_time:
             self.item_result.setText(str(self.current_object.get_result()))
         if self.current_object.credit_time:
             self.item_credit.setTime(time_to_qtime(self.current_object.credit_time))
         if self.current_object.penalty_time:
             self.item_penalty.setTime(time_to_qtime(self.current_object.penalty_time))
+        if self.current_object.penalty_points:
+            self.item_penalty_points.setValue(self.current_object.penalty_points)
         if self.current_object.penalty_laps:
             self.item_penalty_laps.setValue(self.current_object.penalty_laps)
         self.item_bib.setValue(self.current_object.get_bib())
