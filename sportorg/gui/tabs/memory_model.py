@@ -218,10 +218,14 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         self.init_cache()
 
     def get_headers(self):
-        return [_('Last name'), _('First name'), _('Sex'), _('Qualification title'), _('Group'), _('Team'),
-                _('Year title'), _('Bib'), _('Start'), _('Start group'), _('Card title'), _('Rented card'),
-                _('Comment'), _('World code title'), _('National code title'), _('Out of competition title'),
-                _('Result count title')]
+        headers = [_('Last name'), _('First name'), _('Sex'), _('Qualification title'), _('Group'), _('Team'),
+                   _('Year title'), _('Bib'), _('Start'), _('Card title'), _('Rented card'),
+                   _('Comment'), _('World code title'), _('National code title'), _('Out of competition title'),
+                   _('Result count title')]
+
+        if self.race.is_relay():
+            headers.insert(9, _('Start group'))
+        return headers
 
     def init_cache(self):
         self.cache.clear()
@@ -266,7 +270,8 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
             ret.append(time_to_hhmmss(person.start_time))
         else:
             ret.append('')
-        ret.append(person.start_group)
+        if self.race.is_relay():
+            ret.append(person.start_group)
         ret.append(person.card_number)
         ret.append(_('Rented card') if is_rented_card else _('Rented stub'))
         ret.append(person.comment)

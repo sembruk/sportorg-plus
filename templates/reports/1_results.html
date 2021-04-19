@@ -38,6 +38,44 @@
     var selected = {% endraw %}{{selected|tojson}}{%raw %};
     racePreparation(race);
 
+    function getResult(result) {
+        var person = result.person
+        var r = {
+            index: 0,
+            name: (person.surname + ' ' + person.name).slice(0, MAX_PERSON_NAME),
+            team: (person.team && String(person.team.number) + ' ' + String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
+            team_number: person.team && person.team.number || 0,
+            qual: Qualification[person.qual],
+            bib: person.bib,
+            group: person.group.name,
+            year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
+            penalty_time: toHHMMSS(result.penalty_time),
+            penalty_time: result.penalty_time > 0 ? toHHMMSS(result.penalty_time) : '',
+            penalty_laps: result.penalty_laps,
+            result: result.result,
+            result_relay: result.result_relay,
+            result_msec: result.result_msec,
+            result_team_time: toHHMMSS(result.result_team_msec),
+            diff: race.settings.result_processing_mode === 'scores' ? result.diff_scores : toHHMMSS(result.diff),
+            place: result.place,
+            status: result.status,
+            scores: result.scores,
+            place_show: person.is_out_of_competition ? 'в/к' : result.place === 0 ? '' : result.place === -1 ? '' : result.place,
+            is_out_of_competition: person.is_out_of_competition,
+            speed: result.speed,
+            data: result
+        };
+        if (result.status !== 1) {
+            r.diff = '';
+            r.place_show = '';
+            r.speed = '';
+            r.scores = '';
+            r.penalty_time = '';
+            r.penalty_laps = '';
+        }
+        return r
+    }
+
     function getResultsByGroup(group, count) {
         count = +count || 0;
         var isRelay = group.__type ? group.__type === 3 : race.data.race_type === 3;
@@ -47,38 +85,7 @@
             var result = _a[_i];
             var person = result.person
             if (result.status !== 13 && person && person.group && person.group.id === group.id && (count ? result.place <= count && result.place > 0 : 1)) {
-                var r = {
-                    index: 0,
-                    name: (person.surname + ' ' + person.name).slice(0, MAX_PERSON_NAME),
-                    team: (person.team && String(person.team.number) + ' ' + String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
-                    team_number: person.team && person.team.number || 0,
-                    qual: Qualification[person.qual],
-                    bib: person.bib,
-                    year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
-                    penalty_time: toHHMMSS(result.penalty_time),
-                    penalty_time: result.penalty_time > 0 ? toHHMMSS(result.penalty_time) : '',
-                    penalty_laps: result.penalty_laps,
-                    result: result.result,
-                    result_relay: result.result_relay,
-                    result_msec: result.result_msec,
-                    result_team_time: toHHMMSS(result.result_team_msec),
-                    diff: race.settings.result_processing_mode === 'scores' ? result.diff_scores : toHHMMSS(result.diff),
-                    place: result.place,
-                    status: result.status,
-                    scores: result.scores,
-                    place_show: person.is_out_of_competition ? 'в/к' : result.place === 0 ? '' : result.place === -1 ? '' : result.place,
-                    is_out_of_competition: person.is_out_of_competition,
-                    speed: result.speed,
-                    data: result
-                };
-                if (result.status !== 1) {
-                    r.diff = '';
-                    r.place_show = '';
-                    r.speed = '';
-                    r.scores = '';
-                    r.penalty_time = '';
-                    r.penalty_laps = '';
-                }
+                var r = getResult(result)
 
                 // SPLITS
                 var control_index = 0;
@@ -234,6 +241,7 @@
 	function getResultsByCourse(group, count) {
 		count = +count || 0;
         var isRelay = group.__type ? group.__type === 3 : race.data.race_type === 3;
+        var isTeamRace = group.__type ? group.__type === 6 : race.data.race_type === 6;
         var results = [];
         var splits_recalc_times = {};
         var splits_recalc_times_total = {};
@@ -245,37 +253,7 @@
             var result = _a[_i];
             var person = result.person
             if (result.status !== 13 && person && person.group && person.group.course && person.group.course.id === group.id) { //} && (count ? result.place <= count && result.place > 0 : 1)) {
-                var r = {
-                    index: 0,
-                    name: (person.surname + ' ' + person.name).slice(0, MAX_PERSON_NAME),
-                    team: (person.team && String(person.team.number) + ' ' + String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
-                    team_number: person.team && person.team.number || 0,
-                    qual: Qualification[person.qual],
-                    bib: person.bib,
-                    year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
-                    penalty_time: toHHMMSS(result.penalty_time),
-                    penalty_laps: result.penalty_laps,
-                    result: result.result,
-                    result_msec: result.result_msec,
-                    result_team_time: toHHMMSS(result.result_team_msec),
-                    diff: race.settings.result_processing_mode === 'scores' ? result.diff_scores : toHHMMSS(result.diff),
-                    place: result.place,
-                    status: result.status,
-                    scores: result.scores,
-                    place_show: person.is_out_of_competition ? 'в/к' : result.place === 0 ? '' : result.place === -1 ? '' : result.place,
-                    is_out_of_competition: person.is_out_of_competition,
-                    speed: result.speed,
-					group: person.group.name,
-                    data: result
-                };
-                if (result.status !== 1) {
-                    r.diff = '';
-                    r.place_show = '';
-                    r.speed = '';
-                    r.scores = '';
-                    r.penalty_time = '';
-                    r.penalty_laps = '';
-                }
+                var r = getResult(result)
 
                 // SPLITS
                 var control_index = 0;
@@ -346,17 +324,8 @@
                 if (b.status !== 1) {
                     return -1
                 }
-                if (a.is_out_of_competition || b.is_out_of_competition) {
-                    if (race.settings.result_processing_mode === 'scores' && a.scores !== b.scores) {
-                        return a.scores - b.scores;
-                    }
-                    return a.result_msec - b.result_msec;
-                }
-                if (a.place < 1) {
-                    return 1
-                }
-                if (b.place < 1) {
-                    return -1
+                if (race.settings.result_processing_mode === 'scores' && a.scores !== b.scores) {
+                    return b.scores - a.scores;
                 }
                 return a.result_msec - b.result_msec;
             }
@@ -380,6 +349,28 @@
                     index++;
                     results.push({index: index});
                     prevBib = r.bib % 1000;
+                }
+                results.push(r);
+            }
+        } else if (isTeamRace) {
+            var prevTeamBib = 0;
+            var resultsList = results.slice();
+            results = [];
+            for (var _i = 0, resultsList_ = resultsList; _i < resultsList_.length; _i++) {
+                var r = resultsList_[_i];
+                r.index = '';
+                var teamBib = r.team_number
+                if (teamBib == 0 || teamBib !== prevTeamBib) {
+                    index++;
+                    results.push({index: index});
+                    prevTeamBib = teamBib;
+                } else {
+                    r.result = ''
+                    r.scores = ''
+                    r.result_team_time = ''
+                    r.place_show = ''
+                    r.team = ''
+                    r.group = ''
                 }
                 results.push(r);
             }
@@ -562,6 +553,7 @@
                 this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
 
                 this.getField('result_relay').active = isRelay
+                this.getField('bib').active = !isTeamRace
                 this.getField('diff').active = !isTeamRace
                 this.getField('qual').active = !isTeamRace
             } catch (e){}
