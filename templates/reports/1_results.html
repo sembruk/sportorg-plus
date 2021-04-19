@@ -34,8 +34,8 @@
     }
 </style>
 <script>
-    var race = {% endraw %}{{race|tojson}}{%raw %};
-    var selected = {% endraw %}{{selected|tojson}}{%raw %};
+    var race = {% endraw %}{{race|tojson}}{% raw %};
+    var selected = {% endraw %}{{selected|tojson}}{% raw %};
     racePreparation(race);
 
     function getResult(result) {
@@ -49,9 +49,9 @@
             bib: person.bib,
             group: person.group.name,
             year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
-            penalty_time: toHHMMSS(result.penalty_time),
             penalty_time: result.penalty_time > 0 ? toHHMMSS(result.penalty_time) : '',
             penalty_laps: result.penalty_laps,
+            penalty_points: result.penalty_points > 0 ? result.penalty_points : '',
             result: result.result,
             result_relay: result.result_relay,
             result_msec: result.result_msec,
@@ -60,6 +60,7 @@
             place: result.place,
             status: result.status,
             scores: result.scores,
+            scores_without_penalty: result.scores + result.penalty_points,
             place_show: person.is_out_of_competition ? 'в/к' : result.place === 0 ? '' : result.place === -1 ? '' : result.place,
             is_out_of_competition: person.is_out_of_competition,
             speed: result.speed,
@@ -72,6 +73,7 @@
             r.scores = '';
             r.penalty_time = '';
             r.penalty_laps = '';
+            r.penalty_points = '';
         }
         return r
     }
@@ -224,6 +226,8 @@
                 } else {
                     r.result = ''
                     r.scores = ''
+                    r.scores_without_penalty = ''
+                    r.penalty_points = ''
                     r.result_team_time = ''
                     r.place_show = ''
                     r.team = ''
@@ -367,6 +371,7 @@
                 } else {
                     r.result = ''
                     r.scores = ''
+                    r.scores_without_penalty = ''
                     r.result_team_time = ''
                     r.place_show = ''
                     r.team = ''
@@ -501,6 +506,8 @@
             {key: 'year', title: 'ГР', size: 5},
             {key: 'qual', title: 'Разряд', size: 7},
             {key: 'bib', title: 'Номер', size: 6},
+            {key: 'scores_without_penalty', title: 'Очки', size: 5, active: false},
+            {key: 'penalty_points', title: 'Штраф', size: 9, active: false},
             {key: 'penalty_time', title: 'Штраф', size: 9, active: false},
             {key: 'penalty_laps', title: 'Штраф', size: 9, active: false},
             {key: 'result', title: 'Результат', size: 16},
@@ -508,7 +515,6 @@
             {key: 'diff', title: 'Отставание', size: 11},
             {key: 'speed', title: 'Темп', size: 12, active: false},
             {key: 'place_show', title: 'Место', size: 6},
-            {key: 'scores', title: 'Очки', size: 5, active: false},
             {key: 'all_splits', title: 'Сплиты', active: false}
         ],
         active: function (key, val) {
@@ -549,9 +555,10 @@
                 var isRelay = race.data.race_type === 3
                 var isTeamRace = race.data.race_type === 6
                 this.getField('all_splits').active = location.href.indexOf('all_splits=1') > -1;
-                this.getField('scores').active = location.href.indexOf('scores=1') > -1;
                 this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
 
+                this.getField('scores_without_penalty').active = race.settings.result_processing_mode === 'scores';
+                this.getField('penalty_points').active = race.settings.result_processing_mode === 'scores'
                 this.getField('result_relay').active = isRelay
                 this.getField('bib').active = !isTeamRace
                 this.getField('diff').active = !isTeamRace
@@ -635,7 +642,6 @@
             ranking: store.rankingShow ? 1 : 0,
             by_course: store.showProtocolByCourse ? 1 : 0,
             all_splits: Fields.isActive('all_splits') ? 1 : 0,
-            scores: Fields.isActive('scores') ? 1 : 0,
             penalty_time: Fields.isActive('penalty_time') ? 1 : 0
         };
         var queryString = '';
@@ -730,6 +736,7 @@
                 render()
             }
         },
+        {% endraw %}{% if race.settings.result_processing_mode != 'scores' %}
         {
             title: 'Штрафное время',
             value: Fields.isActive('penalty_time'),
@@ -754,6 +761,7 @@
                 render()
             }
         },
+        {% endif %}{% raw %}
         {
             title: 'Темп',
             value: Fields.isActive('speed'),
@@ -762,6 +770,7 @@
                 render()
             }
         },
+        {% endraw %}{% if race.settings.result_processing_mode != 'scores' %}
         {
             title: 'Сплиты (заданное направление)',
             value: !!store.splitsShow,
@@ -770,6 +779,7 @@
                 render()
             }
         },
+        {% endif %}{% raw %}
         {
             title: 'Сплиты (все отметки)',
             value: Fields.isActive('all_splits'),
@@ -778,14 +788,7 @@
                 render()
             }
         },
-        {
-            title: 'Очки',
-            value: Fields.isActive('scores'),
-            change: function (checked) {
-                Fields.active('scores', checked);
-                render()
-            }
-        },
+        {% endraw %}{% if race.settings.result_processing_mode != 'scores' %}
         {
             title: 'Выполнение',
             value: store.rankingShow,
@@ -794,6 +797,7 @@
                 render()
             }
         },
+        {% endif %}{% raw %}
         {
             title: 'Показать первые: ',
             value: [
