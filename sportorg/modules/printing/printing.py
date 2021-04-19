@@ -41,7 +41,9 @@ class PrintProcess(Process):
                     printer.setPageSize(printer_info.defaultPageSize())
             else:
                 # Print to file
-                printer.setOutputFileName('/tmp/print.pdf')
+                filename = '/tmp/print.pdf'
+                logging.info('print to file: ' + filename)
+                printer.setOutputFileName(filename)
                 #printer.setResolution(96)
 
             text_document = QTextDocument()

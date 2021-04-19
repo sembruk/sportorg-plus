@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Start List{% endblock %}
+{% block title %}Стартовый протокол{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -13,6 +13,7 @@
     <h2>ПРОТОКОЛ СТАРТА</h2>
 </div>
 <div id="start-list-tables"></div>
+{% if race.data.chief_referee or race.data.secretary %}
 <div>
     <table class="empty-table">
         <tr>
@@ -27,6 +28,7 @@
         </tr>
     </table>
 </div>
+{% endif %}
 {% raw %}
 <script>
     var race = {% endraw %}{{race|tojson}}{%raw %};
