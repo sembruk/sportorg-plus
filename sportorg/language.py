@@ -23,8 +23,7 @@ if config.DEBUG:
     import polib
 
     def _generate():
-        name = config.NAME.lower()
-        path = config.base_dir(config.LOCALE_DIR, locale_current, 'LC_MESSAGES', name)
+        path = config.base_dir(config.LOCALE_DIR, locale_current, 'LC_MESSAGES', 'sportorg')
         try:
             po = polib.pofile(path + '.po')
             po.save_as_mofile(path + '.mo')
@@ -35,7 +34,7 @@ if config.DEBUG:
 
 
 def locale():
-    cat = gettext.Catalog(config.NAME.lower(), config.LOCALE_DIR, languages=[locale_current])
+    cat = gettext.Catalog('sportorg', config.LOCALE_DIR, languages=[locale_current])
 
     def get_text(message):
         result = cat.gettext(message)
