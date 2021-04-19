@@ -240,6 +240,7 @@ class Group(Model):
         self.min_age = 0
         self.max_age = 0
 
+        self.start_time = None  # type: OTime
         self.max_time = OTime()
         self.start_interval = OTime()
         self.start_corridor = 0
@@ -289,6 +290,7 @@ class Group(Model):
             'max_year': self.max_year,
             'min_age': self.min_age,
             'max_age': self.max_age,
+            'start_time': self.start_time.to_msec() if self.start_time else None,
             'max_time': self.max_time.to_msec(),
             'start_interval': self.start_interval.to_msec(),
             'start_corridor': self.start_corridor,
@@ -317,6 +319,8 @@ class Group(Model):
         self.order_in_corridor = int(data['order_in_corridor'])
         self.first_number = int(data['first_number'])
         self.relay_legs = int(data['relay_legs'])
+        if 'start_time' in data and data['start_time']:
+            self.start_time = OTime(msec=data['start_time'])
         if 'ranking' in data:
             if data['ranking']:
                 self.ranking = Ranking()
@@ -829,6 +833,10 @@ class ResultSportident(Result):
                         return self.__start_time
         elif start_source == 'gate':
             pass
+        elif start_source == 'group':
+            if self.person and self.person.group:
+                if self.person.group.start_time and self.person.group.start_time.to_msec():
+                    return self.person.group.start_time
 
         return OTime()
 

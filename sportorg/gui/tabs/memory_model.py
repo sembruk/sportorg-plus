@@ -266,10 +266,16 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
             ret.append('')
         ret.append(person.get_year())
         ret.append(person.bib)
-        if person.start_time:
-            ret.append(time_to_hhmmss(person.start_time))
+        if self.race.get_setting('system_start_source', 'protocol') == 'group':
+            if person.group and person.group.start_time:
+                ret.append(time_to_hhmmss(person.group.start_time))
+            else:
+                ret.append('')
         else:
-            ret.append('')
+            if person.start_time:
+                ret.append(time_to_hhmmss(person.start_time))
+            else:
+                ret.append('')
         if self.race.is_relay():
             ret.append(person.start_group)
         ret.append(person.card_number)
@@ -413,7 +419,7 @@ class GroupMemoryModel(AbstractSportOrgMemoryModel):
     def get_headers(self):
         return [_('Name'), _('Full name'), _('Course name'), _('Start fee title'), _('Type'), _('Length title'),
                 _('Point count title'), _('Climb title'), _('Sex'), _('Min year title'),
-                _('Max year title'), _('Start interval title'), _('Start corridor title'),
+                _('Max year title'), _('Start time'), _('Max time'), _('Start interval title'), _('Start corridor title'),
                 _('Order in corridor title')]
 
     def init_cache(self):
@@ -449,6 +455,8 @@ class GroupMemoryModel(AbstractSportOrgMemoryModel):
             group.sex.get_title(),
             group.min_year,
             group.max_year,
+            time_to_hhmmss(group.start_time),
+            time_to_hhmmss(group.max_time),
             group.start_interval,
             group.start_corridor,
             group.order_in_corridor,

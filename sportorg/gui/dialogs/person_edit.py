@@ -251,9 +251,16 @@ class PersonEditDialog(QDialog):
             self.item_qual.setCurrentText(self.current_object.qual.get_title())
         if self.current_object.bib:
             self.item_bib.setValue(int(self.current_object.bib))
-        if self.current_object.start_time:
-            time = time_to_qtime(self.current_object.start_time)
-            self.item_start.setTime(time)
+        if race().get_setting('system_start_source', 'protocol') == 'group':
+            if self.current_object.group and self.current_object.group.start_time:
+                time = time_to_qtime(self.current_object.group.start_time)
+                self.item_start.setTime(time)
+                self.item_start.setEnabled(False)
+        else:
+            if self.current_object.start_time:
+                time = time_to_qtime(self.current_object.start_time)
+                self.item_start.setTime(time)
+                self.item_start.setEnabled(True)
         if self.current_object.start_group:
             self.item_start_group.setValue(int(self.current_object.start_group))
 

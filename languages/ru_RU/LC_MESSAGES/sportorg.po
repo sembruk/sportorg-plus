@@ -124,6 +124,9 @@ msgstr "Квалификация"
 msgid "Start time"
 msgstr "Время старта"
 
+msgid "Start time for mass start (rogaining)"
+msgstr "Время старта для масс старта (рогейн)"
+
 msgid "Start group"
 msgstr "Забег"
 
@@ -603,6 +606,9 @@ msgstr "Стартовая станция"
 
 msgid "Control point"
 msgstr "Контрольный пункт"
+
+msgid "By groups (mass start)"
+msgstr "По группам (масс старт)"
 
 msgid "Start gate"
 msgstr "Стартовая калитка"
@@ -1233,6 +1239,12 @@ msgstr "Межд. код"
 
 msgid "National code title"
 msgstr "Нац. код"
+
+msgid "Code"
+msgstr "Код"
+
+msgid "Number"
+msgstr "Номер"
 
 msgid "Out of competition title"
 msgstr "В/К"

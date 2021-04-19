@@ -60,6 +60,8 @@ class TimekeepingPropertiesDialog(QDialog):
         self.item_start_cp_value.setMaximum(999)
         self.item_start_cp_value.setMaximumSize(60, 20)
         self.start_layout.addRow(self.item_start_cp, self.item_start_cp_value)
+        self.item_start_by_group = QRadioButton(_('By groups (mass start)'))
+        self.start_layout.addRow(self.item_start_by_group)
         self.item_start_gate = QRadioButton(_('Start gate'))
         self.item_start_gate.setDisabled(True)
         self.start_layout.addRow(self.item_start_gate)
@@ -273,6 +275,8 @@ class TimekeepingPropertiesDialog(QDialog):
             self.item_start_cp.setChecked(True)
         elif start_source == 'gate':
             self.item_start_gate.setChecked(True)
+        elif start_source == 'group':
+            self.item_start_by_group.setChecked(True)
 
         self.item_start_cp_value.setValue(start_cp_number)
 
@@ -386,6 +390,8 @@ class TimekeepingPropertiesDialog(QDialog):
             start_source = 'cp'
         elif self.item_start_gate.isChecked():
             start_source = 'gate'
+        elif self.item_start_by_group.isChecked():
+            start_source = 'group'
 
         finish_source = 'station'
         if self.item_finish_cp.isChecked():

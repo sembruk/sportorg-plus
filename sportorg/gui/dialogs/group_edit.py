@@ -81,6 +81,12 @@ class GroupEditDialog(QDialog):
         self.item_year_max.editingFinished.connect(self.year_change)
         self.layout.addRow(self.label_year_max, self.item_year_max)
 
+        self.label_start_time = QLabel(_('Start time'))
+        self.label_start_time.setToolTip(_('Start time for mass start (rogaining)'))
+        self.item_start_time = QTimeEdit()
+        self.item_start_time.setDisplayFormat(self.time_format)
+        self.layout.addRow(self.label_start_time, self.item_start_time)
+
         self.label_max_time = QLabel(_('Max time'))
         self.item_max_time = QTimeEdit()
         self.item_max_time.setDisplayFormat(self.time_format)
@@ -187,6 +193,8 @@ class GroupEditDialog(QDialog):
             self.item_year_min.setValue(self.current_object.min_year)
         if self.current_object.max_year:
             self.item_year_max.setValue(self.current_object.max_year)
+        if self.current_object.start_time:
+            self.item_start_time.setTime(time_to_qtime(self.current_object.start_time))
         if self.current_object.max_time:
             self.item_max_time.setTime(time_to_qtime(self.current_object.max_time))
         if self.current_object.start_interval:
@@ -250,6 +258,10 @@ class GroupEditDialog(QDialog):
         time = time_to_otime(self.item_start_interval.time())
         if group.start_interval != time:
             group.start_interval = time
+
+        start_time = time_to_otime(self.item_start_time.time())
+        if group.start_time != start_time:
+            group.start_time = start_time
 
         time = time_to_otime(self.item_max_time.time())
 
