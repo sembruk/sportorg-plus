@@ -22,15 +22,16 @@ locale_current = _get_conf_locale()
 if config.DEBUG:
     import polib
 
-    def _generate():
-        path = config.base_dir(config.LOCALE_DIR, locale_current, 'LC_MESSAGES', 'sportorg')
+    def _generate(lang):
+        path = config.base_dir(config.LOCALE_DIR, lang, 'LC_MESSAGES', 'sportorg')
         try:
             po = polib.pofile(path + '.po')
             po.save_as_mofile(path + '.mo')
         except Exception as e:
             logging.error(str(e))
 
-    _generate()
+    _generate('ru_RU')
+    _generate('en_US')
 
 
 def locale():
