@@ -179,6 +179,8 @@ class MainWindow(QMainWindow):
                     action.setShortcuts(shortcuts)
                 if 'status_tip' in action_item:
                     action.setStatusTip(action_item['status_tip'])
+                if 'icon' in action_item:
+                    action.setIcon(QtGui.QIcon(action_item['icon']))
                 if 'tabs' in action_item:
                     self.menu_list_for_disabled.append((
                         action,
@@ -191,6 +193,8 @@ class MainWindow(QMainWindow):
             else:
                 menu = QtWidgets.QMenu(parent)
                 menu.setTitle(action_item['title'])
+                if 'icon' in action_item:
+                    menu.setIcon(QtGui.QIcon(action_item['icon']))
                 if 'tabs' in action_item:
                     self.menu_list_for_disabled.append((
                         menu,

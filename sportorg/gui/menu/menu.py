@@ -10,21 +10,25 @@ def menu_list():
                 {
                     'title': _('New'),
                     'shortcut': 'Ctrl+N',
+                    'icon': config.icon_dir('file.svg'),
                     'action': 'NewAction'
                 },
                 {
                     'title': _('Save'),
                     'shortcut': 'Ctrl+S',
+                    'icon': config.icon_dir('save.svg'),
                     'action': 'SaveAction'
                 },
                 {
                     'title': _('Open'),
                     'shortcut': 'Ctrl+O',
+                    'icon': config.icon_dir('folder.svg'),
                     'action': 'OpenAction'
                 },
                 {
                     'title': _('Save As'),
                     'shortcut': 'Ctrl+Shift+S',
+                    'icon': config.icon_dir('save.svg'),
                     'action': 'SaveAsAction'
                 },
                 {
@@ -33,10 +37,12 @@ def menu_list():
                 {
                     'title': _('Settings'),
                     'shortcut': 'Ctrl+Alt+S',
+                    'icon': config.icon_dir('settings.svg'),
                     'action': 'SettingsAction'
                 },
                 {
                     'title': _('Event Settings'),
+                    'icon': config.icon_dir('form.svg'),
                     'action': 'EventSettingsAction'
                 },
                 {
@@ -51,6 +57,7 @@ def menu_list():
                         },
                         {
                             'title': _('CSV Winorient'),
+                            'icon': config.icon_dir('csv.svg'),
                             'action': 'CSVWinorientImportAction'
                         },
                         {
@@ -61,7 +68,6 @@ def menu_list():
                             'title': _('Orgeo CSV'),
                             'action': 'CSVOrgeoImportAction'
                         },
-
                         {
                             'title': _('Ocad txt v8'),
                             'action': 'OcadTXTv8ImportAction'
@@ -99,12 +105,14 @@ def menu_list():
                     'title': _('Add object'),
                     'tabs': list(range(5)),
                     'shortcut': ['insert', 'i'],
+                    'icon': config.icon_dir('add.svg'),
                     'action': 'AddObjectAction'
                 },
                 {
                     'title': _('Delete'),
                     'shortcut': 'Del',
                     'tabs': list(range(5)),
+                    'icon': config.icon_dir('delete.svg'),
                     'action': 'DeleteAction'
                 },
                 {
@@ -135,6 +143,7 @@ def menu_list():
             'actions': [
                 {
                     'title': _('Refresh'),
+                    'icon': config.icon_dir('refresh.svg'),
                     'shortcut': 'F5',
                     'action': 'RefreshAction'
                 },
@@ -142,12 +151,14 @@ def menu_list():
                     'title': _('Filter'),
                     'shortcut': 'F2',
                     'tabs': [0, 1],
+                    'icon': config.icon_dir('filter.svg'),
                     'action': 'FilterAction'
                 },
                 {
                     'title': _('Search'),
                     'shortcut': 'Ctrl+F',
                     'tabs': list(range(5)),
+                    'icon': config.icon_dir('search.svg'),
                     'action': 'SearchAction'
                 },
                 {
@@ -228,6 +239,7 @@ def menu_list():
                 {
                     'title': _('Manual finish'),
                     'shortcut': 'F3',
+                    'icon': config.icon_dir('flag.svg'),
                     'action': 'ManualFinishAction'
                 },
                 {
@@ -299,20 +311,24 @@ def menu_list():
             'actions': [
                 {
                     'title': _('on/off SPORTident readout'),
+                    'icon': config.icon_dir('sportident.png'),
                     'shortcut': 'F8',
                     'action': 'SPORTidentReadoutAction'
                 },
                 {
                     'title': _('on/off Sportiduino readout'),
+                    'icon': config.icon_dir('sportiduino.png'),
                     'shortcut': 'F9',
                     'action': 'SportiduinoReadoutAction'
                 },
                 {
                     'title': _('on/off SFR readout'),
+                    'icon': config.icon_dir('sfr.png'),
                     'action': 'SFRReadoutAction'
                 },
                 {
                     'title': _('Teamwork'),
+                    'icon': config.icon_dir('network.svg'),
                     'actions': [
                         {
                             'title': _('Send selected'),
@@ -346,18 +362,22 @@ def menu_list():
             'actions': [
                 {
                     'title': _('Timekeeping settings'),
+                    'icon': config.icon_dir('stopwatch.svg'),
                     'action': 'TimekeepingSettingsAction'
                 },
                 {
                     'title': _('Teamwork'),
+                    'icon': config.icon_dir('network.svg'),
                     'action': 'TeamworkSettingsAction'
                 },
                 {
                     'title': _('Printer settings'),
+                    'icon': config.icon_dir('printer.svg'),
                     'action': 'PrinterSettingsAction'
                 },
                 {
                     'title': _('Live'),
+                    'icon': config.icon_dir('live.svg'),
                     'action': 'LiveSettingsAction'
                 },
                 {
