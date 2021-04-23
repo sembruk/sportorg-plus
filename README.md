@@ -6,25 +6,34 @@
 
 Fork of [SportOrg v1.5](https://github.com/sportorg/pysport)
 
+Differences from SportOrg:
+* added rogaining full support (teams)
+* added some columns at tabs
+* fixed some bugs
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/3a69d94...master))
+
+### Installation
+
 ```commandline
 pip install poetry
 poetry install
 ```
 
-Run
+### Running
 
 ```commandline
 python SportOrg.pyw
 ```
 
+### Screenshots
+
 ![Mainwindow sportorg](img/mainwindow.png)
 
 ![Dialogedit sportorg](img/dialogedit.png)
-![Bibprintout sportorg](img/bibprintout.png)
 
 
-## build
-
-### cx_Freeze
+### Building with cx_Freeze
 
 `python setup_.py build`
+
