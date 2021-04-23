@@ -11,7 +11,7 @@ Differences from SportOrg:
 * added some columns at tabs
 * fixed some bugs
 
-[All changes](https://github.com/sembruk/sportorg-plus/compare/3a69d94...master))
+[All changes](https://github.com/sembruk/sportorg-plus/compare/3a69d94...master)
 
 ### Installation
 
