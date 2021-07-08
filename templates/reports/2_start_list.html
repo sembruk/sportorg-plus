@@ -52,7 +52,8 @@
                     year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
                     start: toHHMMSS(person.start_time),
                     start_time: person.start_time,
-                    comment: person.comment
+                    comment: person.comment,
+                    subgroup: person.subgroup
                 });
             }
         }
@@ -126,7 +127,8 @@
             {key: 'year', title: 'ГР', size: 5},
             {key: 'qual', title: 'Разряд', size: 7, active: false},
             {key: 'bib', title: 'Номер', size: 6},
-            {key: 'card_number', title: 'Номер чипа', size: 11},
+            {key: 'card_number', title: 'Чип', size: 4},
+            {key: 'subgroup', title: 'Подгруппа', size: 9},
             {key: 'comment', title: '', size: 20},
             {key: 'start', title: 'Время старта', size: 13, active: false}
         ],
@@ -176,15 +178,18 @@
         resultBlock.innerHTML = '';
         for (var _i = 0, _a = race.groups; _i < _a.length; _i++) {
             var group = _a[_i];
-            var titleBlock = document.createElement('h2');
-            titleBlock.id = group.name;
-            titleBlock.appendChild(document.createTextNode(group.name));
-            resultBlock.appendChild(titleBlock);
-            //resultBlock.appendChild(getGroupsBlockElement(race));
-            if (store.tableView) {
-                resultBlock.appendChild(new TableGenerator(getStartListByGroup(group), Fields.fields).getTable({className: 'sportorg-table'}));
-            } else {
-                resultBlock.appendChild(new TableTextGenerator(getStartListByGroup(group), Fields.fields).getTable());
+            var groupStartList = getStartListByGroup(group);
+            if (groupStartList.length > 0) {
+                var titleBlock = document.createElement('h2');
+                titleBlock.id = group.name;
+                titleBlock.appendChild(document.createTextNode(group.name));
+                resultBlock.appendChild(titleBlock);
+                //resultBlock.appendChild(getGroupsBlockElement(race));
+                if (store.tableView) {
+                    resultBlock.appendChild(new TableGenerator(groupStartList, Fields.fields).getTable({className: 'sportorg-table'}));
+                } else {
+                    resultBlock.appendChild(new TableTextGenerator(groupStartList, Fields.fields).getTable());
+                }
             }
         }
     }
