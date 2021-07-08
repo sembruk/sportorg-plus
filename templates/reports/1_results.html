@@ -64,6 +64,7 @@
             place_show: person.is_out_of_competition ? 'в/к' : result.place === 0 ? '' : result.place === -1 ? '' : result.place,
             is_out_of_competition: person.is_out_of_competition,
             speed: result.speed,
+            subgroup: result.person.subgroup,
             data: result
         };
         if (result.status !== 1) {
@@ -514,6 +515,7 @@
             {key: 'result_relay', title: 'Ком. рез-т', size: 14},
             {key: 'diff', title: 'Отставание', size: 11},
             {key: 'speed', title: 'Темп', size: 12, active: false},
+            {key: 'subgroup', title: '', size: 6},
             {key: 'place_show', title: 'Место', size: 6},
             {key: 'all_splits', title: 'Сплиты', active: false}
         ],

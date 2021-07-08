@@ -1063,6 +1063,7 @@ class Person(Model):
         self.is_rented_card = False
         self.is_personal = False
         self.comment = ''
+        self.subgroup = ''
 
         self.start_time = None  # type: OTime
         self.start_group = 0
@@ -1130,6 +1131,7 @@ class Person(Model):
             'is_rented_card': self.is_rented_card,
             'is_personal': self.is_personal,
             'comment': self.comment,
+            'subgroup': self.subgroup,
             'start_time': self.start_time.to_msec() if self.start_time else None,
             'start_group': self.start_group,
         }
@@ -1149,6 +1151,8 @@ class Person(Model):
         self.is_rented_card = bool(data['is_rented_card'])
         self.is_personal = bool(data['is_personal'])
         self.comment = str(data['comment'])
+        if 'subgroup' in data and data['subgroup']:
+            self.subgroup = str(data['subgroup'])
         self.start_group = int(data['start_group'])
         if data['start_time']:
             self.start_time = OTime(msec=int(data['start_time']))
