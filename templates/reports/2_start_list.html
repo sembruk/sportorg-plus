@@ -51,7 +51,8 @@
                     team_number: person.team && person.team.number || 0,
                     year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
                     start: toHHMMSS(person.start_time),
-                    start_time: person.start_time
+                    start_time: person.start_time,
+                    comment: person.comment
                 });
             }
         }
@@ -123,10 +124,11 @@
             {key: 'name', title: 'Фамилия, имя', size: 30},
             {key: 'team', title: 'Команда', size: 20},
             {key: 'year', title: 'ГР', size: 5},
-            {key: 'qual', title: 'Разряд', size: 7},
+            {key: 'qual', title: 'Разряд', size: 7, active: false},
             {key: 'bib', title: 'Номер', size: 6},
             {key: 'card_number', title: 'Номер чипа', size: 11},
-            {key: 'start', title: 'Время старта', size: 13}
+            {key: 'comment', title: '', size: 20},
+            {key: 'start', title: 'Время старта', size: 13, active: false}
         ],
         active: function (key, val) {
             for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
@@ -178,7 +180,7 @@
             titleBlock.id = group.name;
             titleBlock.appendChild(document.createTextNode(group.name));
             resultBlock.appendChild(titleBlock);
-            resultBlock.appendChild(getGroupsBlockElement(race));
+            //resultBlock.appendChild(getGroupsBlockElement(race));
             if (store.tableView) {
                 resultBlock.appendChild(new TableGenerator(getStartListByGroup(group), Fields.fields).getTable({className: 'sportorg-table'}));
             } else {
