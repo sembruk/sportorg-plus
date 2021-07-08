@@ -149,6 +149,12 @@ class PersonEditDialog(QDialog):
         self.item_comment.setTabChangesFocus(True)
         self.layout.addRow(self.label_comment, self.item_comment)
 
+        self.label_subgroup = QLabel(_('Subgroup'))
+        self.item_subgroup = QTextEdit()
+        self.item_subgroup.setTabChangesFocus(True)
+        self.layout.addRow(self.label_subgroup, self.item_subgroup)
+
+
         def cancel_changes():
             self.close()
 
@@ -308,6 +314,7 @@ class PersonEditDialog(QDialog):
         self.item_rented.setChecked(self.current_object.is_rented_card)
 
         self.item_comment.setText(self.current_object.comment)
+        self.item_subgroup.setText(self.current_object.subgroup)
 
         use_birthday = Config().configuration.get('use_birthday', False)
         if use_birthday:
@@ -379,6 +386,9 @@ class PersonEditDialog(QDialog):
 
         if person.comment != self.item_comment.toPlainText():
             person.comment = self.item_comment.toPlainText()
+
+        if person.subgroup != self.item_subgroup.toPlainText():
+            person.subgroup = self.item_subgroup.toPlainText()
 
         use_birthday = Config().configuration.get('use_birthday', False)
         if use_birthday:

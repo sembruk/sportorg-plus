@@ -222,7 +222,7 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         use_birthday = Config().configuration.get('use_birthday', False)
         headers = [_('Last name'), _('First name'), _('Sex'), _('Qualification title'), _('Group'), _('Team'),
                    _('Age') if use_birthday else _('Year title'), _('Bib'), _('Start'), _('Card title'), _('Rented card'),
-                   _('Comment'), _('World code title'), _('National code title'), _('Out of competition title'),
+                   _('Comment'), _('Subgroup'), _('World code title'), _('National code title'), _('Out of competition title'),
                    _('Result count title')]
 
         if self.race.is_relay():
@@ -287,6 +287,7 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         ret.append(person.card_number)
         ret.append(_('Rented card') if is_rented_card else _('Rented stub'))
         ret.append(person.comment)
+        ret.append(person.subgroup)
         ret.append(str(person.world_code) if person.world_code else '')
         ret.append(str(person.national_code) if person.national_code else '')
 
