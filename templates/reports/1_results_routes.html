@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Результаты{% endblock %}
+{% block title %}Результаты - {{ race.data.description }}{% endblock %}
 {% block head %}{{ super() }}{% endblock %}
 {% block content %}
 <div class="text-center">
     <h3>{{ race.data.description }} <br>{{ race.data.start_datetime|date }} {{ race.data.location }}</h3>
-    <h2>ПРОТОКОЛ РЕЗУЛЬТАТОВ</h2>
+    <h2>РЕЗУЛЬТАТЫ</h2>
 </div>
 <div id="results-tables"></div>
 {% if race.data.chief_referee or race.data.secretary %}
