@@ -184,8 +184,13 @@ class ResultEditDialog(QDialog):
             self.item_created_at.setTime(time_to_qtime(datetime.fromtimestamp(self.current_object.created_at)))
         if self.current_object.finish_time:
             self.item_finish.setTime(time_to_qtime(self.current_object.finish_time))
-        if self.current_object.start_time:
+        if race().get_setting('system_start_source', 'protocol') == 'group':
+            if self.current_object.person.group and self.current_object.person.group.start_time:
+                self.item_start.setTime(time_to_qtime(self.current_object.person.group.start_time))
+        elif self.current_object.start_time:
             self.item_start.setTime(time_to_qtime(self.current_object.start_time))
+        elif self.current_object.person.start_time:
+            self.item_start.setTime(time_to_qtime(self.current_object.person.start_time))
         self.item_time.setTime(time_to_qtime(self.current_object.get_result_otime()))
         if self.current_object.finish_time:
             self.item_result.setText(str(self.current_object.get_result()))
@@ -234,7 +239,7 @@ class ResultEditDialog(QDialog):
             result.finish_time = time_
 
         time_ = time_to_otime(self.item_start.time())
-        if result.start_time != time_:
+        if self.item_start.isEnabled() and result.start_time != time_:
             result.start_time = time_
 
         time_ = time_to_otime(self.item_credit.time())
