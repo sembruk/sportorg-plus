@@ -147,6 +147,14 @@
         <br> Номер: {{person.bib}} Чип: {{person.card_number}}
         <br> Старт: {{result.start_msec|tohhmmss}}
         <table>
+            <tr>
+                <th>№</th>
+                <th>КП</th>
+                <th>Время</th>
+                <th>Сплит</th>
+                <th>Ск-ть</th>
+                <th>Место</th>
+            </tr>
         {% for leg in result.splits %}
             {% if leg.is_correct %}
                 <tr>
@@ -183,11 +191,8 @@
         <br>
         {% endif %}
         <br>
-        {% if result.status != 1 %}
-            {% for control in course.controls %}
-                {{control.code}}
-            {% endfor %}<br>
-			<h1>ПЛОХАЯ ОТМЕТКА</h1>
+        {% if result.status == 8 %}
+			<h2>ПРЕВЫШЕНО КВ</h2>
         {% endif %}
         <table>
             {% set ns = namespace(last_place=-1) %}
