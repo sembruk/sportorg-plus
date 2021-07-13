@@ -73,6 +73,8 @@ class ResultChecker:
     @staticmethod
     def calculate_penalty(result):
         mode = race().get_setting('marked_route_mode', 'off')
+        result.penalty_time = OTime()
+        result.penalty_laps = 0
         if mode == 'off':
             return
 

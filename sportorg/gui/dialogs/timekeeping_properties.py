@@ -326,6 +326,7 @@ class TimekeepingPropertiesDialog(QDialog):
 
         if rp_score_mode == 'rogain':
             self.rp_rogain_scores_radio.setChecked(True)
+            self.marked_route_tab.setDisabled(True)
         else:
             self.rp_fixed_scores_radio.setChecked(True)
 
@@ -343,7 +344,7 @@ class TimekeepingPropertiesDialog(QDialog):
         mr_if_dont_dsq_check = obj.get_setting('marked_route_dont_dsq', False)
         mr_if_max_penalty_by_cp = obj.get_setting('marked_route_max_penalty_by_cp', False)
 
-        if mr_mode == 'off':
+        if mr_mode == 'off' or rp_score_mode == 'rogain':
             self.mr_off_radio.setChecked(True)
         elif mr_mode == 'time':
             self.mr_time_radio.setChecked(True)
