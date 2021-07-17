@@ -63,23 +63,26 @@ class GroupEditDialog(QDialog):
 
         self.label_age_min = QLabel(_('Min age'))
         self.item_age_min = QSpinBox()
-        # self.layout.addRow(self.label_age_min, self.item_age_min)
 
         self.label_age_max = QLabel(_('Max age'))
         self.item_age_max = QSpinBox()
-        # self.layout.addRow(self.label_age_max, self.item_age_max)
 
         self.label_year_min = QLabel(_('Min year'))
         self.item_year_min = QSpinBox()
         self.item_year_min.setMaximum(date.today().year)
         self.item_year_min.editingFinished.connect(self.year_change)
-        self.layout.addRow(self.label_year_min, self.item_year_min)
-
+        
         self.label_year_max = QLabel(_('Max year'))
         self.item_year_max = QSpinBox()
         self.item_year_max.setMaximum(date.today().year)
         self.item_year_max.editingFinished.connect(self.year_change)
-        self.layout.addRow(self.label_year_max, self.item_year_max)
+
+        if race().is_team_race():
+            self.layout.addRow(self.label_age_min, self.item_age_min)
+            self.layout.addRow(self.label_age_max, self.item_age_max)
+        else:
+            self.layout.addRow(self.label_year_min, self.item_year_min)
+            self.layout.addRow(self.label_year_max, self.item_year_max)
 
         self.label_start_time = QLabel(_('Start time'))
         self.label_start_time.setToolTip(_('Start time for mass start (rogaining)'))

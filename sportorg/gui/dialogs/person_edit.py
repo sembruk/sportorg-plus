@@ -90,7 +90,7 @@ class PersonEditDialog(QDialog):
 
         self.label_group = QLabel(_('Group'))
         self.item_group = AdvComboBox()
-        self.item_group.addItems(get_race_groups())
+        #self.item_group.addItems(get_race_groups())
         self.layout.addRow(self.label_group, self.item_group)
 
         self.label_team = QLabel(_('Team'))
@@ -259,11 +259,20 @@ class PersonEditDialog(QDialog):
         else:
             self.button_ok.setEnabled(True)
 
+    def get_groups_by_person(self):
+        groups = []
+        for g in race().groups:
+            if g.name and (g.sex == Sex.MF or self.current_object.sex == g.sex):
+                groups.append(g.name)
+        return groups
+        
+
     def set_values_from_model(self):
         self.item_surname.setText(self.current_object.surname)
         self.item_surname.selectAll()
         self.item_name.setCurrentText(self.current_object.name)
         self.item_sex.setCurrentText(self.current_object.sex.get_title())
+        self.item_group.addItems(self.get_groups_by_person())
         if self.current_object.group:
             self.item_group.setCurrentText(self.current_object.group.name)
         else:
