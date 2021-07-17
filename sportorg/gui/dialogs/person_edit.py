@@ -11,7 +11,7 @@ from sportorg.gui.utils.custom_controls import AdvComboBox
 from sportorg.gui.dialogs.organization_edit import TeamEditDialog
 from sportorg.language import _
 from sportorg.models.constant import get_names, get_race_groups, get_race_teams
-from sportorg.models.memory import race, Person, find, Qualification, Limit, Team
+from sportorg.models.memory import race, Person, Sex, find, Qualification, Limit, Team
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.modules.configs.configs import Config
 from sportorg.modules.teamwork import Teamwork
@@ -54,16 +54,6 @@ class PersonEditDialog(QDialog):
         self.item_name.addItems(get_names())
         self.layout.addRow(self.label_name, self.item_name)
 
-        self.label_group = QLabel(_('Group'))
-        self.item_group = AdvComboBox()
-        self.item_group.addItems(get_race_groups())
-        self.layout.addRow(self.label_group, self.item_group)
-
-        self.label_team = QLabel(_('Team'))
-        self.item_team = AdvComboBox()
-        self.item_team.addItems(get_race_teams())
-        self.layout.addRow(self.label_team, self.item_team)
-
         use_birthday = Config().configuration.get('use_birthday', False)
         if use_birthday:
             self.label_birthday = QLabel(_('Birthday'))
@@ -78,6 +68,21 @@ class PersonEditDialog(QDialog):
             self.item_year.setMaximum(date.today().year)
             self.item_year.editingFinished.connect(self.year_change)
             self.layout.addRow(self.label_year, self.item_year)
+
+        self.label_sex = QLabel(_('Sex'))
+        self.item_sex = AdvComboBox()
+        self.item_sex.addItems(Sex.get_titles())
+        self.layout.addRow(self.label_sex, self.item_sex)
+
+        self.label_group = QLabel(_('Group'))
+        self.item_group = AdvComboBox()
+        self.item_group.addItems(get_race_groups())
+        self.layout.addRow(self.label_group, self.item_group)
+
+        self.label_team = QLabel(_('Team'))
+        self.item_team = AdvComboBox()
+        self.item_team.addItems(get_race_teams())
+        self.layout.addRow(self.label_team, self.item_team)
 
         self.label_qual = QLabel(_('Qualification'))
         self.item_qual = AdvComboBox()
@@ -239,6 +244,7 @@ class PersonEditDialog(QDialog):
         self.item_surname.setText(self.current_object.surname)
         self.item_surname.selectAll()
         self.item_name.setCurrentText(self.current_object.name)
+        self.item_sex.setCurrentText(self.current_object.sex.get_title())
         if self.current_object.group:
             self.item_group.setCurrentText(self.current_object.group.name)
         else:
@@ -299,6 +305,8 @@ class PersonEditDialog(QDialog):
             person.name = self.item_name.currentText()
         if person.surname != self.item_surname.text():
             person.surname = self.item_surname.text()
+        if person.sex.get_title() != self.item_sex.currentText():
+            person.sex = Sex.get_by_name(self.item_sex.currentText())
         if (person.group and person.group.name != self.item_group.currentText()) or\
                 (person.group is None and len(self.item_group.currentText()) > 0):
             person.group = find(race().groups, name=self.item_group.currentText())
