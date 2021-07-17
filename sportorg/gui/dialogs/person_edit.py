@@ -2,7 +2,7 @@ import logging
 from datetime import date
 
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QFormLayout, QLabel, QLineEdit, QSpinBox, QTimeEdit, QTextEdit, QCheckBox, QDialog, \
+from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QLabel, QLineEdit, QSpinBox, QTimeEdit, QTextEdit, QCheckBox, QDialog, \
     QDialogButtonBox, QDateEdit
 
 from sportorg import config
@@ -60,6 +60,7 @@ class PersonEditDialog(QDialog):
             self.item_birthday = QDateEdit()
             self.item_birthday.setDate(date.today())
             self.item_birthday.setMaximumDate(date.today())
+            self.item_birthday.editingFinished.connect(self.birthday_change)
             self.layout.addRow(self.label_birthday, self.item_birthday)
         else:
             self.label_year = QLabel(_('Year of birth'))
@@ -72,7 +73,20 @@ class PersonEditDialog(QDialog):
         self.label_sex = QLabel(_('Sex'))
         self.item_sex = AdvComboBox()
         self.item_sex.addItems(Sex.get_titles())
-        self.layout.addRow(self.label_sex, self.item_sex)
+
+        if use_birthday:
+            self.label_age = QLabel(_('Age'))
+            self.item_age = QSpinBox()
+            self.item_age.setMinimum(0)
+            self.item_age.setMaximum(200)
+            self.item_age.setEnabled(False)
+            hbox = QHBoxLayout()
+            hbox.addWidget(self.item_sex)
+            hbox.addWidget(self.label_age)
+            hbox.addWidget(self.item_age)
+            self.layout.addRow(self.label_sex, hbox)
+        else:
+            self.layout.addRow(self.label_sex, self.item_sex)
 
         self.label_group = QLabel(_('Group'))
         self.item_group = AdvComboBox()
@@ -180,6 +194,11 @@ class PersonEditDialog(QDialog):
                 new_year -= 100
             widget.setValue(new_year)
 
+    def birthday_change(self):
+        widget = self.sender()
+        new_birthday = qdate_to_date(widget.date())
+        self.item_age.setValue(Person.get_age_by_birthdate(new_birthday))
+
     def items_ok(self):
         ret = True
         for item_name in self.is_ok.keys():
@@ -285,6 +304,7 @@ class PersonEditDialog(QDialog):
         if use_birthday:
             if self.current_object.birth_date:
                 self.item_birthday.setDate(self.current_object.birth_date)
+                self.item_age.setValue(self.current_object.age)
         else:
             if self.current_object.get_year():
                 self.item_year.setValue(self.current_object.get_year())

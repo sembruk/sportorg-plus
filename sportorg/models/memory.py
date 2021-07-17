@@ -1102,6 +1102,17 @@ class Person(Model):
         else:
             self.birth_date = date(year, 1, 1)
 
+    @staticmethod
+    def get_age_by_birthdate(birth_date):
+        today = date.today()
+        return today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+
+    @property
+    def age(self):
+        if self.birth_date:
+            return self.get_age_by_birthdate(self.birth_date)
+        return 0
+
     @property
     def full_name(self):
         surname = self.surname
