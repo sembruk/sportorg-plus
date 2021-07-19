@@ -228,6 +228,8 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
 
         if self.race.is_relay():
             headers.insert(9, _('Start group'))
+        if self.race.is_team_race():
+            headers.insert(11, _('Subgroup'))
         return headers
 
     def init_cache(self):
@@ -287,6 +289,8 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
             ret.append(person.start_group)
         ret.append(person.card_number)
         ret.append(_('Rented card') if is_rented_card else _('Rented stub'))
+        if self.race.is_team_race():
+            ret.append(person.subgroup)
         ret.append(person.comment)
         ret.append(str(person.world_code) if person.world_code else '')
         ret.append(str(person.national_code) if person.national_code else '')

@@ -2,8 +2,8 @@ import logging
 from datetime import date
 
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QFormLayout, QLabel, QLineEdit, QDialog, QPushButton, QSpinBox, QTimeEdit, QCheckBox, \
-    QDialogButtonBox
+from PySide2.QtWidgets import QFormLayout, QLabel, QLineEdit, QDialog, QPushButton, QSpinBox, \
+    QTextEdit, QTimeEdit, QCheckBox, QDialogButtonBox
 
 from sportorg import config
 from sportorg.gui.dialogs.group_ranking import GroupRankingDialog
@@ -11,7 +11,7 @@ from sportorg.gui.global_access import GlobalAccess
 from sportorg.gui.utils.custom_controls import AdvComboBox
 from sportorg.language import _
 from sportorg.models.constant import get_race_courses
-from sportorg.models.memory import race, Group, find, Sex, Limit, RaceType
+from sportorg.models.memory import race, Group, Subgroup, find, Sex, Limit, RaceType
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.modules.teamwork import Teamwork
 from sportorg.utils.time import time_to_qtime, time_to_otime
@@ -123,6 +123,12 @@ class GroupEditDialog(QDialog):
         self.rank_button = QPushButton(_('Configuration'))
         self.layout.addRow(self.rank_checkbox, self.rank_button)
 
+        self.label_subgroups = QLabel(_('Subgroup min_age max_age'))
+        self.item_subgroups = QTextEdit()
+        self.item_subgroups.setTabChangesFocus(True)
+        self.layout.addRow(self.label_subgroups, self.item_subgroups)
+
+
         def cancel_changes():
             self.close()
 
@@ -219,6 +225,9 @@ class GroupEditDialog(QDialog):
 
         self.rank_button.clicked.connect(rank_configuration)
 
+        for sg in self.current_object.subgroups:
+            self.item_subgroups.append('{} {} {}'.format(sg.name, sg.min_age, sg.max_age))
+
     def apply_changes_impl(self):
         group = self.current_object
         if self.is_new:
@@ -280,6 +289,19 @@ class GroupEditDialog(QDialog):
             group.set_type(selected_type)
 
         group.is_any_course = self.item_is_any_course.isChecked()
+
+        text = self.item_subgroups.toPlainText()
+
+        group.subgroups.clear()
+        for i in text.split('\n'):
+            sg = Subgroup()
+            if i is None or len(i.split()) != 3:
+                continue
+            sg.name = i.split()[0]
+            sg.min_age = i.split()[1]
+            sg.max_age = i.split()[2]
+            group.subgroups.append(sg)
+
 
         ResultCalculation(race()).set_rank(group)
         Teamwork().send(group.to_dict())

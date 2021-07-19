@@ -248,6 +248,29 @@ class Course(Model):
                     controls.append(cp)
         return controls
 
+class Subgroup(Model):
+    def __init__(self):
+        self.name = ''
+        self.min_age = 0
+        self.max_age = 0
+
+    def __repr__(self):
+        return 'Subgroup {}'.format(self.name)
+
+    def to_dict(self):
+        return {
+            'object': self.__class__.__name__,
+            'name': self.name,
+            'min_age': self.min_age,
+            'max_age': self.max_age,
+        }
+   
+    def update_data(self, data):
+        self.name = str(data['name'])
+        self.min_age = int(data['min_age'])
+        self.max_age = int(data['max_age'])
+
+
 class Group(Model):
     def __init__(self):
         self.id = uuid.uuid4()
@@ -278,6 +301,8 @@ class Group(Model):
         self.__type = None  # type: RaceType
         self.relay_legs = 0
 
+        self.subgroups = []  # type: List[Subgroup]
+
     def __repr__(self):
         return 'Group {}'.format(self.name)
 
@@ -301,6 +326,7 @@ class Group(Model):
         return self.get_type() == RaceType.TEAM_RACE
 
     def to_dict(self):
+        subgroups = [sg.to_dict() for sg in self.subgroups]
         return {
             'object': self.__class__.__name__,
             'id': str(self.id),
@@ -325,7 +351,7 @@ class Group(Model):
             'ranking': self.ranking.to_dict() if self.ranking else None,
             '__type': self.__type.value if self.__type else None,
             'relay_legs': self.relay_legs,
-
+            'subgroups': subgroups
         }
 
     def update_data(self, data):
@@ -353,6 +379,12 @@ class Group(Model):
             self.is_any_course = bool(data['is_any_course'])
         if data['__type']:
             self.__type = RaceType(int(data['__type']))
+        self.subgroups = []
+        if 'subgroups' in data:
+            for item in data['subgroups']:
+                sg = Subgroup()
+                sg.update_data(item)
+                self.subgroups.append(sg)
 
 
 class Team(Model):
@@ -365,6 +397,7 @@ class Team(Model):
         self.contact = ''
         self.code = ''
         self.group = None  # type: Group
+        self.subgroup = ''  # Rogaining
         self.result = TeamResult()
         self.count_person = 0
 
@@ -382,6 +415,7 @@ class Team(Model):
             'number': self.number,
             'name': self.name,
             'group_id': str(self.group.id) if self.group else None,
+            'subgroup': self.subgroup,
             'country': self.country,
             'region': self.region,
             'contact': self.contact,
@@ -396,6 +430,7 @@ class Team(Model):
         self.region = str(data['region']) if 'region' in data else ''
         self.code = str(data['code']) if 'code' in data else ''
         self.contact = str(data['contact']) if 'contact' in data else ''
+        self.subgroup = str(data['subgroup']) if 'subgroup' in data else ''
 
     def clone(self):
         new_team = Team()
@@ -1122,6 +1157,12 @@ class Person(Model):
             self.team.group = group
         else:
             self._group = group
+
+    @property
+    def subgroup(self): 
+        if race().is_team_race() and self.team:
+            return self.team.subgroup
+        return ''
 
     def __repr__(self):
         return '{} {} {}'.format(self.full_name, self.bib, self.group)
