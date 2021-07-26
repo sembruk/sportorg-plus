@@ -162,7 +162,7 @@ class MainWindow(QMainWindow):
                 logging.error(str(e))
 
     def conf_write(self):
-        Configuration().parser[ConfigFile.GEOMETRY] = self.get_size()
+        Configuration().parser[ConfigFile.GEOMETRY]['main'] = self.saveGeometry().toHex().data().decode()
         Configuration().save()
 
     def post_show(self):
@@ -186,16 +186,15 @@ class MainWindow(QMainWindow):
 
     def _setup_ui(self):
         geometry = ConfigFile.GEOMETRY
-        x = Configuration().parser.getint(geometry, 'x', fallback=480)
-        y = Configuration().parser.getint(geometry, 'y', fallback=320)
-        width = Configuration().parser.getint(geometry, 'width', fallback=880)
-        height = Configuration().parser.getint(geometry, 'height', fallback=474)
 
-        self.setMinimumSize(QtCore.QSize(480, 320))
-        self.setGeometry(x, y, 480, 320)
+        geom = bytearray.fromhex(Configuration().parser.get(geometry, 'main',  fallback='00'))
+        if len(geom) == 1:
+            self.resize(880, 470)
+        self.restoreGeometry(geom)
+
         self.setWindowIcon(QtGui.QIcon(config.ICON))
         self.set_title()
-        self.resize(width, height)
+
         self.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.setDockNestingEnabled(False)
         self.setDockOptions(QtWidgets.QMainWindow.AllowTabbedDocks
@@ -276,12 +275,14 @@ class MainWindow(QMainWindow):
                 item[0].setDisabled(False)
 
     def get_size(self):
+
         return {
-            'x': self.x() + 8,
-            'y': self.y() + 30,
+            'x': self.geometry().x(),
+            'y': self.geometry().y(),
             'width': self.width(),
             'height': self.height(),
         }
+
 
     def set_title(self, title=None):
         main_title = '{} {}'.format(config.NAME, config.VERSION)
