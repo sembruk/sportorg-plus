@@ -54,6 +54,7 @@
                     year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
                     start: isMassStart ? toHHMMSS(group.start_time) : toHHMMSS(person.start_time),
                     start_time: person.start_time,
+                    subgroup: person.team ? person.team.subgroup : '',
                     comment: person.comment
                 });
             }
@@ -129,6 +130,7 @@
             {key: 'qual', title: 'Разряд', size: 7},
             {key: 'bib', title: 'Номер', size: 6},
             {key: 'card_number', title: 'Номер чипа', size: 11},
+            {key: 'subgroup', title: 'П/группа', size: 8},
             {key: 'comment', title: '', size: 20},
             {key: 'start', title: 'Время старта', size: 13}
         ],
@@ -168,6 +170,7 @@
                 var isRogaining = race.settings.result_processing_mode === "scores" && race.settings.result_processing_score_mode == "rogain";
                 this.getField('bib').active = !isTeamRace
                 this.getField('qual').active = !isTeamRace
+                this.getField('subgroup').active = isRogaining
             } catch (e){}
             return this;
         }
