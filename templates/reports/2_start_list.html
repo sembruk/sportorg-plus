@@ -37,20 +37,22 @@
     function getStartListByGroup(group) {
         var isRelay = group.__type ? group.__type === 3 : race.data.race_type === 3;
         var isTeamRace = group.__type ? group.__type === 6 : race.data.race_type === 6;
+        var isMassStart = race.settings.system_start_source === "group";
+        var isRogaining = race.settings.result_processing_mode === "scores" && race.settings.result_processing_score_mode == "rogain";
         var results = [];
         for (var _i = 0, _a = race.persons; _i < _a.length; _i++) {
             var person = _a[_i];
             if (person.group && person.group.id === group.id) {
                 results.push({
                     index: 0,
-                    name: person.surname + ' ' + person.name,
-                    team: (person.team && String(person.team.number) + ' ' + String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
+                    name: person.name + ' ' + person.surname,
+                    team: (person.team && String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
                     qual: Qualification[person.qual],
                     bib: person.bib,
                     card_number: person.card_number,
                     team_number: person.team && person.team.number || 0,
                     year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
-                    start: toHHMMSS(person.start_time),
+                    start: isMassStart ? toHHMMSS(group.start_time) : toHHMMSS(person.start_time),
                     start_time: person.start_time
                 });
             }
@@ -105,7 +107,7 @@
                 var teamBib = r.team_number
                 if (teamBib == 0 || teamBib !== prevTeamBib) {
                     index++;
-                    results.push({index: index});
+                    results.push({index: teamBib});
                     prevTeamBib = teamBib;
                 } else {
                     r.team = ''
@@ -120,7 +122,7 @@
     var Fields = {
         fields: [
             {key: 'index', title: '№', size: 4},
-            {key: 'name', title: 'Фамилия, имя', size: 30},
+            {key: 'name', title: 'Участник', size: 30},
             {key: 'team', title: 'Команда', size: 20},
             {key: 'year', title: 'ГР', size: 5},
             {key: 'qual', title: 'Разряд', size: 7},
@@ -161,7 +163,9 @@
         init: function () {
             try {
                 var isTeamRace = race.data.race_type === 6
+                var isRogaining = race.settings.result_processing_mode === "scores" && race.settings.result_processing_score_mode == "rogain";
                 this.getField('bib').active = !isTeamRace
+                this.getField('qual').active = !isTeamRace
             } catch (e){}
             return this;
         }

@@ -96,7 +96,7 @@
         .bib-title {
             text-align: center;
             font-size: 1.2cm;
-            height: 4.2cm;
+            height: 1.2cm;
             overflow: hidden;
             text-overflow: ellipsis;
         }
@@ -111,6 +111,7 @@
         }
         .bib-info, .left-info-100 {
             width: 100%;
+            height: 8.5cm;
         }
         .bib-info .left-info, .bib-info .right-info {
             width: 50%;
@@ -207,7 +208,6 @@
     racePreparation(race);
     var isTeamRace = race.data.race_type === 6
     var store = {
-        bibDetailedRotatableText: false,
         isRelayView: false
     };
     function render (options) {
@@ -249,42 +249,50 @@
         race.persons.sort(sortFunc);
         var bibListBlock = document.getElementById('bib-list');
         bibListBlock.innerHTML = '';
+        var prevTeamNumber = 0;
+        var bibDetailedBlock
         for (var _i = 0, _a = race.persons; _i < _a.length; _i++) {
             var person = _a[_i];
-            var bibItemBlock = document.createElement('div');
-            bibItemBlock.className = 'bib-item';
-            var bibTitleBlock = document.createElement('div');
-            bibTitleBlock.className = 'bib-title';
-            var bibNumberBlock = document.createElement('div');
-            bibNumberBlock.className = 'bib-number';
-            var bibInfoBlock = document.createElement('div');
-            bibInfoBlock.className = 'bib-info';
-            var bibDetailedBlock = document.createElement('div');
-            var detildData = [
-                { title: '', value: person.name + ' ' + person.surname},
-                { title: 'Номер чипа: ', value: person.card_number || '' },
-                { title: 'Время старта: ', value: toHHMMSS(person.start_time || person.group && person.group.start_time) },
-                { title: 'Группа: ', value: person.group && person.group.name },
-                { title: 'Команда: ', value: person.team && person.team.name || '' }
-            ];
-            for (var _b = 0, detildData_ = detildData; _b < detildData_.length; _b++) {
-                var obj = detildData_[_b];
-                var itemSpan = document.createElement('span');
-                itemSpan.className = 'info-item';
-                itemSpan.appendChild(document.createTextNode(obj.title));
-                var strong = document.createElement('strong');
-                strong.appendChild(document.createTextNode(obj.value));
-                itemSpan.appendChild(strong);
-                bibDetailedBlock.appendChild(itemSpan);
-                bibDetailedBlock.appendChild(document.createElement('br'));
+            if (prevTeamNumber != person.team.number) {
+                var bibItemBlock = document.createElement('div');
+                bibItemBlock.className = 'bib-item';
+                var bibTitleBlock = document.createElement('div');
+                bibTitleBlock.className = 'bib-title';
+                var bibNumberBlock = document.createElement('div');
+                bibNumberBlock.className = 'bib-number';
+                var bibInfoBlock = document.createElement('div');
+                bibInfoBlock.className = 'bib-info';
+                bibDetailedBlock = document.createElement('div');
+                var detildData = [
+                    { title: 'Команда: ', value: person.team && person.team.name || '' },
+                    { title: 'Группа: ', value: person.group && person.group.name },
+                    { title: 'Время старта: ', value: toHHMMSS(person.start_time || person.group && person.group.start_time) }
+                ];
+                for (var _b = 0, detildData_ = detildData; _b < detildData_.length; _b++) {
+                    var obj = detildData_[_b];
+                    var itemSpan = document.createElement('span');
+                    itemSpan.className = 'info-item';
+                    itemSpan.appendChild(document.createTextNode(obj.title));
+                    var strong = document.createElement('strong');
+                    strong.appendChild(document.createTextNode(obj.value));
+                    itemSpan.appendChild(strong);
+                    bibDetailedBlock.appendChild(itemSpan);
+                    bibDetailedBlock.appendChild(document.createElement('br'));
+                }
             }
-            var bibDetailedRotatableBlock = bibDetailedBlock.cloneNode(true);
-            if (options && options.bibDetailedRotatableText) {
-                bibDetailedBlock.className = 'left-info';
-            } else {
-                bibDetailedBlock.className = 'left-info-100';
+            var itemSpan = document.createElement('span');
+            itemSpan.className = 'info-item';
+            var strong = document.createElement('strong');
+            strong.appendChild(document.createTextNode(person.name + ' ' + person.surname));
+            itemSpan.appendChild(strong);
+            itemSpan.appendChild(document.createTextNode(' Чип ' + person.card_number) || '');
+            bibDetailedBlock.appendChild(itemSpan);
+            bibDetailedBlock.appendChild(document.createElement('br'));
+            if (prevTeamNumber == person.team.number) {
+                continue;
             }
-            bibDetailedRotatableBlock.className = 'right-info rotatable';
+            prevTeamNumber = person.team.number;
+            bibDetailedBlock.className = 'left-info-100';
             bibTitleBlock.appendChild(document.createTextNode(race.data.title));
             bibTitleBlock.appendChild(document.createElement('br'));
             bibTitleBlock.appendChild(document.createTextNode(''));
@@ -294,9 +302,6 @@
                 bibNumberBlock.appendChild(document.createTextNode(!options.isRelayView ? person.bib : person.bib % 1000 + '.' + ~~(person.bib / 1000)));
             }
             bibInfoBlock.appendChild(bibDetailedBlock);
-            if (options && options.bibDetailedRotatableText) {
-                bibInfoBlock.appendChild(bibDetailedRotatableBlock);
-            }
             bibItemBlock.appendChild(bibTitleBlock);
             bibItemBlock.appendChild(bibNumberBlock);
             bibItemBlock.appendChild(bibInfoBlock);
@@ -318,14 +323,6 @@
             ],
             change: function (arr) {
                 store.sort = arr[0];
-                render(store);
-            }
-        },
-        {
-            title: 'Отображать перевернутые данные',
-            value: store.bibDetailedRotatableText,
-            change: function (checked) {
-                store.bibDetailedRotatableText = checked;
                 render(store);
             }
         },
