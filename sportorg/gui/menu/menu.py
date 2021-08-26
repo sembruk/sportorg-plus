@@ -235,6 +235,10 @@ def menu_list():
                     'title': _('Split teams'),
                     'action': 'SplitTeamsAction'
                 },
+                {
+                    'title': _('Update subgroups'),
+                    'action': 'UpdateSubroups'
+                },
             ]
         },
         {

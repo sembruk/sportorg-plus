@@ -504,6 +504,7 @@ def copy_card_number_to_bib():
         if person.card_number:
             person.bib = person.card_number
 
+
 def split_teams():
     known_teams = set()
     for person in race().persons:
@@ -516,6 +517,23 @@ def split_teams():
             team.group = person.group
             person.team = team
             known_teams.add(team)
+
+
+def update_subgroups():
+    obj = race()
+    for team in obj.teams:
+        persons = obj.get_persons_by_team(team)
+        if team.group and persons:
+            group = team.group
+            for sg in reversed(group.subgroups):
+                sg_ok = True
+                for p in persons:
+                    if p.age < sg.min_age:
+                        sg_ok = False
+                        break
+                if sg_ok:
+                    team.subgroup = sg.name
+                    break
 
 
 def clone_relay_legs(min_bib, max_bib, increment):
