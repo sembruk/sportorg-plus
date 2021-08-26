@@ -53,7 +53,8 @@
                     team_number: person.team && person.team.number || 0,
                     year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
                     start: isMassStart ? toHHMMSS(group.start_time) : toHHMMSS(person.start_time),
-                    start_time: person.start_time
+                    start_time: person.start_time,
+                    comment: person.comment
                 });
             }
         }
@@ -128,6 +129,7 @@
             {key: 'qual', title: 'Разряд', size: 7},
             {key: 'bib', title: 'Номер', size: 6},
             {key: 'card_number', title: 'Номер чипа', size: 11},
+            {key: 'comment', title: '', size: 20},
             {key: 'start', title: 'Время старта', size: 13}
         ],
         active: function (key, val) {
