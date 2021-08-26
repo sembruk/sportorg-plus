@@ -1145,8 +1145,8 @@ class Person(Model):
 
     @staticmethod
     def get_age_by_birthdate(birth_date):
-        today = date.today()
-        return today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+        start = race().data.get_start_datetime()
+        return start.year - birth_date.year - ((start.month, start.day) < (birth_date.month, birth_date.day))
 
     @property
     def age(self):

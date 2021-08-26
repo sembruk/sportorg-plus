@@ -220,8 +220,9 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
 
     def get_headers(self):
         use_birthday = Config().configuration.get('use_birthday', False)
-        headers = [_('Last name'), _('First name'), _('Sex'), _('Qualification title'), _('Group'), _('Team'),
-                   _('Age') if use_birthday else _('Year title'), _('Bib'), _('Start'), _('Card title'), _('Rented card'),
+        headers = [_('Last name'), _('First name'), _('Sex'), _('Age') if use_birthday else _('Year title'),
+                   _('Qualification title'), _('Group'), _('Team'),
+                   _('Bib'), _('Start'), _('Card title'), _('Rented card'),
                    _('Comment'), _('World code title'), _('National code title'), _('Out of competition title'),
                    _('Result count title')]
 
@@ -254,6 +255,11 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         ret.append(person.surname)
         ret.append(person.name)
         ret.append(person.sex.get_title())
+        use_birthday = Config().configuration.get('use_birthday', False)
+        if use_birthday:
+            ret.append(person.age)
+        else:
+            ret.append(person.get_year())
         if person.qual:
             ret.append(person.qual.get_title())
         else:
@@ -266,11 +272,6 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
             ret.append(person.team.full_name)
         else:
             ret.append('')
-        use_birthday = Config().configuration.get('use_birthday', False)
-        if use_birthday:
-            ret.append(person.age)
-        else:
-            ret.append(person.get_year())
         ret.append(person.bib)
         if self.race.get_setting('system_start_source', 'protocol') == 'group':
             if person.group and person.group.start_time:
