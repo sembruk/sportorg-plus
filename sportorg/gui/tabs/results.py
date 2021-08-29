@@ -91,7 +91,7 @@ class Widget(QtWidgets.QWidget):
 
     def setup_ui(self):
         self.result_splitter.setOrientation(QtCore.Qt.Horizontal)
-        self.result_detail_part.setMaximumSize(QtCore.QSize(350, 16777215))
+        self.result_detail_part.setMaximumSize(QtCore.QSize(330, 16777215))
         self.result_detail_part.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.result_detail_part.setFrameShadow(QtWidgets.QFrame.Raised)
         self.vertical_layout_course.setContentsMargins(0, 0, 0, 0)
@@ -212,4 +212,4 @@ class Widget(QtWidgets.QWidget):
 
     def resize_event(self, *args, **kwargs):
         self.result_course_group_box.setGeometry(QtCore.QRect(1, 1, 120, self.result_table.height()))
-        self.result_card_group_box.setGeometry(QtCore.QRect(120, 1, 235, self.result_table.height()))
+        self.result_card_group_box.setGeometry(QtCore.QRect(120, 1, 205, self.result_table.height()))

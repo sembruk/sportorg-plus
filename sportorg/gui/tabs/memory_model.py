@@ -222,9 +222,10 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         use_birthday = Config().configuration.get('use_birthday', False)
         headers = [_('Last name'), _('First name'), _('Sex'), _('Age') if use_birthday else _('Year title'),
                    _('Qualification title'), _('Group'), _('Team'),
-                   _('Bib'), _('Start'), _('Card title'), _('Rented card'),
-                   _('Comment'), _('World code title'), _('National code title'), _('Out of competition title'),
-                   _('Result count title')]
+                   _('Bib'), _('Start'), _('Card title'),
+                   _('Comment'), _('Result count title'), _('Rented card'),
+                   _('World code title'), _('National code title'),
+                   _('Out of competition title')]
 
         if self.race.is_relay():
             headers.insert(9, _('Start group'))
@@ -288,10 +289,11 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         if self.race.is_relay():
             ret.append(person.start_group)
         ret.append(person.card_number)
-        ret.append(_('Rented card') if is_rented_card else _('Rented stub'))
+        ret.append(person.comment)
         if self.race.is_team_race():
             ret.append(person.subgroup)
-        ret.append(person.comment)
+        ret.append(person.result_count)
+        ret.append(_('Rented card') if is_rented_card else _('Rented stub'))
         ret.append(str(person.world_code) if person.world_code else '')
         ret.append(str(person.national_code) if person.national_code else '')
 
@@ -299,7 +301,6 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         if person.is_out_of_competition:
             out_of_comp_status = _('o/c')
         ret.append(out_of_comp_status)
-        ret.append(person.result_count)
 
         return ret
 
