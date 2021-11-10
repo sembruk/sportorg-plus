@@ -910,11 +910,30 @@ class ResultSportident(Result):
             i.has_penalty = True
             i.course_index = -1
 
+        # BNO2021: reset credit_time for bonuses
+        self.credit_time = OTime()
+        unique_bonuses = set()
+
         for i in range(len(self.splits)):
             try:
                 split = self.splits[i]
                 template = controls[course_index].get_course_cp_template()
                 cur_code = split.code
+
+                # BNO2021: check bonuses
+                # CP 81, 82, 83 - 12 minutes
+                # CP 84 - 15 minutes
+                # CP 85, 86, 87 - 6 minutes
+                if int(cur_code)//10 == 8:
+                    if cur_code not in unique_bonuses:
+                        unique_bonuses.add(cur_code)
+                        if int(cur_code) < 84:
+                            self.credit_time += OTime(minute=12)
+                        elif int(cur_code) > 84:
+                            self.credit_time += OTime(minute=6)
+                        else:
+                            self.credit_time += OTime(minute=15)
+                    continue
 
                 list_exists = False
                 list_contains = False

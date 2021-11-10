@@ -49,12 +49,14 @@
             bib: person.bib,
             group: person.group.name,
             year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
+            credit_time: result.credit_time > 0 ? toHHMMSS(result.credit_time) : '',
             penalty_time: result.penalty_time > 0 ? toHHMMSS(result.penalty_time) : '',
             penalty_laps: result.penalty_laps,
             penalty_points: result.penalty_points > 0 ? result.penalty_points : '',
             result: result.result,
             result_relay: result.result_relay,
             result_msec: result.result_msec,
+            time: result.finish_msec > result.start_msec ? toHHMMSS(result.finish_msec - result.start_msec) : toHHMMSS(result.finish_msec + 86400000 - result.start_msec),
             result_team_time: toHHMMSS(result.result_team_msec),
             diff: race.settings.result_processing_mode === 'scores' ? result.diff_scores : toHHMMSS(result.diff),
             place: result.place,
@@ -71,6 +73,7 @@
             r.place_show = '';
             r.speed = '';
             r.scores = '';
+            r.credit_time = '';
             r.penalty_time = '';
             r.penalty_laps = '';
             r.penalty_points = '';
@@ -508,7 +511,9 @@
             {key: 'bib', title: 'Номер', size: 6},
             {key: 'scores_without_penalty', title: 'Очки', size: 5, active: false},
             {key: 'penalty_points', title: 'Штраф', size: 9, active: false},
-            {key: 'penalty_time', title: 'Штраф', size: 9, active: false},
+            {key: 'time', title: 'Время', size: 9},
+            {key: 'penalty_time', title: 'Штраф', size: 9},
+            {key: 'credit_time', title: 'Бонусы', size: 9},
             {key: 'penalty_laps', title: 'Штраф', size: 9, active: false},
             {key: 'result', title: 'Результат', size: 16},
             {key: 'result_relay', title: 'Ком. рез-т', size: 14},
@@ -555,14 +560,14 @@
                 var isRelay = race.data.race_type === 3
                 var isTeamRace = race.data.race_type === 6
                 this.getField('all_splits').active = location.href.indexOf('all_splits=1') > -1;
-                this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
+                //this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
 
                 this.getField('scores_without_penalty').active = race.settings.result_processing_mode === 'scores';
                 this.getField('penalty_points').active = race.settings.result_processing_mode === 'scores'
                 this.getField('result_relay').active = isRelay
                 this.getField('bib').active = !isTeamRace
-                this.getField('diff').active = !isTeamRace
-                this.getField('qual').active = !isTeamRace
+                //this.getField('diff').active = !isTeamRace
+                //this.getField('qual').active = !isTeamRace
             } catch (e){}
             return this;
         }
@@ -745,6 +750,7 @@
                 render()
             }
         },
+        /*
         {
             title: 'Кол-во штрафных кругов',
             value: Fields.isActive('penalty_laps'),
@@ -753,6 +759,7 @@
                 render()
             }
         },
+        */
         {
             title: 'Отставание',
             value: Fields.isActive('diff'),
@@ -789,6 +796,7 @@
             }
         },
         {% endraw %}{% if race.settings.result_processing_mode != 'scores' %}
+        /*
         {
             title: 'Выполнение',
             value: store.rankingShow,
@@ -797,6 +805,7 @@
                 render()
             }
         },
+        */
         {% endif %}{% raw %}
         {
             title: 'Показать первые: ',

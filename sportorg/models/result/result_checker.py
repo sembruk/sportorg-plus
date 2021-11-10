@@ -53,7 +53,9 @@ class ResultChecker:
                 if not result.status_comment:
                     result.status_comment = StatusComments().remove_hint(StatusComments().get())
             elif result.person.group and result.person.group.max_time.to_msec():
-                if result.get_result_otime() > result.person.group.max_time:
+                # BNO2021
+                result_time = result.get_result_otime() - result.get_penalty_time()
+                if result_time > result.person.group.max_time:
                     if race().get_setting('result_processing_mode', 'time') == 'time':
                         result.status = ResultStatus.OVERTIME
                     elif race().get_setting('result_processing_mode', 'time') == 'scores':
