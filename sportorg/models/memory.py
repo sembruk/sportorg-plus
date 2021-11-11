@@ -472,8 +472,8 @@ class Result:
         self.person = None  # type: Person
         self.status = ResultStatus.OK
         self.status_comment = ''
-        self.penalty_time = None  # type: OTime
-        self.credit_time = None  # type: OTime
+        self.penalty_time = OTime() # type: OTime
+        self.credit_time = OTime() # type: OTime
         self.penalty_laps = 0  # count of penalty legs (marked route)
         self.penalty_points = 0 # rogaining
         self.place = 0
@@ -483,6 +483,7 @@ class Result:
         self.diff_scores = 0  # readonly
         self.created_at = time.time()
         self.speed = ''
+        self.length = ''
         self.can_win_count = None  # quantity of athletes who can win at current time
         self.final_result_time = None  # type: OTime real time, when nobody can win
 
@@ -549,8 +550,8 @@ class Result:
             'finish_time': self.finish_time.to_msec() if self.finish_time else None,
             'diff': self.diff.to_msec() if self.diff else None,
             'diff_scores': self.diff_scores,
-            'penalty_time': self.penalty_time.to_msec() if self.penalty_time else None,
-            'credit_time': self.credit_time.to_msec() if self.credit_time else None,
+            'penalty_time': self.penalty_time.to_msec() if self.penalty_time else OTime(),
+            'credit_time': self.credit_time.to_msec() if self.credit_time else OTime(),
             'status': self.status.value,
             'status_comment': self.status_comment,
             'penalty_laps': self.penalty_laps,
@@ -562,6 +563,7 @@ class Result:
             'card_number': self.card_number,
 
             'speed': self.speed,  # readonly
+            'length': self.length,  # readonly
             'scores': self.scores,  # readonly
             'created_at': self.created_at,  # readonly
             'result': self.get_result(),  # readonly
@@ -698,6 +700,11 @@ class Result:
         ret_ms = self.get_finish_time().to_msec(time_accuracy) - self.get_start_time().to_msec(time_accuracy)
         ret_ms += self.get_penalty_time().to_msec(time_accuracy)
         ret_ms -= self.get_credit_time().to_msec(time_accuracy)
+        return OTime(msec=ret_ms)
+
+    def get_pure_otime(self):
+        time_accuracy = race().get_setting('time_accuracy', 0)
+        ret_ms = self.get_finish_time().to_msec(time_accuracy) - self.get_start_time().to_msec(time_accuracy)
         return OTime(msec=ret_ms)
 
     def get_result_otime_relay(self):
