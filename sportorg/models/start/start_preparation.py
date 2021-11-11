@@ -504,6 +504,19 @@ def copy_card_number_to_bib():
         if person.card_number:
             person.bib = person.card_number
 
+def split_teams():
+    known_teams = set()
+    for person in race().persons:
+        if person.team:
+            team = person.team
+            if team in known_teams:
+                team = team.clone()
+                race().teams.append(team)
+            team.number = person.bib
+            team.group = person.group
+            person.team = team
+            known_teams.add(team)
+
 
 def clone_relay_legs(min_bib, max_bib, increment):
     """Clone existing relay legs to new (the same names, bib += increment"""

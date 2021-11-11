@@ -390,6 +390,16 @@ class Team(Model):
         self.code = str(data['code']) if 'code' in data else ''
         self.contact = str(data['contact']) if 'contact' in data else ''
 
+    def clone(self):
+        new_team = Team()
+        new_team.name = self.name
+        new_team.country = self.country
+        new_team.region = self.region
+        new_team.contact = self.contact
+        new_team.code = self.code
+        new_team.group = self.group
+        return new_team
+
 
 class Split(Model):
     def __init__(self):

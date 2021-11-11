@@ -206,11 +206,11 @@ def menu_list():
                     'title': _('Guess corridors'),
                     'action': 'GuessCorridorsAction'
                 },
-                {
-                    'title': _('Relay number assign mode'),
-                    'tabs': [0],
-                    'action': 'RelayNumberAction'
-                },
+                #{
+                #    'title': _('Relay number assign mode'),
+                #    'tabs': [0],
+                #    'action': 'RelayNumberAction'
+                #},
                 {
                     'title': _('Start time change'),
                     'action': 'StartTimeChangeAction'
@@ -219,10 +219,10 @@ def menu_list():
                     'title': _('Handicap start time'),
                     'action': 'StartHandicapAction'
                 },
-                {
-                    'title': _('Clone relay legs'),
-                    'action': 'RelayCloneAction'
-                },
+                #{
+                #    'title': _('Clone relay legs'),
+                #    'action': 'RelayCloneAction'
+                #},
                 {
                     'title': _('Use bib as card number'),
                     'action': 'CopyBibToCardNumber'
@@ -230,6 +230,10 @@ def menu_list():
                 {
                     'title': _('Use card number as bib'),
                     'action': 'CopyCardNumberToBib'
+                },
+                {
+                    'title': _('Split teams'),
+                    'action': 'SplitTeamsAction'
                 },
             ]
         },
