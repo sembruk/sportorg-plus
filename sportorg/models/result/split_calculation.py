@@ -39,9 +39,6 @@ class PersonSplits(object):
         leg_start_time = self.result.get_start_time()
         start_time = self.result.get_start_time()
 
-        if self.course.length:
-            self.result.speed = get_speed_min_per_km(self.result.get_result_otime(), self.course.length)
-
         if not len(self.course.controls):
             prev_split = start_time
             for i, split in enumerate(self.result.splits):
@@ -86,6 +83,15 @@ class PersonSplits(object):
             split_index += 1
 
         self.last_correct_index = course_index - 1
+
+        if self.course.length:
+            self.result.speed = get_speed_min_per_km(self.result.get_result_otime(), self.course.length)
+        elif self.length > 0:
+            if 'finish' in self.race.controls and prev_cp_desc is not None:
+                finish_desc = self.race.controls['finish']
+                finish_leg_length = math.sqrt((finish_desc.x - prev_cp_desc.x)**2 + (finish_desc.y - prev_cp_desc.y)**2)
+            self.result.speed = get_speed_min_per_km(self.result.get_pure_otime(), self.length)
+            self.result.length = '{:.1f} км'.format(self.length/1000.0)
 
         return self
 
