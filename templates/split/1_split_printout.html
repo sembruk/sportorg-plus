@@ -142,11 +142,19 @@
     <code>
         {{ race.data.title }}
         <br> {{ race.data.start_datetime|date }}
-        <h2>{{ person.surname }} {{ person.name }} - {{ group.name }}</h2>
+        <h2>{{ person.name }} {{ person.surname }} - {{ group.name }}</h2>
         <br> Команда: {{team.number}} {{team.name}}
         <br> Номер: {{person.bib}} Чип: {{person.card_number}}
         <br> Старт: {{result.start_msec|tohhmmss}}
         <table>
+          <tr>
+            <th></th>
+            <th>КП</th>
+            <th>Время</th>
+            <th>Сплит</th>
+            <th></th>
+            <th>Место</th>
+          </tr>
         {% for leg in result.splits %}
             {% if leg.is_correct %}
                 <tr>
@@ -174,7 +182,10 @@
             {% endif %}
         {% endfor %}
         </table>
-        <br> Финиш: {{result.finish_msec|tohhmmss}} {{result.speed}}
+        <br> Финиш:  {{result.finish_msec|tohhmmss}} {{result.speed}}
+        <br> Время:  {{(result.result_msec - result.penalty_time + result.credit_time)|tohhmmss}}
+        <br> Штраф: +{{result.penalty_time|tohhmmss}}
+        <br> Бонус: -{{result.credit_time|tohhmmss}}
         <br> Результат: {{result.result}}
         {% if result.place > 0 %}
             <br> Место: {{result.place}} из {{group.count_finished}} (всего {{group.count_person}})
@@ -186,23 +197,20 @@
                     <br>Вас уже никто не обгонит!
                 {% endif %}
             {% endif %}
-        <br>
         {% endif %}
-        <br>
         {% if result.status != 1 %}
             {% for control in course.controls %}
                 {{control.code}}
             {% endfor %}<br>
-			<h1>ПЛОХАЯ ОТМЕТКА</h1>
-		{% else %}
-			<h1>ОТМЕТКА - OK</h1>
+			  <h3>ПЛОХАЯ ОТМЕТКА</h3>
         {% endif %}
+        <br>
         <table>
             {% for item in items %}
                 {% if item.result.place|int < 11 and item.result.place|int > 0 %}
                     <tr>
                         <td>{{item.result.place}}</td>
-                        <td>{{item.person.surname}} {{item.person.name}}</td>
+                        <td>{{item.person.name}} {{item.person.surname}}</td>
                         <td>{{item.person.bib}}</td>
                         <td>{{item.result.result}}</td>
                     </tr>
