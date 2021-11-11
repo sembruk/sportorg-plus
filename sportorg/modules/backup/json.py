@@ -23,6 +23,8 @@ def load(file):
     new_event(event)
     set_current_race_index(current_race)
     obj = race()
+    for course in obj.courses:
+        obj.add_cp_coords(course.get_cp_coords())
     ResultChecker.check_all()
     ResultCalculation(obj).process_results()
     RaceSplits(obj).generate()

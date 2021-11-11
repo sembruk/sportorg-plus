@@ -135,6 +135,7 @@ class CourseEditDialog(QDialog):
             course.controls.append(control)
 
         obj = race()
+        obj.add_cp_coords(course.get_cp_coords())
         ResultChecker.check_all()
         ResultCalculation(obj).process_results()
         RaceSplits(obj).generate()

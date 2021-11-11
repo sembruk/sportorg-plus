@@ -1,3 +1,4 @@
+import math
 import logging
 
 from sportorg.models.memory import Course, Group, Qualification, ResultStatus
@@ -18,6 +19,7 @@ class PersonSplits(object):
 
         self.relay_leg = self.result.person.bib // 1000
         self.last_correct_index = 0
+        self.length = 0
 
     @property
     def person(self):
@@ -49,6 +51,10 @@ class PersonSplits(object):
                 split.leg_time = split.time - prev_split
                 prev_split = split.time
 
+        prev_cp_desc = None
+        if 'start' in self.race.controls:
+            prev_cp_desc = self.race.controls['start']
+        self.length = 0
         while split_index < len(self.result.splits) and course_index < len(self.course.controls):
             cur_split = self.result.splits[split_index]
 
@@ -60,9 +66,18 @@ class PersonSplits(object):
                 leg_start_time = cur_split.time
 
                 cur_split.course_index = course_index
-                cur_split.length_leg = self.course.controls[course_index].length
+                cur_cp = self.course.controls[course_index]
+                if cur_cp.length > 0:
+                    cur_split.length_leg = cur_cp.length
+                elif cur_split.code in self.race.controls:
+                    cp_desc = self.race.controls[cur_split.code]
+                    if prev_cp_desc is None:
+                        prev_cp_desc = cp_desc
+                    cur_split.length_leg = math.sqrt((cp_desc.x - prev_cp_desc.x)**2 + (cp_desc.y - prev_cp_desc.y)**2)
+                    prev_cp_desc = cp_desc
                 if cur_split.length_leg:
                     cur_split.speed = get_speed_min_per_km(cur_split.leg_time, cur_split.length_leg)
+                    self.length += cur_split.length_leg
 
                 cur_split.leg_place = 0
 
@@ -71,6 +86,7 @@ class PersonSplits(object):
             split_index += 1
 
         self.last_correct_index = course_index - 1
+
         return self
 
     def get_last_correct_index(self):

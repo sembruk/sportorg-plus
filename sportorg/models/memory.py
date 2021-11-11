@@ -136,6 +136,9 @@ class CourseControl(Model):
                 char = tmp[index]
         return str(res)
 
+    def get_course_cp_template(self):
+        return str(self.code).split('|')[0]
+
     def to_dict(self):
         return {
             'object': self.__class__.__name__,
@@ -223,6 +226,20 @@ class Course(Model):
             control.update_data(item)
             self.controls.append(control)
 
+    def get_cp_coords(self):
+        controls = []
+        for cp in self.controls:
+            l = cp.code.split('|')
+            if len(l) > 1:
+                coords_str = l[1]
+                coords = coords_str.split(';')
+                if len(coords) == 3:
+                    cp = ControlPoint()
+                    cp.code = coords[0]
+                    cp.x = float(coords[1])
+                    cp.y = float(coords[2])
+                    controls.append(cp)
+        return controls
 
 class Group(Model):
     def __init__(self):
@@ -896,7 +913,7 @@ class ResultSportident(Result):
         for i in range(len(self.splits)):
             try:
                 split = self.splits[i]
-                template = str(controls[course_index].code)
+                template = controls[course_index].get_course_cp_template()
                 cur_code = split.code
 
                 list_exists = False
@@ -940,7 +957,7 @@ class ResultSportident(Result):
 
                         if prev_split.code == cur_code and j in recognized_indexes:
 
-                            if course_index_current < 0 or str(controls[course_index_current].code).find('*') < 0:
+                            if course_index_current < 0 or controls[course_index_current].get_course_cp_template().find('*') < 0:
                                 # check only free order controls to be duplicated
                                 continue
 
@@ -960,14 +977,14 @@ class ResultSportident(Result):
                             split.is_correct = True
                             recognized_indexes.append(i)
 
-                            correct_code = str(controls[course_index].code).split('(')[0].strip()
+                            correct_code = controls[course_index].get_course_cp_template().split('(')[0].strip()
                             if split.code == correct_code:
                                 split.has_penalty = False
 
                             course_index += 1
                     else:
                         # just cp '31 989'
-                        is_equal = str(cur_code) == controls[course_index].code
+                        is_equal = str(cur_code) == controls[course_index].get_course_cp_template()
                         if is_equal:
                             split.is_correct = True
                             split.has_penalty = False
@@ -1254,7 +1271,7 @@ class Race(Model):
         self.relay_teams = []  # type: List[RelayTeam]
         self.teams = []  # type: List[Team]
         self.settings = {}  # type: Dict[str, Any]
-        self.controls = []  # type: List[ControlPoint]
+        self.controls = {}  # type: Dict[code, ControlPoint]
 
     def __repr__(self):
         return repr(self.data)
@@ -1580,6 +1597,10 @@ class Race(Model):
                 if person.id != p.id and person.full_name and person.full_name == p.full_name and person.birth_date == p.birth_date:
                     ret.append(person)
         return ret
+
+    def add_cp_coords(self, controls):
+        for cp in controls:
+            self.controls[cp.code] = cp
 
 
 class Qualification(IntEnum):
