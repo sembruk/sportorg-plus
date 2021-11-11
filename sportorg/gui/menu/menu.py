@@ -231,6 +231,10 @@ def menu_list():
                     'title': _('Use card number as bib'),
                     'action': 'CopyCardNumberToBib'
                 },
+                {
+                    'title': _('Split teams'),
+                    'action': 'SplitTeamsAction'
+                },
             ]
         },
         {

@@ -850,6 +850,9 @@ msgstr "Заменить номера чипов нагрудными номер
 msgid "Use card number as bib"
 msgstr "Заменить нагрудные номера номерами чипов"
 
+msgid "Split teams"
+msgstr "Разделить команды"
+
 msgid "No results to change status"
 msgstr "Нет результата для изменения статуса"
 
