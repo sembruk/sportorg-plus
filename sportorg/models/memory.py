@@ -533,6 +533,15 @@ class Result:
             else:
                 return self.scores < other.scores
 
+    def compare(self, other, max_gap=OTime(minute=1)):
+        if self.get_start_time() and other.get_start_time():
+            if abs(self.get_start_time().to_sec() - other.get_start_time().to_sec()) > max_gap.to_sec():
+                return False
+        if self.get_finish_time() and other.get_finish_time():
+            if abs(self.get_finish_time().to_sec() - other.get_finish_time().to_sec()) > max_gap.to_sec():
+                return False
+        return True
+
     @property
     @abstractmethod
     def system_type(self) -> SystemType:

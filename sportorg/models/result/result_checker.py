@@ -227,4 +227,43 @@ class ResultChecker:
             points = 0
         return points, penalty_points
 
+    @staticmethod
+    def find_pursuits():
+        logging.debug('Find pursuits')
+        known_orders = {}
+        for result in race().results:
+            user_cp_order = '-'.join([i.code for i in result.splits])
+            if user_cp_order not in known_orders:
+                known_orders[user_cp_order] = []
+            known_orders[user_cp_order].append(result)
+        all_groups = []
+        for cp_order,results_list in known_orders.items():
+            known_groups = []
+            group_dict = {}
+            for result in results_list:
+                bib = result.person.bib
+                for other_result in results_list:
+                    if result == other_result:
+                        continue
+                    if result.compare(other_result):
+                        other_bib = other_result.person.bib
+                        if bib in group_dict:
+                            if other_bib not in group_dict[bib]:
+                                group_dict[bib].append(other_bib)
+                                group_dict[other_bib] = group_dict[bib]
+                        elif other_bib in group_dict:
+                            if bib not in group_dict[other_bib]:
+                                group_dict[other_bib].append(bib)
+                                group_dict[bib] = group_dict[other_bib]
+                        else:
+                            new_group = [bib, other_bib]
+                            group_dict[bib] = new_group
+                            group_dict[other_bib] = new_group
+                            known_groups.append(new_group)
+            if known_groups:
+                all_groups += known_groups
+        print(all_groups)
+
+
+
 

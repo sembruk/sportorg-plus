@@ -308,6 +308,11 @@ def menu_list():
                     'title': _('Assign result by card number'),
                     'action': 'AssignResultByCardNumberAction'
                 },
+                {
+                    'title': _('Find pursuits'),
+                    'action': 'FindPursuitsAction'
+                },
+
             ]
         },
         {

@@ -614,6 +614,11 @@ class AssignResultByCardNumberAction(Action, metaclass=ActionFactory):
                 result.person = find(race().persons, card_number=result.card_number)
         self.app.refresh()
 
+class FindPursuitsAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        ResultChecker.find_pursuits()
+        self.app.refresh()
+
 
 class ImportSportOrgAction(Action, metaclass=ActionFactory):
     def execute(self):
