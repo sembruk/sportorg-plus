@@ -42,8 +42,8 @@
         var person = result.person
         var r = {
             index: 0,
-            name: (person.surname + ' ' + person.name).slice(0, MAX_PERSON_NAME),
-            team: (person.team && String(person.team.number) + ' ' + String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
+            name: (person.name + ' ' + person.surname).slice(0, MAX_PERSON_NAME),
+            team: (person.team && String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
             team_number: person.team && person.team.number || 0,
             qual: Qualification[person.qual],
             bib: person.bib,
