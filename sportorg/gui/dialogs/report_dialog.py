@@ -135,6 +135,9 @@ class ReportDialog(QDialog):
         if selected_items['groups']:
             current_race['groups'] = selected_items['groups']
 
+        for team in current_race['teams']:
+            team.pop('contact', None)
+
         if template_path.endswith('.docx'):
             # DOCX template processing
             full_path = config.template_dir() + template_path
