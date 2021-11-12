@@ -128,7 +128,7 @@ def time_to_minutes(value, max_val=24*60):
 
 def get_speed_min_per_km(time, length_m):
     time_km = time / (length_m / 1000)
-    return time_to_mmss(time_km) + "/km"
+    return time_to_mmss(time_km)
 
 
 def qdate_to_date(value):

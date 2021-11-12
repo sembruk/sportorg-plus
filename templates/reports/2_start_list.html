@@ -45,7 +45,7 @@
             if (person.group && person.group.id === group.id) {
                 results.push({
                     index: 0,
-                    name: person.name + ' ' + person.surname,
+                    name: person.surname + ' ' + person.name,
                     team: (person.team && String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
                     qual: Qualification[person.qual],
                     bib: person.bib,
@@ -122,15 +122,15 @@
 
     var Fields = {
         fields: [
-            {key: 'index', title: '№', size: 4},
+            {key: 'index', title: '№', size: 4, active: false},
+            {key: 'card_number', title: 'Чип', size: 3},
             {key: 'name', title: 'Участник', size: 30},
-            {key: 'team', title: 'Команда', size: 20},
             {key: 'year', title: 'ГР', size: 5},
             {key: 'qual', title: 'Разряд', size: 7},
+            {key: 'team', title: 'Команда', size: 20},
             {key: 'bib', title: 'Номер', size: 6},
-            {key: 'card_number', title: 'Номер чипа', size: 11},
             {key: 'comment', title: '', size: 20},
-            {key: 'start', title: 'Время старта', size: 13}
+            {key: 'start', title: 'Время старта', size: 13, active: false}
         ],
         active: function (key, val) {
             for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
@@ -166,7 +166,7 @@
             try {
                 var isTeamRace = race.data.race_type === 6
                 var isRogaining = race.settings.result_processing_mode === "scores" && race.settings.result_processing_score_mode == "rogain";
-                this.getField('bib').active = !isTeamRace
+                this.getField('bib').active = false
                 this.getField('qual').active = !isTeamRace
             } catch (e){}
             return this;
@@ -184,6 +184,9 @@
             titleBlock.id = group.name;
             titleBlock.appendChild(document.createTextNode(group.name));
             resultBlock.appendChild(titleBlock);
+            var desk = document.createElement('h5');
+            desk.appendChild(document.createTextNode(group.long_name));
+            resultBlock.appendChild(desk);
             resultBlock.appendChild(getGroupsBlockElement(race));
             if (store.tableView) {
                 resultBlock.appendChild(new TableGenerator(getStartListByGroup(group), Fields.fields).getTable({className: 'sportorg-table'}));
@@ -243,6 +246,7 @@
                 render()
             }
         },
+        /*
         {
             title: 'Номер',
             value: Fields.isActive('bib'),
@@ -259,6 +263,7 @@
                 render()
             }
         },
+        */
         {
             title: 'Автоскролл',
             value: Scrolling.enabled,

@@ -152,7 +152,7 @@
             <th>КП</th>
             <th>Время</th>
             <th>Сплит</th>
-            <th></th>
+            <th>/км</th>
             <th>Место</th>
           </tr>
         {% for leg in result.splits %}
@@ -183,10 +183,10 @@
         {% endfor %}
         </table>
         <br> Финиш:  {{result.finish_msec|tohhmmss}}
-        <br> Время:  {{(result.result_msec - result.penalty_time + result.credit_time)|tohhmmss}} {{result.speed}}
+        <br> Время:  {{(result.result_msec - result.penalty_time + result.credit_time)|tohhmmss}} {{result.speed}}/км
         <br> Штраф: +{{result.penalty_time|tohhmmss}}
         <br> Бонус: -{{result.credit_time|tohhmmss}}
-        <br> Результат: {{result.result}} {{result.length}}
+        <br> Результат: {{result.result}} ({{result.length}})
         {% if result.place > 0 %}
             <br> Место: {{result.place}} из {{group.count_finished}} (всего {{group.count_person}})
             {% if "can_win_count" in result and result.can_win_count is not none %}
