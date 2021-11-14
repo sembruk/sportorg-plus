@@ -113,7 +113,13 @@ class ResultCalculation(object):
             for res in self.race.results:
                 person = res.person
                 if person:
-                    if person.group is group and person.team:
+                    if not person.team:
+                        person_group = person.group
+                        person.team = Team()
+                        person.team.name = '-'
+                        person.team.group = person_group
+                        self.race.teams.append(person.team)
+                    if person.group is group:
                         person.team.result.add_result(res)
                         teams_results[person.team.id] = person.team.result
 
