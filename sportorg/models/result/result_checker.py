@@ -2,7 +2,8 @@ import logging
 
 from sportorg.common.otime import OTime
 from sportorg.models.constant import StatusComments
-from sportorg.models.memory import Person, ResultStatus, race, Result, find, Split
+from sportorg.models.memory import Person, ResultStatus, race, Result, find, Split, Team
+from sportorg.models.result.result_calculation import ResultCalculation
 
 
 class ResultCheckerException(Exception):
@@ -262,8 +263,23 @@ class ResultChecker:
                             known_groups.append(new_group)
             if known_groups:
                 all_groups += known_groups
-        print(all_groups)
-
-
+        print(len(all_groups), all_groups)
+        for g in all_groups:
+            new_team = Team()
+            for bib in g:
+                person = find(race().persons, bib=bib)
+                if person.team:
+                    if person.team.name != new_team.name:
+                        new_team.name += '/' if new_team.name else ''
+                        new_team.name += person.team.name
+                    if person.team.contact != new_team.contact:
+                        new_team.contact += '/' +person.team.contact
+                new_team.group = person.group
+                person.team = new_team
+            if not new_team.name:
+                new_team.name = '-'
+            race().teams.append(new_team)
+            logging.debug('New team: {}'.format(new_team.name))
+        ResultCalculation(race()).process_results()
 
 

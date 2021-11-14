@@ -45,6 +45,7 @@
             name: (person.name + ' ' + person.surname).slice(0, MAX_PERSON_NAME),
             team: (person.team && String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
             team_number: person.team && person.team.number || 0,
+            team_id: person.team && person.team.id || 0,
             qual: Qualification[person.qual],
             bib: person.bib,
             group: person.group.name,
@@ -215,23 +216,26 @@
                 results.push(r);
             }
         } else if (isTeamRace) {
-            var prevTeamBib = 0;
+            var prevTeamId = 0;
             var resultsList = results.slice();
             results = [];
             for (var _i = 0, resultsList_ = resultsList; _i < resultsList_.length; _i++) {
                 var r = resultsList_[_i];
                 r.index = '';
-                var teamBib = r.team_number
-                if (teamBib == 0 || teamBib !== prevTeamBib) {
+                var teamId = r.team_id
+                if (teamId == 0 || teamId !== prevTeamId) {
                     index++;
-                    results.push({index: index});
-                    prevTeamBib = teamBib;
+                    r.index = index;
+                    prevTeamId = teamId;
                 } else {
                     r.result = ''
                     r.scores = ''
                     r.scores_without_penalty = ''
                     r.penalty_points = ''
                     r.result_team_time = ''
+                    r.penalty_time = ''
+                    r.credit_time = ''
+                    r.time = ''
                     r.place_show = ''
                     r.team = ''
                 }
@@ -360,20 +364,23 @@
                 results.push(r);
             }
         } else if (isTeamRace) {
-            var prevTeamBib = 0;
+            var prevTeamId = 0;
             var resultsList = results.slice();
             results = [];
             for (var _i = 0, resultsList_ = resultsList; _i < resultsList_.length; _i++) {
                 var r = resultsList_[_i];
                 r.index = '';
-                var teamBib = r.team_number
-                if (teamBib == 0 || teamBib !== prevTeamBib) {
+                var teamId = r.team_id
+                if (teamId == 0 || teamId !== prevTeamId) {
                     index++;
-                    results.push({index: index});
-                    prevTeamBib = teamBib;
+                    r.index = index;
+                    prevTeamId = teamId;
                 } else {
                     r.result = ''
                     r.scores = ''
+                    r.time = ''
+                    r.penalty_time = ''
+                    r.credit_time = ''
                     r.scores_without_penalty = ''
                     r.result_team_time = ''
                     r.place_show = ''
@@ -565,8 +572,8 @@
                 this.getField('scores_without_penalty').active = race.settings.result_processing_mode === 'scores';
                 this.getField('penalty_points').active = race.settings.result_processing_mode === 'scores'
                 this.getField('result_relay').active = isRelay
-                this.getField('bib').active = !isTeamRace
-                //this.getField('diff').active = !isTeamRace
+                //this.getField('bib').active = !isTeamRace
+                this.getField('diff').active = false
                 //this.getField('qual').active = !isTeamRace
             } catch (e){}
             return this;

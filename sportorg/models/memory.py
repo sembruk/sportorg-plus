@@ -540,6 +540,14 @@ class Result:
         if self.get_finish_time() and other.get_finish_time():
             if abs(self.get_finish_time().to_sec() - other.get_finish_time().to_sec()) > max_gap.to_sec():
                 return False
+        if len(self.splits) != len(other.splits):
+            return False
+        for i in range(len(self.splits)):
+            if self.splits[i].code != other.splits[i].code:
+                return False
+            if abs(self.splits[i].time.to_sec() - other.splits[i].time.to_sec()) > max_gap.to_sec():
+                return False
+         
         return True
 
     @property
@@ -2220,10 +2228,10 @@ class TeamResult(object):
             self.members_results[i].scores = self.score
 
     def get_time(self):
-        if len(self.members_results) > 0:
-            start_time = self.members_results[0].get_start_time()
-            return self.finish_time - start_time
-        return OTime()
+        ret = OTime()
+        for i in range(len(self.members_results)):
+            ret = max(ret, self.members_results[i].get_result_otime())
+        return ret
 
     def is_status_ok(self):
         for r in self.members_results:
