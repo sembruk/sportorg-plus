@@ -132,11 +132,20 @@ class ReportDialog(QDialog):
 
         races_dict = [r.to_dict() for r in races()]
         current_race = races_dict[get_current_race_index()]
+
         if selected_items['groups']:
             current_race['groups'] = selected_items['groups']
-
         for team in current_race['teams']:
             team.pop('contact', None)
+
+        template_path_items = template_path.split('/')[-1]
+        template_path_items = '.'.join(template_path_items.split('.')[:-1]).split('_')
+
+        # remove tokens, containing only digits
+        for i in template_path_items:
+            if str(i).isdigit():
+                template_path_items.remove(i)
+        report_suffix = '_'.join(template_path_items)
 
         if template_path.endswith('.docx'):
             # DOCX template processing
@@ -170,8 +179,14 @@ class ReportDialog(QDialog):
             if _settings['save_to_last_file']:
                 file_name = _settings['last_file']
             else:
-                file_name = get_save_file_name(_('Save As HTML file'), _("HTML file (*.html)"),
-                                               '{}_report'.format(obj.data.get_start_datetime().strftime("%Y%m%d")))
+                file_name = get_save_file_name(
+                    _('Save As HTML file'),
+                    _("HTML file (*.html)"),
+                    '{}_{}'.format(
+                        obj.data.get_start_datetime().strftime("%Y%m%d"),
+                        report_suffix
+                    )
+                )
             if len(file_name):
                 _settings['last_file'] = file_name
                 with codecs.open(file_name, 'w', 'utf-8') as file:
