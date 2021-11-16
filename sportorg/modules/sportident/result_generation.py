@@ -1,9 +1,18 @@
 import logging
+from enum import Enum
 
 from sportorg.gui.dialogs.bib_dialog import BibDialog
 from sportorg.models.result.result_checker import ResultChecker, ResultCheckerException
-from sportorg.models.memory import race, Person, Result, ResultSportident, find
+from sportorg.models.memory import Person, Result, ResultSportident, find, race, ResultStatus
 from sportorg.language import _
+
+
+class FinishSource(Enum):
+    station = 0
+    zero = 1
+    readout = 2
+    dsq = 3
+    penalty = 4
 
 
 class ResultSportidentGeneration:
@@ -13,6 +22,33 @@ class ResultSportidentGeneration:
         self.assign_chip_reading = race().get_setting('system_assign_chip_reading', 'off')
         self.duplicate_chip_processing = race().get_setting('system_duplicate_chip_processing', 'several_results')
         self.card_read_repeated = self.duplicate_chip_processing == 'bib_request'
+        self.missed_finish = race().get_setting(
+            'system_missed_finish', 'zero'
+        )
+        self.finish_source = FinishSource[race().get_setting(
+            'system_finish_source', 'station'
+        )]
+        self._process_missed_finish()
+
+    def _process_missed_finish(self):
+        if self._result and self._result.finish_time is None:
+            if self.finish_source == FinishSource.station:
+                if self.missed_finish == FinishSource.readout:
+                    self._result.finish_time = OTime.now()
+                elif self.missed_finish == FinishSource.zero:
+                    self._result.finish_time = OTime(msec=0)
+                elif self.missed_finish == FinishSource.dsq:
+                    self._result.finish_time = OTime(msec=0)
+                    self._result.status = ResultStatus.DISQUALIFIED
+                elif self.missed_finish == FinishSource.penalty:
+                    if len(self._result.splits) > 0:
+                        last_cp_time = self._result.splits[-1].time
+                        penalty_time = OTime(
+                            msec=race().get_setting('marked_route_penalty_time', 60000)
+                        )
+                        self._result.finish_time = last_cp_time + penalty_time
+                    else:
+                        self._result.finish_time = OTime(msec=0)
 
     def _add_result_to_race(self):
         race().add_result(self._result)
