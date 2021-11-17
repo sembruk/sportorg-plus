@@ -141,8 +141,8 @@ class ResultSportidentGeneration:
             if existing_res.merge_with(self._result):
                 # existing result changed, recalculate group results and printout
                 self._result = existing_res
-                ResultChecker.calculate_penalty(self._result)
                 ResultChecker.checking(self._result)
+                ResultChecker.calculate_penalty(self._result)
 
             return True
 
@@ -183,8 +183,8 @@ class ResultSportidentGeneration:
         if isinstance(self._result.person, Person):
             self._find_person_by_result()
             try:
-                ResultChecker.calculate_penalty(self._result)
                 ResultChecker.checking(self._result)
+                ResultChecker.calculate_penalty(self._result)
             except ResultCheckerException as e:
                 logging.error(str(e))
 
