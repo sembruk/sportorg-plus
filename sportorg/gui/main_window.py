@@ -98,10 +98,12 @@ class MainWindow(QMainWindow):
 
     def interval(self):
         if SIReaderClient().is_alive() != self.sportident_status:
+            pass
+        # FIXME
+        """
             self.toolbar_property['sportident'].setIcon(
                 QtGui.QIcon(config.icon_dir(self.sportident_icon[SIReaderClient().is_alive()])))
             self.sportident_status = SIReaderClient().is_alive()
-        """
         if Teamwork().is_alive() != self.teamwork_status:
             self.toolbar_property['teamwork'].setIcon(
                 QtGui.QIcon(config.icon_dir(self.teamwork_icon[Teamwork().is_alive()])))
