@@ -26,8 +26,10 @@ class OrgeoCSVReader:
                 'Команда': 'team_name',
                 'Код': 'code',
                 'Регион': 'district',
+                'Квал.': 'qual_str',
                 'Дата рожд.': 'date_of_birn',
                 'Год': 'date_of_birn',
+                '№ чипа': 'sportident_card',
                 'Примечания': 'comment',
                 'Кем подана': 'representative',
                 'Телефон': 'cell_number',
@@ -118,10 +120,7 @@ def import_csv(source):
             obj.teams.append(team)
 
     for person_dict in orgeo_data.data:
-        if 'qual_id' in person_dict and person_dict['qual_id'].isdigit():
-            qual_id = int(person_dict['qual_id'])
-        else:
-            qual_id = 0
+        
         person_team = memory.find(obj.teams, number=person_dict['claim_id'])
         person_team.contact = person_dict['representative']
         if 'cell_number' in person_dict:
@@ -138,13 +137,21 @@ def import_csv(source):
             person.sex = Sex.M if person_dict['sex'] == 'М' else Sex.F
         person.bib = person_dict['bib'] if 'bib' in person_dict else 0
         person.birth_date = person_dict['date_of_birn']
-        person.card_number = int(person_dict['sportident_card']) if 'sportident_card' in person_dict else 0
+        if 'sportident_card' in person_dict and person_dict['sportident_card'].isdigit():
+            person.card_number = int(person_dict['sportident_card'])
         person.group = memory.find(obj.groups, name=person_dict['group_name'])
         if obj.is_team_race():
             person_team.group = person.group
         person.team = person_team
-        person.qual = Qualification(qual_id)
-        person.comment = person_dict['status'] + ' ' + person_dict['comment']
+        if 'qual_id' in person_dict and person_dict['qual_id'].isdigit():
+            person.qual = Qualification(int(person_dict['qual_id']))
+        elif 'qual_str' in person_dict:
+            person.qual = Qualification.get_qual_by_name(person_dict['qual_str'])
+        if 'status' in person_dict:
+            person.comment = person_dict['status'] + ' '
+        if 'comment' in person_dict:
+            person.comment += person_dict['comment']
+
         obj.persons.append(person)
 
     new_lengths = obj.get_lengths()
