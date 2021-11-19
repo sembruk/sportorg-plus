@@ -25,7 +25,6 @@ class ResultCalculation(object):
                 for a in new_relays:
                     self.race.relay_teams.append(a)
             elif self.race.get_type(i) == RaceType.TEAM_RACE:
-                pass
                 self.process_team_results(i)
             else:
                 # single race

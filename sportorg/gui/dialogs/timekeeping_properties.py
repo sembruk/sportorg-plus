@@ -136,6 +136,7 @@ class TimekeepingPropertiesDialog(QDialog):
         self.rp_time_radio = QRadioButton(_('by time'))
         self.result_proc_layout.addRow(self.rp_time_radio)
         self.rp_scores_radio = QRadioButton(_('by scores'))
+        self.rp_scores_radio.toggled.connect(self.on_rp_mode_changed)
         self.result_proc_layout.addRow(self.rp_scores_radio)
 
         self.rp_scores_group = QGroupBox()
@@ -262,13 +263,21 @@ class TimekeepingPropertiesDialog(QDialog):
         self.show()
 
     def on_assignment_mode(self):
-        mode = False
-        if self.assignment_mode.isChecked():
-            mode = True
+        mode = self.assignment_mode.isChecked()
         self.start_group_box.setDisabled(mode)
         self.finish_group_box.setDisabled(mode)
         self.chip_reading_box.setDisabled(mode)
         self.chip_duplicate_box.setDisabled(mode)
+
+    def on_rp_mode_changed(self):
+        if self.rp_scores_radio.isChecked():
+            self.disable_mr_tab()
+        else:
+            self.marked_route_tab.setEnabled(True)
+
+    def disable_mr_tab(self):
+        self.mr_off_radio.setChecked(True)
+        self.marked_route_tab.setDisabled(True)
 
     def set_values_from_model(self):
         cur_race = race()
@@ -350,8 +359,7 @@ class TimekeepingPropertiesDialog(QDialog):
             self.rp_time_radio.setChecked(True)
         else:
             self.rp_scores_radio.setChecked(True)
-            self.mr_off_radio.setChecked(True)
-            self.marked_route_tab.setDisabled(True)
+            self.disable_mr_tab()
 
         if rp_score_mode == 'rogain':
             self.rp_rogain_scores_radio.setChecked(True)
