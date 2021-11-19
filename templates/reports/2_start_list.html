@@ -67,10 +67,10 @@
                 }
             }
             if (isTeamRace) {
-                if (a.team.number === b.team.number) {
-                    return a.card_number - b.card_number
+                if (a.team_number === b.team_number) {
+                    return a.bib - b.bib
                 }
-                return a.team.number - b.team.number
+                return a.team_number - b.team_number
             }
             if (a.start_time === b.start_time) {
                 return a.bib - b.bib
