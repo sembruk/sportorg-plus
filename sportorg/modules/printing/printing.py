@@ -1,4 +1,5 @@
 import sys
+import platform
 import logging
 from multiprocessing import Process
 
@@ -27,11 +28,12 @@ class PrintProcess(Process):
         try:
             sys.stdout = FakeStd()
             sys.stderr = FakeStd()
-            #app = QApplication.instance()
-            #if app is None:
-            #    app = QApplication(['--platform', 'minimal'])
-            ## we need this call to correctly render images...
-            #app.processEvents()
+            if platform.system() == 'Windows':
+                app = QApplication.instance()
+                if app is None:
+                    app = QApplication(['--platform', 'minimal'])
+                # we need this call to correctly render images...
+                app.processEvents()
 
             printer = QPrinter()
             if self.printer_name:
