@@ -66,6 +66,13 @@ class Sex(_TitleType):
     M = 1
     F = 2
 
+# For Poedit
+sexTranslations = [
+    _('Mf'),
+    _('M'),
+    _('F'),
+]
+
 
 class RaceType(_TitleType):
     INDIVIDUAL_RACE = 0
