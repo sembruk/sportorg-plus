@@ -557,7 +557,10 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 logging.exception(str(e))
                 self.delete_from_recent_files(file_name)
-                QMessageBox.warning(self, _('Error'), _('Cannot read file, format unknown') + ': ' + file_name)
+                if isinstance(e, FileNotFoundError):
+                    QMessageBox.warning(self, _('Error'), str(e))
+                else:
+                    QMessageBox.warning(self, _('Error'), _('Cannot read file, format unknown') + ': ' + file_name)
 
     def split_printout_selected(self):
         if self.current_tab != 1:
