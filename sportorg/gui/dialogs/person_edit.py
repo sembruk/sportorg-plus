@@ -73,6 +73,7 @@ class PersonEditDialog(QDialog):
         self.label_sex = QLabel(_('Sex'))
         self.item_sex = AdvComboBox()
         self.item_sex.addItems(Sex.get_titles())
+        self.item_sex.currentTextChanged.connect(self.on_sex_change)
 
         if use_birthday:
             self.label_age = QLabel(_('Age'))
@@ -198,6 +199,13 @@ class PersonEditDialog(QDialog):
         widget = self.sender()
         new_birthday = qdate_to_date(widget.date())
         self.item_age.setValue(Person.get_age_by_birthdate(new_birthday))
+    
+    def on_sex_change(self):
+        person = self.current_object
+        if person.sex.get_title() != self.item_sex.currentText():
+            sex = Sex.get_by_name(self.item_sex.currentText())
+            self.item_group.clear()
+            self.item_group.addItems(self.get_groups_by_sex(sex))
 
     def items_ok(self):
         ret = True
@@ -259,10 +267,10 @@ class PersonEditDialog(QDialog):
         else:
             self.button_ok.setEnabled(True)
 
-    def get_groups_by_person(self):
+    def get_groups_by_sex(self, sex):
         groups = []
         for g in race().groups:
-            if g.name and (g.sex == Sex.MF or self.current_object.sex == g.sex):
+            if g.name and (g.sex == Sex.MF or sex == g.sex):
                 groups.append(g.name)
         return groups
         
@@ -272,7 +280,7 @@ class PersonEditDialog(QDialog):
         self.item_surname.selectAll()
         self.item_name.setCurrentText(self.current_object.name)
         self.item_sex.setCurrentText(self.current_object.sex.get_title())
-        self.item_group.addItems(self.get_groups_by_person())
+        self.item_group.addItems(self.get_groups_by_sex(self.current_object.sex))
         if self.current_object.group:
             self.item_group.setCurrentText(self.current_object.group.name)
         else:
