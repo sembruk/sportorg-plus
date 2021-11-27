@@ -53,6 +53,7 @@
             penalty_laps: result.penalty_laps,
             penalty_points: result.penalty_points > 0 ? result.penalty_points : '',
             result: result.result,
+            time: result.finish_msec > result.start_msec ? toHHMMSS(result.finish_msec - result.start_msec) : toHHMMSS(result.finish_msec + 86400000 - result.start_msec),
             result_relay: result.result_relay,
             result_msec: result.result_msec,
             result_team_time: toHHMMSS(result.result_team_msec),
@@ -511,6 +512,7 @@
             {key: 'year', title: 'ГР', size: 5},
             {key: 'qual', title: 'Разряд', size: 7},
             {key: 'bib', title: 'Номер', size: 6},
+            {key: 'time', title: 'Время', size: 6},
             {key: 'scores_without_penalty', title: 'Очки', size: 5, active: false},
             {key: 'penalty_points', title: 'Штраф', size: 9, active: false},
             {key: 'penalty_time', title: 'Штраф', size: 9, active: false},
@@ -560,14 +562,15 @@
             try {
                 var isRelay = race.data.race_type === 3
                 var isTeamRace = race.data.race_type === 6
+                var isRogaining = race.settings.result_processing_mode === 'scores'
                 this.getField('all_splits').active = location.href.indexOf('all_splits=1') > -1;
                 this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
 
-                this.getField('scores_without_penalty').active = race.settings.result_processing_mode === 'scores';
-                this.getField('penalty_points').active = race.settings.result_processing_mode === 'scores'
+                this.getField('scores_without_penalty').active = 
+                this.getField('penalty_points').active = isRogaining
                 this.getField('result_relay').active = isRelay
                 this.getField('bib').active = !isTeamRace
-                this.getField('diff').active = !isTeamRace
+                this.getField('diff').active = !isRogaining
                 this.getField('qual').active = !isTeamRace
             } catch (e){}
             return this;
