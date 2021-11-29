@@ -13,6 +13,8 @@ Differences from SportOrg:
 
 [All changes](https://github.com/sembruk/sportorg-plus/compare/3a69d94...master)
 
+[Changelog](https://github.com/sembruk/sportorg-plus/blob/master/changelog.md)
+
 ### Installation
 
 ```commandline
