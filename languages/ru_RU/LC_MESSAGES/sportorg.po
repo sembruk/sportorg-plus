@@ -1884,6 +1884,9 @@ msgstr "Командные результаты"
 msgid "Toolbar"
 msgstr "Панель инструментов"
 
+msgid "Show toolbar"
+msgstr "Показывать панель инструментов"
+
 msgid "Logs"
 msgstr "Логи"
 

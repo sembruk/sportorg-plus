@@ -85,6 +85,7 @@ class MainWindow(QMainWindow):
         self._set_style()
         self._setup_ui()
         self._setup_menu()
+        self._setup_toolbar()
         self._setup_tab()
         self._setup_statusbar()
         self.show()
@@ -248,6 +249,17 @@ class MainWindow(QMainWindow):
         self.menubar.setNativeMenuBar(False)
         self.setMenuBar(self.menubar)
         self._create_menu(self.menubar, menu_list())
+
+    def _setup_toolbar(self):
+        self.toolbar = self.addToolBar(_('Toolbar'))
+        for tb in toolbar_list():
+            tb_action = QtWidgets.QAction(QtGui.QIcon(tb[0]), tb[1], self)
+            tb_action.triggered.connect(self.menu_factory.get_action(tb[2]))
+            if len(tb) == 4:
+                self.toolbar_property[tb[3]] = tb_action
+            self.toolbar.addAction(tb_action)
+        if not self.get_configuration().get('show_toolbar'):
+            self.toolbar.hide()
 
     def _setup_statusbar(self):
         self.statusbar = QtWidgets.QStatusBar()
