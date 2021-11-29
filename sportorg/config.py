@@ -13,7 +13,7 @@ class Env(BaseSettings):
     class Config:
         env_file = '.env'
 
-NAME = 'SportOrg+'
+NAME = 'SportOrgPlus'
 VERSION = Version(1, 1, 0, 0, 'v')
 
 

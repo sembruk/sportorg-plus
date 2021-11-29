@@ -12,13 +12,52 @@ include_files = [config.LOCALE_DIR, config.TEMPLATE_DIR, config.IMG_DIR, config.
 includes = ['atexit', 'codecs']
 excludes = ['Tkinter']
 
+build_exe_options = {
+    'includes': includes,
+    'excludes': excludes,
+    'packages': ['idna', 'requests', 'encodings', 'asyncio'],
+    'include_files': include_files,
+    'silent': 1
+}
+
+shortcut_table = [
+    ("DesktopShortcut",        # Shortcut
+     "DesktopFolder",          # Directory_
+     config.NAME,              # Name
+     "TARGETDIR",              # Component_
+     "[TARGETDIR]SportOrg.exe", # Target
+     None,                     # Arguments
+     None,                     # Description
+     None,                     # Hotkey
+     None,                     # Icon
+     None,                     # IconIndex
+     None,                     # ShowCmd
+     'TARGETDIR'               # WkDir
+     ),
+    #("StartupShortcut",        # Shortcut
+    # "StartupFolder",          # Directory_
+    # config.NAME,              # Name
+    # "TARGETDIR",              # Component_
+    # "[TARGETDIR]SportOrg.exe", # Target
+    # None,                     # Arguments
+    # None,                     # Description
+    # None,                     # Hotkey
+    # None,                     # Icon
+    # None,                     # IconIndex
+    # None,                     # ShowCmd
+    # 'TARGETDIR'               # WkDir
+    # ),
+]
+
+bdist_msi_options = {
+    #'initial_target_dir': r'[ProgramFilesFolder]\%s' % config.NAME,
+    'all_users': False,
+    'data': {'Shortcut': shortcut_table}
+}
+
 options = {
-    'build_exe': {
-        'includes': includes,
-        'excludes': excludes,
-        "packages": ['idna', 'requests', 'encodings', 'asyncio', 'pywinusb/hid'],
-        'include_files': include_files
-    }
+    'build_exe': build_exe_options,
+    'bdist_msi': bdist_msi_options
 }
 
 executables = [
@@ -26,14 +65,13 @@ executables = [
         'SportOrg.pyw',
         base=base,
         icon=config.icon_dir('sportorg.ico'),
-        shortcut_dir=config.NAME.lower(),
         copyright='GNU GENERAL PUBLIC LICENSE {}'.format(config.NAME)
     )
 ]
 
 setup(
     name=config.NAME,
-    version=config.VERSION.file,
+    version=str(config.VERSION),
     description=config.NAME,
     options=options,
     executables=executables
