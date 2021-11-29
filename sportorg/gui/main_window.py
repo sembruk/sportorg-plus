@@ -27,7 +27,7 @@ from sportorg.modules.sportident.result_generation import ResultSportidentGenera
 from sportorg.common.broker import Broker
 from sportorg.gui.dialogs.file_dialog import get_save_file_name
 from sportorg.gui.menu import menu_list, Factory
-from sportorg.gui.tabs import persons, groups, teams, results, courses
+from sportorg.gui.tabs import persons, groups, teams, results, courses, log
 from sportorg.gui.tabs.memory_model import PersonMemoryModel, ResultMemoryModel, GroupMemoryModel, \
     CourseMemoryModel, TeamMemoryModel
 from sportorg.gui.toolbar import toolbar_list
@@ -265,6 +265,8 @@ class MainWindow(QMainWindow):
         self.tabwidget.addTab(groups.Widget(), _('Groups'))
         self.tabwidget.addTab(courses.Widget(), _('Courses'))
         self.tabwidget.addTab(teams.Widget(), _('Teams'))
+        self.logging_tab = log.Widget()
+        self.tabwidget.addTab(self.logging_tab, _('Logs'))
         self.tabwidget.currentChanged.connect(self._menu_disable)
 
     def _menu_disable(self, tab_index):
