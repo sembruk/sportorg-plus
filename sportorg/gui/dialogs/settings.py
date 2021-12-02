@@ -36,7 +36,7 @@ class MainTab(Tab):
         self.layout.addRow(_('Auto save') + ' (sec)', self.item_auto_save)
 
         self.item_show_toolbar = QCheckBox(_('Show toolbar'))
-        self.item_show_toolbar.setChecked(Config().configuration.get('show_toolbar'))
+        self.item_show_toolbar.setChecked(Config().configuration.get('show_toolbar', True))
         self.layout.addRow(self.item_show_toolbar)
 
         self.item_open_recent_file = QCheckBox(_('Open recent file'))
