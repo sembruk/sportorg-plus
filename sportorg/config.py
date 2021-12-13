@@ -14,7 +14,7 @@ class Env(BaseSettings):
         env_file = '.env'
 
 NAME = 'SportOrg+'
-VERSION = Version(1, 0, 0, 0, 'v')
+VERSION = Version(1, 1, 0, 0, 'v')
 
 
 def is_executable():
