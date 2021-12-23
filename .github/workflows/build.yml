@@ -2,17 +2,16 @@ name: Build
 
 on:
   push:
-    branshes: [ $default-branch, build ]
-    # Sequence of patterns matched against refs/tags
-    #tags:
-    #- 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+    #branches: [ $default-branch ]
+    tags:
+    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   build:
     runs-on: windows-latest
     strategy:
       matrix:
-        architecture: [x64]
+        architecture: [x86, x64]
     name: Build on Windows ${{ matrix.architecture }}
     steps:
       - name: Checkout code
@@ -37,5 +36,19 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: dist/*.msi
+      - name: Generate Changelog
+        run: |
+          # Get text after ## ... <version> from changelog.md and changelog_ru.md
+          sed -n "/^##.*${{ github.ref_name }}$/,/^##/{/^##/d ; p}" changelog.md | sed -z "s/^\n*//g" - > ${{ github.workspace }}-CHANGELOG.txt
+          printf "\n---\n" >> ${{ github.workspace }}-CHANGELOG.txt
+          sed -n "/^##.*${{ github.ref_name }}$/,/^##/{/^##/d ; p}" changelog_ru.md | sed -z "s/^\n*//g" - >> ${{ github.workspace }}-CHANGELOG.txt
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          body_path: ${{ github.workspace }}-CHANGELOG.txt
+          files: |
+            dist/*.msi
+
 
 # vim: ts=2 sw=2 et

@@ -1,5 +1,9 @@
 # SportOrg+ Changelog
 
+## 2021-12-23 v1.1.1
+
+* Autobuild for Windows
+
 ## 2021-11-29 v1.1.0
 
 * Split-teams action
