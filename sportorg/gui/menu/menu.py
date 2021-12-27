@@ -398,8 +398,13 @@ def menu_list():
             'title': _('Help'),
             'actions': [
                 {
-                    'title': _('About'),
+                    'title': _('Help'),
                     'shortcut': 'F1',
+                    'action': 'HelpAction'
+                },
+
+                {
+                    'title': _('About'),
                     'action': 'AboutAction'
                 },
                 {

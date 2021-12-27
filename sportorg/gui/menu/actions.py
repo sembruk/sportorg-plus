@@ -10,6 +10,7 @@ from PySide2.QtWidgets import QMessageBox, QApplication, QTableView
 from sportorg import config
 from sportorg.common.otime import OTime
 from sportorg.gui.dialogs.about import AboutDialog
+from sportorg.gui.dialogs.help import HelpDialog
 from sportorg.gui.dialogs.cp_delete import CPDeleteDialog
 from sportorg.gui.dialogs.entry_filter import DialogFilter
 from sportorg.gui.dialogs.entry_mass_edit import MassEditDialog
@@ -583,6 +584,11 @@ class TelegramSendAction(Action, metaclass=ActionFactory):
 class AboutAction(Action, metaclass=ActionFactory):
     def execute(self):
         AboutDialog().exec_()
+
+
+class HelpAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        HelpDialog().exec_()
 
 
 class CheckUpdatesAction(Action, metaclass=ActionFactory):
