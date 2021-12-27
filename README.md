@@ -1,40 +1,51 @@
 [![Python 3.8](https://img.shields.io/badge/python-v3.8-blue.svg?logo=pythonlang)](https://www.python.org/downloads/)
-[![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/sportorg/pysport/blob/develop/LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](/LICENSE)
 [![SportOrg+ version](https://img.shields.io/github/v/release/sembruk/sportorg-plus)](https://github.com/sembruk/sportorg-plus/releases/latest)
 
-# SportOrg+
+# SportOrgPlus
 
-Fork of [SportOrg v1.5](https://github.com/sportorg/pysport)
+[English](/README.en.md)
 
-Differences from SportOrg:
-* added rogaining full support (teams)
-* added some columns at tabs
-* fixed some bugs
+Программа для проведения соревнований по спортивному ориентированию, рогейну, приключенческих гонок.
 
-[All changes](https://github.com/sembruk/sportorg-plus/compare/3a69d94...master)
+Ответвление от [SportOrg версии 1.5](https://github.com/sportorg/pysport)
 
-[Changelog](https://github.com/sembruk/sportorg-plus/blob/master/changelog.md)
+Основное отличие — полная поддержка соревнований по рогейну (команды).
 
-### Installation
+[Список изменений](/changelog.ru.md)
+
+## Установка
+
+### Установка на ОС Windows
+
+[Скачать](https://github.com/sembruk/sportorg-plus/releases/latest) и запустить файл установки \*.msi.
+
+### Установка на ОС GNU/Linux
+
+Скачать проект
 
 ```commandline
-pip install -r requirements.txt
+git clone https://github.com/sembruk/sportorg-plus.git
+cd sportorg-plus
 ```
 
-### Running
+Установить зависимости
 
 ```commandline
-python SportOrg.pyw
+pip3 install -r requirements.txt
 ```
 
-### Screenshots
+## Запуск на ОС GNU/Linux
+
+```commandline
+cd sportorg-plus
+./SportOrg.pyw
+```
+
+### Скриншоты
 
 ![Mainwindow sportorg](img/mainwindow.png)
 
 ![Dialogedit sportorg](img/dialogedit.png)
 
-
-### Building with cx_Freeze
-
-`python setup_.py build`
 
