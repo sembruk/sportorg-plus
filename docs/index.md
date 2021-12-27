@@ -1,19 +1,15 @@
-# SportOrg
+# SportOrgPlus
 
-___
+---
 
 Документация по состоянию на 12 мая 2019г.
 
-___
-
-## Загрузить
-
-[Загрузить](https://github.com/sportorg/pysport/releases)
+---
 
 ## Установка
 
-1. Загрузите установщик SportOrg,
-1. Установите программу,
+1. [Загрузите](https://github.com/sembruk/sportorg-plus/releases/latest) файл установки \*.msi для своего типа системы (win32 или win64).
+1. Установите программу.
 1. Запустите программу SportOrg.exe.
 
 ## Проведение соревнований
