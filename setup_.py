@@ -25,7 +25,7 @@ shortcut_table = [
      "DesktopFolder",          # Directory_
      config.NAME,              # Name
      "TARGETDIR",              # Component_
-     "[TARGETDIR]SportOrg.exe", # Target
+     "[TARGETDIR]SportOrgPlus.exe", # Target
      None,                     # Arguments
      None,                     # Description
      None,                     # Hotkey
@@ -38,7 +38,7 @@ shortcut_table = [
     # "StartupFolder",          # Directory_
     # config.NAME,              # Name
     # "TARGETDIR",              # Component_
-    # "[TARGETDIR]SportOrg.exe", # Target
+    # "[TARGETDIR]SportOrgPlus.exe", # Target
     # None,                     # Arguments
     # None,                     # Description
     # None,                     # Hotkey
@@ -62,7 +62,7 @@ options = {
 
 executables = [
     Executable(
-        'SportOrg.pyw',
+        'SportOrgPlus.pyw',
         base=base,
         icon=config.icon_dir('sportorg.ico'),
         copyright='GNU GENERAL PUBLIC LICENSE {}'.format(config.NAME)

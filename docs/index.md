@@ -53,7 +53,7 @@
 
 - [Многодневные соревнования](user-guide/multiday.md)
 - Эстафеты
-- Рогейн
+- [Рогейн](event_management/rogaining.md)
 - [Проверка отметки в различных дисциплинах](user-guide/course.md)
 - [Лабиринт](user-guide/maze.md)
 - Расширенная конфигурация

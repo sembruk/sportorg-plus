@@ -1,4 +1,4 @@
-# SportOrg+ Changelog
+# SportOrgPlus Changelog
 
 ## 2021-12-23 v1.1.1
 

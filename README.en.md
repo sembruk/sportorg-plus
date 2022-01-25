@@ -1,6 +1,6 @@
 [![Python 3.8](https://img.shields.io/badge/python-v3.8-blue.svg?logo=pythonlang)](https://www.python.org/downloads/)
 [![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](/LICENSE)
-[![SportOrg+ version](https://img.shields.io/github/v/release/sembruk/sportorg-plus)](https://github.com/sembruk/sportorg-plus/releases/latest)
+[![SportOrgPlus version](https://img.shields.io/github/v/release/sembruk/sportorg-plus)](https://github.com/sembruk/sportorg-plus/releases/latest)
 
 # SportOrgPlus
 
