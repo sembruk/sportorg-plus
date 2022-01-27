@@ -291,7 +291,7 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         ret.append(person.card_number)
         ret.append(person.comment)
         if self.race.is_team_race():
-            ret.append(person.subgroup)
+            ret.append(person.subgroups_str())
         ret.append(person.result_count)
         ret.append(_('Rented card') if is_rented_card else _('Rented stub'))
         ret.append(str(person.world_code) if person.world_code else '')

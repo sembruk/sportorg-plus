@@ -397,7 +397,7 @@ class Team(Model):
         self.contact = ''
         self.code = ''
         self.group = None  # type: Group
-        self.subgroup = ''  # Rogaining
+        self.subgroups = []   # Rogaining, type: List[Subgroup]
         self.result = TeamResult()
         self.count_person = 0
 
@@ -415,7 +415,6 @@ class Team(Model):
             'number': self.number,
             'name': self.name,
             'group_id': str(self.group.id) if self.group else None,
-            'subgroup': self.subgroup,
             'country': self.country,
             'region': self.region,
             'contact': self.contact,
@@ -430,7 +429,6 @@ class Team(Model):
         self.region = str(data['region']) if 'region' in data else ''
         self.code = str(data['code']) if 'code' in data else ''
         self.contact = str(data['contact']) if 'contact' in data else ''
-        self.subgroup = str(data['subgroup']) if 'subgroup' in data else ''
 
     def clone(self):
         new_team = Team()
@@ -441,6 +439,20 @@ class Team(Model):
         new_team.code = self.code
         new_team.group = self.group
         return new_team
+
+    def update_subgroups(self):
+        persons = race().get_persons_by_team(self)
+        self.subgroups = []
+        if self.group and persons:
+            group = self.group
+            for sg in group.subgroups:
+                sg_ok = True
+                for p in persons:
+                    if p.age < sg.min_age or p.age > sg.max_age:
+                        sg_ok = False
+                        break
+                if sg_ok:
+                    self.subgroups.append(sg.name)
 
 
 class Split(Model):
@@ -1158,11 +1170,13 @@ class Person(Model):
         else:
             self._group = group
 
-    @property
-    def subgroup(self): 
-        if race().is_team_race() and self.team:
-            return self.team.subgroup
-        return ''
+    def subgroups(self): 
+        if self.team:
+            return self.team.subgroups
+        return []
+
+    def subgroups_str(self):
+        return ', '.join(self.subgroups())
 
     def __repr__(self):
         return '{} {} {}'.format(self.full_name, self.bib, self.group)

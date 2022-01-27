@@ -8,11 +8,12 @@ from PySide2.QtWidgets import QFormLayout, QHBoxLayout, QLabel, QLineEdit, QSpin
 from sportorg import config
 from sportorg.gui.global_access import GlobalAccess
 from sportorg.gui.utils.custom_controls import AdvComboBox
-from sportorg.gui.dialogs.organization_edit import TeamEditDialog
+from sportorg.gui.dialogs.team_edit import TeamEditDialog
 from sportorg.language import _
 from sportorg.models.constant import get_names, get_race_groups, get_race_teams
 from sportorg.models.memory import race, Person, Sex, find, Qualification, Limit, Team
 from sportorg.models.result.result_calculation import ResultCalculation
+from sportorg.models.start.start_preparation import update_subgroups
 from sportorg.modules.configs.configs import Config
 from sportorg.modules.teamwork import Teamwork
 from sportorg.utils.time import time_to_qtime, time_to_otime, qdate_to_date
@@ -398,5 +399,7 @@ class PersonEditDialog(QDialog):
             if person.get_year() != self.item_year.value():
                 person.set_year(self.item_year.value())
 
+        if person.team is not None:
+            person.team.update_subgroups()
         ResultCalculation(race()).process_results()
         Teamwork().send(person.to_dict())

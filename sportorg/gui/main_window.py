@@ -12,7 +12,7 @@ from sportorg.common.singleton import singleton
 from sportorg.gui.dialogs.course_edit import CourseEditDialog
 from sportorg.gui.dialogs.person_edit import PersonEditDialog
 from sportorg.gui.dialogs.group_edit import GroupEditDialog
-from sportorg.gui.dialogs.organization_edit import TeamEditDialog
+from sportorg.gui.dialogs.team_edit import TeamEditDialog
 from sportorg.models.constant import RentCards
 from sportorg.models.memory import Race, race, NotEmptyException, new_event, set_current_race_index
 from sportorg.models.result.result_calculation import ResultCalculation

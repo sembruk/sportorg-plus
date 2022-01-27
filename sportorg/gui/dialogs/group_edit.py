@@ -13,6 +13,7 @@ from sportorg.language import _
 from sportorg.models.constant import get_race_courses
 from sportorg.models.memory import race, Group, Subgroup, find, Sex, Limit, RaceType
 from sportorg.models.result.result_calculation import ResultCalculation
+from sportorg.models.start.start_preparation import update_subgroups
 from sportorg.modules.teamwork import Teamwork
 from sportorg.utils.time import time_to_qtime, time_to_otime
 
@@ -298,10 +299,11 @@ class GroupEditDialog(QDialog):
             if i is None or len(i.split()) != 3:
                 continue
             sg.name = i.split()[0]
-            sg.min_age = i.split()[1]
-            sg.max_age = i.split()[2]
+            sg.min_age = int(i.split()[1])
+            sg.max_age = int(i.split()[2])
             group.subgroups.append(sg)
 
 
         ResultCalculation(race()).set_rank(group)
+        update_subgroups(group)
         Teamwork().send(group.to_dict())

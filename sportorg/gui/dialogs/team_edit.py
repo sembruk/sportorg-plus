@@ -9,6 +9,7 @@ from sportorg.gui.utils.custom_controls import AdvComboBox
 from sportorg.language import _
 from sportorg.models.constant import get_countries, get_regions, get_race_groups
 from sportorg.models.memory import race, Team, find, Limit
+from sportorg.models.start.start_preparation import update_subgroups
 from sportorg.modules.teamwork import Teamwork
 
 
@@ -91,16 +92,16 @@ class TeamEditDialog(QDialog):
         name = self.item_name.text()
         self.button_ok.setDisabled(False)
         if name and name != self.current_object.name:
-            org = find(race().teams, name=name)
-            if org:
+            team = find(race().teams, name=name)
+            if team:
                 self.button_ok.setDisabled(True)
 
     def check_number(self):
         number = self.item_number.value()
         self.button_ok.setDisabled(False)
         if number and number != self.current_object.number:
-            org = find(race().teams, number=number)
-            if org:
+            team = find(race().teams, number=number)
+            if team:
                 self.button_ok.setDisabled(True)
 
     def set_values_from_model(self):
@@ -118,19 +119,21 @@ class TeamEditDialog(QDialog):
         self.item_contact.setText(self.current_object.contact)
 
     def apply_changes_impl(self):
-        org = self.current_object
+        team = self.current_object
         if self.is_new:
-            race().teams.insert(0, org)
+            race().teams.insert(0, team)
 
-        org.number = self.item_number.value()
-        org.name = self.item_name.text()
-        if (org.group and org.group.name != self.item_group.currentText()) or\
-                (org.group is None and len(self.item_group.currentText()) > 0):
-            org.group = find(race().groups, name=self.item_group.currentText())
+        team.number = self.item_number.value()
+        team.name = self.item_name.text()
+        if (team.group and org.group.name != self.item_group.currentText()) or\
+                (team.group is None and len(self.item_group.currentText()) > 0):
+            team.group = find(race().groups, name=self.item_group.currentText())
 
-        org.code = self.item_code.text()
-        org.country = self.item_country.currentText()
-        org.region = self.item_region.currentText()
-        org.contact = self.item_contact.text()
+        team.code = self.item_code.text()
+        team.country = self.item_country.currentText()
+        team.region = self.item_region.currentText()
+        team.contact = self.item_contact.text()
 
-        Teamwork().send(org.to_dict())
+        team.update_subgroups()
+
+        Teamwork().send(team.to_dict())

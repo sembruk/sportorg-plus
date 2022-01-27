@@ -3,7 +3,7 @@ import logging
 from PySide2 import QtCore, QtWidgets
 from PySide2.QtWidgets import QAbstractItemView, QHeaderView
 
-from sportorg.gui.dialogs.organization_edit import TeamEditDialog
+from sportorg.gui.dialogs.team_edit import TeamEditDialog
 from sportorg.gui.global_access import GlobalAccess
 from sportorg.gui.tabs.memory_model import TeamMemoryModel
 from sportorg.gui.tabs.table import TableView

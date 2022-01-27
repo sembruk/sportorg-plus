@@ -6,7 +6,7 @@ from copy import copy
 
 from sportorg.common.otime import OTime
 
-from sportorg.models.memory import race, Group, Person, Result, ResultStatus
+from sportorg.models.memory import race, Group, Person, Result, ResultStatus, find
 from sportorg.models.result.result_calculation import ResultCalculation
 
 
@@ -519,21 +519,13 @@ def split_teams():
             known_teams.add(team)
 
 
-def update_subgroups():
+def update_subgroups(group=None):
     obj = race()
+    teams = obj.teams
+    if group is not None:
+        teams = find(obj.teams, group=group, return_all=True)
     for team in obj.teams:
-        persons = obj.get_persons_by_team(team)
-        if team.group and persons:
-            group = team.group
-            for sg in reversed(group.subgroups):
-                sg_ok = True
-                for p in persons:
-                    if p.age < sg.min_age:
-                        sg_ok = False
-                        break
-                if sg_ok:
-                    team.subgroup = sg.name
-                    break
+        team.update_subgroups()
 
 
 def clone_relay_legs(min_bib, max_bib, increment):
