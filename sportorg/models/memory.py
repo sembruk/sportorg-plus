@@ -420,6 +420,7 @@ class Team(Model):
             'contact': self.contact,
             'code': self.code,
             'count_person': self.count_person,  # readonly
+            'subgroups': self.subgroups
         }
 
     def update_data(self, data):
@@ -1227,6 +1228,7 @@ class Person(Model):
             'bib': self.bib,
             'birth_date': str(self.birth_date) if self.birth_date else None,
             'year': self.get_year() if self.get_year() else 0,  # back compatibility with 1.0
+            'age': self.age,
             'group_id': str(self.group.id) if self.group else None,
             'team_id': str(self.team.id) if self.team else None,
             'world_code': self.world_code,
