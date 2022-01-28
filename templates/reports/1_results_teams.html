@@ -34,7 +34,7 @@
         var r = {
             index: 0,
             name: (person.name + ' ' + person.surname).slice(0, MAX_PERSON_NAME),
-            team: (person.team && String(person.team.number) + ' ' + String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
+            team: (person.team && String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
             team_number: person.team && person.team.number || 0,
             team_id: person.team_id || '',
             qual: Qualification[person.qual],
@@ -55,10 +55,21 @@
             scores_without_penalty: result.scores + result.penalty_points,
             place_show: person.is_out_of_competition ? 'в/к' : result.place === 0 ? '' : result.place === -1 ? '' : result.place,
             is_out_of_competition: person.is_out_of_competition,
-            speed: result.speed,
-            subgroup: result.person.team ? result.person.team.subgroups.toString() : '',
+            subgroup: '',
             data: result
         };
+        if (result.person.team) {
+            var sgr = []
+            result.person.team.subgroup_result.forEach(function (elem) {
+                if (elem.place < 4) {
+                    elem.place = '<b>' + elem.place + '</b>';
+                }
+                sgr.push(elem.name + ':' + elem.place);
+            });
+            subgroup_str = sgr.join(" ");
+            r.subgroup = document.createElement('div');
+            r.subgroup.innerHTML = subgroup_str;
+        }
         r.name += ' ' + r.sex + r.age;
         var a = document.createElement('a');
         a.href = 'team' + r.team_number + '.html';
@@ -67,7 +78,6 @@
         if (result.status !== 1) {
             r.diff = '';
             r.place_show = '';
-            r.speed = '';
             r.scores = '';
             r.penalty_time = '';
             r.penalty_points = '';
@@ -249,14 +259,14 @@
             {key: 'team', title: 'Команда', size: 20},
             {key: 'name', title: 'Участники', size: 30},
             {key: 'qual', title: 'Разряд', size: 7},
-            {key: 'bib', title: 'Номер', size: 6},
+            {key: 'team_number', title: 'Номер', size: 6, active: false},
             {key: 'time', title: 'Время', size: 6},
             {key: 'scores_without_penalty', title: 'Очки', size: 5, active: false},
             {key: 'penalty_points', title: 'Штраф', size: 9, active: false},
             {key: 'penalty_time', title: 'Штраф', size: 9, active: false},
             {key: 'result', title: 'Результат', size: 16},
+            {key: 'scores', title: 'Результат', size: 5, active: false},
             {key: 'diff', title: 'Отставание', size: 11},
-            {key: 'speed', title: 'Темп', size: 12, active: false},
             {key: 'subgroup', title: 'П/группа', size: 8},
         ],
         active: function (key, val) {
@@ -298,9 +308,10 @@
                 var isRogaining = race.settings.result_processing_mode === 'scores'
                 this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
 
-                this.getField('scores_without_penalty').active = 
+                this.getField('scores_without_penalty').active = isRogaining
+                this.getField('scores').active = isRogaining
                 this.getField('penalty_points').active = isRogaining
-                this.getField('bib').active = !isTeamRace
+                this.getField('result').active = !isRogaining
                 this.getField('diff').active = !isRogaining
                 this.getField('qual').active = !isTeamRace
             } catch (e){}
@@ -444,9 +455,9 @@
         //},
         {
             title: 'Номер',
-            value: Fields.isActive('bib'),
+            value: Fields.isActive('team_number'),
             change: function (checked) {
-                Fields.active('bib', checked);
+                Fields.active('team_number', checked);
                 render()
             }
         },
@@ -468,14 +479,6 @@
             }
         },
         {% endif %}{% raw %}
-        {
-            title: 'Темп',
-            value: Fields.isActive('speed'),
-            change: function (checked) {
-                Fields.active('speed', checked);
-                render()
-            }
-        },
         {
             title: 'Показать первые: ',
             value: [

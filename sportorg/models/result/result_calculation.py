@@ -109,6 +109,7 @@ class ResultCalculation(object):
     def process_team_results(self, group):
         if group and isinstance(group, Group):
             teams_results = {}
+            subgroup_teams = {}
             for res in self.race.results:
                 person = res.person
                 if person:
@@ -121,12 +122,26 @@ class ResultCalculation(object):
                     if person.group is group:
                         person.team.result.add_result(res)
                         teams_results[person.team.id] = person.team.result
+                        for sgr in person.team.subgroup_result:
+                            if not sgr.name in subgroup_teams:
+                                subgroup_teams[sgr.name] = {}
+                            if not sgr in subgroup_teams[sgr.name]:
+                                subgroup_teams[sgr.name][sgr] = person.team.result
+
 
             res_sorted = sorted(teams_results.values())
             place = 1
             for res in res_sorted:
                 res.set_place(place)
                 place += 1
+
+            for sgr_results in subgroup_teams.values():
+                lst_sorted = sorted(sgr_results.items(), key=lambda item: item[1])
+                place = 1
+                for r in lst_sorted:
+                    sgr = r[0]
+                    sgr.place = place
+                    place += 1
 
     def set_rank(self, group):
         ranking = group.ranking

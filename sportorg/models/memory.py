@@ -397,7 +397,7 @@ class Team(Model):
         self.contact = ''
         self.code = ''
         self.group = None  # type: Group
-        self.subgroups = []   # Rogaining, type: List[Subgroup]
+        self.subgroup_result = []   # Rogaining, type: List[SubgroupResult]
         self.result = TeamResult()
         self.count_person = 0
 
@@ -420,7 +420,7 @@ class Team(Model):
             'contact': self.contact,
             'code': self.code,
             'count_person': self.count_person,  # readonly
-            'subgroups': self.subgroups
+            'subgroup_result': [sgr.to_dict() for sgr in self.subgroup_result],
         }
 
     def update_data(self, data):
@@ -443,7 +443,7 @@ class Team(Model):
 
     def update_subgroups(self):
         persons = race().get_persons_by_team(self)
-        self.subgroups = []
+        self.subgroup_result = []
         if self.group and persons:
             group = self.group
             for sg in group.subgroups:
@@ -453,7 +453,7 @@ class Team(Model):
                         sg_ok = False
                         break
                 if sg_ok:
-                    self.subgroups.append(sg.name)
+                    self.subgroup_result.append(SubgroupResult(sg.name))
 
 
 class Split(Model):
@@ -1173,7 +1173,7 @@ class Person(Model):
 
     def subgroups(self): 
         if self.team:
-            return self.team.subgroups
+            return [sgr.name for sgr in self.team.subgroup_result]
         return []
 
     def subgroups_str(self):
@@ -2216,6 +2216,17 @@ def race(i=None):
     else:
         return Race()
 
+class SubgroupResult(object):
+    def __init__(self, name, place=0):
+        self.name = name
+        self.place = place
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'place': self.place,
+        }
+    
 
 class TeamResult(object):
     def __init__(self):
