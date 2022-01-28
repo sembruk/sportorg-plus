@@ -40,7 +40,6 @@
             qual: Qualification[person.qual],
             bib: person.bib,
             group: person.group.name,
-            year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
             age: person.age ? person.age : '',
             sex: person.sex > 0 ? (person.sex == 1 ? 'М' : 'Ж') : '',
             penalty_time: result.penalty_time > 0 ? toHHMMSS(result.penalty_time) : '',
@@ -76,14 +75,15 @@
         return r
     }
 
-    function getResultsByGroup(group, count) {
-        count = +count || 0;
+    function getResultsByGroup(group, showFirstCount) {
+        showFirstCount = +showFirstCount || 0;
         var isTeamRace = group.__type ? group.__type === 6 : race.data.race_type === 6;
         var results = [];
         for (var _i = 0, _a = race.results; _i < _a.length; _i++) {
             var result = _a[_i];
             var person = result.person
-            if (result.status !== 13 && person && person.group && person.group.id === group.id && (count ? result.place <= count && result.place > 0 : 1)) {
+            if (result.status !== 13 && person && person.group && person.group.id === group.id
+                    && (showFirstCount > 0 ? result.place <= showFirstCount && result.place > 0 : true)) {
                 var r = getPersonResult(result)
 
                 results.push(r);
@@ -134,6 +134,9 @@
                     teamResult.name += '\n' + r.name;
                 }
             }
+            if (teamResult) {
+                results.push(teamResult);
+            }
         } else {
             results.forEach(function (elem) {
                 index++;
@@ -142,14 +145,14 @@
         }
         return results;
     }
-	function getResultsByCourse(group, count) {
-		//count = +count || 0;
+	function getResultsByCourse(group, showFirstCount) {
+		//showFirstCount = +showFirstCount || 0;
         //var isTeamRace = group.__type ? group.__type === 6 : race.data.race_type === 6;
         //var results = [];
         //for (var _i = 0, _a = race.results; _i < _a.length; _i++) {
         //    var result = _a[_i];
         //    var person = result.person
-        //    if (result.status !== 13 && person && person.group && person.group.course && person.group.course.id === group.id) { //} && (count ? result.place <= count && result.place > 0 : 1)) {
+        //    if (result.status !== 13 && person && person.group && person.group.course && person.group.course.id === group.id) { //} && (showFirstCount ? result.place <= showFirstCount && result.place > 0 : 1)) {
         //        var r = getPersonResult(result)
 
         //        results.push(r);
@@ -240,7 +243,8 @@
 
     var Fields = {
         fields: [
-            {key: 'index', title: '№', size: 4},
+            /*{key: 'index', title: '№', size: 4},*/
+            {key: 'place_show', title: 'Место', size: 6},
             {key: 'group', title: 'Группа', size: 10, active: false},
             {key: 'team', title: 'Команда', size: 20},
             {key: 'name', title: 'Участники', size: 30},
@@ -253,7 +257,6 @@
             {key: 'result', title: 'Результат', size: 16},
             {key: 'diff', title: 'Отставание', size: 11},
             {key: 'speed', title: 'Темп', size: 12, active: false},
-            {key: 'place_show', title: 'Место', size: 6},
             {key: 'subgroup', title: 'П/группа', size: 8},
         ],
         active: function (key, val) {
@@ -326,11 +329,11 @@
         for (var _i = 0; _i < _a.length; _i++) {
             if (store.showProtocolByCourse){
                 var course = _a[_i];
-                var rows = getResultsByCourse(course, store.count);
+                var rows = getResultsByCourse(course, store.showFirstCount);
                 var groupName = course.name;
             } else {
                 var group = _a[_i];
-                var rows = getResultsByGroup(group, store.count);
+                var rows = getResultsByGroup(group, store.showFirstCount);
                 var course = group.course;
                 var groupName = group.name;
             }
@@ -352,7 +355,7 @@
                 resultBlock.appendChild(getGroupsBlockElement(race));
             }
             var fields = Fields.getCopyFields();
-            resultBlock.appendChild(new TableGenerator(rows, fields).getTable({className: 'sportorg-table'}));
+            resultBlock.appendChild(new TableGenerator(rows, fields).getTable({className: 'blue-table'}));
             if (store.newPage && _i < _a.length - 1) {
                 var newPage = document.createElement('div');
                 newPage.className = 'new-page';
@@ -485,7 +488,7 @@
                 {text: '10', value: 10}
             ],
             change: function (arr) {
-                store.count = arr[0];
+                store.showFirstCount = arr[0];
                 render();
             }
         },
