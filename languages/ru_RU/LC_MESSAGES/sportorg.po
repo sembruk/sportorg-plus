@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SportOrg\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-23 22:34+0300\n"
-"PO-Revision-Date: 2021-11-23 22:42+0300\n"
+"POT-Creation-Date: 2022-01-31 19:49+0300\n"
+"PO-Revision-Date: 2022-01-31 19:53+0300\n"
 "Last-Translator: SportOrg\n"
 "Language-Team: SportOrg\n"
 "Language: ru_RU\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Poedit-Basepath: ../../../sportorg\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: gui/dialogs/about.py:20 gui/menu/menu.py:401
+#: gui/dialogs/about.py:20 gui/menu/menu.py:411
 msgid "About"
 msgstr "О нас"
 
@@ -36,17 +36,16 @@ msgstr "Номер или Имя"
 
 #: gui/dialogs/bib_dialog.py:56 gui/dialogs/course_edit.py:77
 #: gui/dialogs/entry_filter.py:100 gui/dialogs/entry_mass_edit.py:172
-#: gui/dialogs/event_properties.py:94 gui/dialogs/group_edit.py:138
+#: gui/dialogs/event_properties.py:94 gui/dialogs/group_edit.py:145
 #: gui/dialogs/group_ranking.py:52 gui/dialogs/live_dialog.py:70
-#: gui/dialogs/not_start_dialog.py:54 gui/dialogs/organization_edit.py:81
-#: gui/dialogs/person_edit.py:164 gui/dialogs/print_properties.py:101
-#: gui/dialogs/relay_clone_dialog.py:49 gui/dialogs/relay_number_dialog.py:49
-#: gui/dialogs/rent_cards_dialog.py:46 gui/dialogs/report_dialog.py:93
-#: gui/dialogs/result_edit.py:147 gui/dialogs/scores_dialog.py:60
-#: gui/dialogs/search_dialog.py:69 gui/dialogs/settings.py:218
-#: gui/dialogs/sportorg_import_dialog.py:68
+#: gui/dialogs/not_start_dialog.py:54 gui/dialogs/person_edit.py:166
+#: gui/dialogs/print_properties.py:101 gui/dialogs/relay_clone_dialog.py:49
+#: gui/dialogs/relay_number_dialog.py:49 gui/dialogs/rent_cards_dialog.py:46
+#: gui/dialogs/report_dialog.py:93 gui/dialogs/result_edit.py:147
+#: gui/dialogs/scores_dialog.py:60 gui/dialogs/search_dialog.py:69
+#: gui/dialogs/settings.py:234 gui/dialogs/sportorg_import_dialog.py:68
 #: gui/dialogs/start_handicap_dialog.py:78
-#: gui/dialogs/start_time_change_dialog.py:52
+#: gui/dialogs/start_time_change_dialog.py:52 gui/dialogs/team_edit.py:82
 #: gui/dialogs/teamwork_properties.py:67 gui/dialogs/telegram_dialog.py:70
 #: gui/dialogs/text_io.py:100 gui/dialogs/timekeeping_properties.py:248
 msgid "OK"
@@ -55,16 +54,16 @@ msgstr "ОК"
 #: gui/dialogs/bib_dialog.py:59 gui/dialogs/course_edit.py:80
 #: gui/dialogs/cp_delete.py:66 gui/dialogs/entry_filter.py:101
 #: gui/dialogs/entry_mass_edit.py:173 gui/dialogs/event_properties.py:97
-#: gui/dialogs/group_edit.py:141 gui/dialogs/group_ranking.py:55
+#: gui/dialogs/group_edit.py:148 gui/dialogs/group_ranking.py:55
 #: gui/dialogs/live_dialog.py:73 gui/dialogs/not_start_dialog.py:57
-#: gui/dialogs/organization_edit.py:84 gui/dialogs/person_edit.py:167
-#: gui/dialogs/print_properties.py:104 gui/dialogs/relay_clone_dialog.py:52
-#: gui/dialogs/relay_number_dialog.py:52 gui/dialogs/rent_cards_dialog.py:49
-#: gui/dialogs/report_dialog.py:96 gui/dialogs/result_edit.py:150
-#: gui/dialogs/scores_dialog.py:63 gui/dialogs/search_dialog.py:70
-#: gui/dialogs/settings.py:221 gui/dialogs/sportorg_import_dialog.py:71
+#: gui/dialogs/person_edit.py:169 gui/dialogs/print_properties.py:104
+#: gui/dialogs/relay_clone_dialog.py:52 gui/dialogs/relay_number_dialog.py:52
+#: gui/dialogs/rent_cards_dialog.py:49 gui/dialogs/report_dialog.py:96
+#: gui/dialogs/result_edit.py:150 gui/dialogs/scores_dialog.py:63
+#: gui/dialogs/search_dialog.py:70 gui/dialogs/settings.py:237
+#: gui/dialogs/sportorg_import_dialog.py:71
 #: gui/dialogs/start_handicap_dialog.py:81
-#: gui/dialogs/start_time_change_dialog.py:55
+#: gui/dialogs/start_time_change_dialog.py:55 gui/dialogs/team_edit.py:85
 #: gui/dialogs/teamwork_properties.py:70 gui/dialogs/telegram_dialog.py:73
 #: gui/dialogs/text_io.py:103 gui/dialogs/timekeeping_properties.py:251
 #: gui/utils/custom_controls.py:64
@@ -72,13 +71,13 @@ msgid "Cancel"
 msgstr "Отмена"
 
 #: gui/dialogs/bib_dialog.py:81 gui/dialogs/entry_filter.py:97
-#: gui/dialogs/entry_mass_edit.py:163 gui/dialogs/organization_edit.py:46
-#: gui/dialogs/person_edit.py:91 gui/dialogs/person_edit.py:223
-#: gui/dialogs/person_edit.py:250 gui/dialogs/result_edit.py:170
+#: gui/dialogs/entry_mass_edit.py:163 gui/dialogs/person_edit.py:93
+#: gui/dialogs/person_edit.py:232 gui/dialogs/person_edit.py:259
+#: gui/dialogs/result_edit.py:170 gui/dialogs/team_edit.py:47
 #: gui/dialogs/text_io.py:14 gui/dialogs/text_io.py:291
-#: gui/dialogs/text_io.py:341 gui/tabs/memory_model.py:223
-#: gui/tabs/memory_model.py:316 gui/tabs/memory_model.py:319
-#: gui/tabs/memory_model.py:525 modules/printing/printout_split.py:81
+#: gui/dialogs/text_io.py:341 gui/tabs/memory_model.py:224
+#: gui/tabs/memory_model.py:322 gui/tabs/memory_model.py:325
+#: gui/tabs/memory_model.py:531 modules/printing/printout_split.py:81
 msgid "Group"
 msgstr "Группа"
 
@@ -95,10 +94,10 @@ msgstr "не найдено"
 msgid "Course properties"
 msgstr "Свойства дистанции"
 
-#: gui/dialogs/course_edit.py:36 gui/dialogs/group_edit.py:40
-#: gui/dialogs/organization_edit.py:34 gui/dialogs/sportorg_import_dialog.py:40
-#: gui/tabs/memory_model.py:426 gui/tabs/memory_model.py:485
-#: gui/tabs/memory_model.py:525 gui/tabs/results.py:127
+#: gui/dialogs/course_edit.py:36 gui/dialogs/group_edit.py:44
+#: gui/dialogs/sportorg_import_dialog.py:40 gui/dialogs/team_edit.py:35
+#: gui/tabs/memory_model.py:432 gui/tabs/memory_model.py:491
+#: gui/tabs/memory_model.py:531 gui/tabs/results.py:127
 msgid "Name"
 msgstr "Название"
 
@@ -114,11 +113,11 @@ msgstr "Набор высоты"
 msgid "Point count"
 msgstr "Количество КП"
 
-#: gui/dialogs/course_edit.py:60 gui/tabs/memory_model.py:485
+#: gui/dialogs/course_edit.py:60 gui/tabs/memory_model.py:491
 msgid "Controls"
 msgstr "Контрольные пункты"
 
-#: gui/dialogs/cp_delete.py:25 gui/menu/menu.py:300
+#: gui/dialogs/cp_delete.py:25 gui/menu/menu.py:304
 msgid "Delete CP"
 msgstr "Удалить КП"
 
@@ -127,11 +126,11 @@ msgid "Number CP"
 msgstr "Номер КП"
 
 #: gui/dialogs/cp_delete.py:37 gui/dialogs/cp_delete.py:90
-#: gui/main_window.py:267 gui/menu/menu.py:183
+#: gui/main_window.py:278 gui/menu/menu.py:183
 msgid "Courses"
 msgstr "Дистанции"
 
-#: gui/dialogs/cp_delete.py:42 gui/main_window.py:265 gui/menu/menu.py:173
+#: gui/dialogs/cp_delete.py:42 gui/main_window.py:276 gui/menu/menu.py:173
 msgid "Race Results"
 msgstr "Результаты"
 
@@ -139,7 +138,7 @@ msgstr "Результаты"
 msgid "Ok"
 msgstr "Оk"
 
-#: gui/dialogs/cp_delete.py:104 gui/menu/menu.py:256
+#: gui/dialogs/cp_delete.py:104 gui/menu/menu.py:260
 msgid "Results"
 msgstr "Результаты"
 
@@ -148,10 +147,10 @@ msgid "Filter Dialog"
 msgstr "Фильтрация"
 
 #: gui/dialogs/entry_filter.py:98 gui/dialogs/entry_mass_edit.py:164
-#: gui/dialogs/person_edit.py:96 gui/dialogs/text_io.py:14
+#: gui/dialogs/person_edit.py:98 gui/dialogs/text_io.py:14
 #: gui/dialogs/text_io.py:294 gui/dialogs/text_io.py:345
-#: gui/tabs/memory_model.py:223 gui/tabs/memory_model.py:316
-#: gui/tabs/memory_model.py:319 modules/printing/printout_split.py:83
+#: gui/tabs/memory_model.py:224 gui/tabs/memory_model.py:322
+#: gui/tabs/memory_model.py:325 modules/printing/printout_split.py:83
 msgid "Team"
 msgstr "Команда"
 
@@ -172,31 +171,31 @@ msgstr "Нет"
 msgid "Mass Edit Dialog"
 msgstr "Диалог массового редактирования"
 
-#: gui/dialogs/entry_mass_edit.py:165 gui/dialogs/person_edit.py:123
-#: gui/tabs/memory_model.py:229
+#: gui/dialogs/entry_mass_edit.py:165 gui/dialogs/person_edit.py:125
+#: gui/tabs/memory_model.py:231
 msgid "Start group"
 msgstr "Забег"
 
-#: gui/dialogs/entry_mass_edit.py:166 gui/dialogs/person_edit.py:147
+#: gui/dialogs/entry_mass_edit.py:166 gui/dialogs/person_edit.py:149
 #: gui/dialogs/result_edit.py:124 gui/dialogs/text_io.py:14
 #: gui/dialogs/text_io.py:301 gui/dialogs/text_io.py:357
-#: gui/tabs/memory_model.py:225
+#: gui/tabs/memory_model.py:226
 msgid "Comment"
 msgstr "Комментарий"
 
-#: gui/dialogs/entry_mass_edit.py:167 gui/dialogs/person_edit.py:140
+#: gui/dialogs/entry_mass_edit.py:167 gui/dialogs/person_edit.py:142
 msgid "rented card"
 msgstr "аренда чипа"
 
-#: gui/dialogs/entry_mass_edit.py:168 gui/dialogs/person_edit.py:141
+#: gui/dialogs/entry_mass_edit.py:168 gui/dialogs/person_edit.py:143
 msgid "is paid"
 msgstr "оплачено"
 
-#: gui/dialogs/entry_mass_edit.py:169 gui/dialogs/person_edit.py:142
+#: gui/dialogs/entry_mass_edit.py:169 gui/dialogs/person_edit.py:144
 msgid "out of competition"
 msgstr "в/к"
 
-#: gui/dialogs/entry_mass_edit.py:170 gui/dialogs/person_edit.py:143
+#: gui/dialogs/entry_mass_edit.py:170 gui/dialogs/person_edit.py:145
 msgid "personal participation"
 msgstr "лично"
 
@@ -242,87 +241,109 @@ msgstr "Главный секретарь"
 
 #: gui/dialogs/event_properties.py:78 gui/dialogs/live_dialog.py:37
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
-#: gui/dialogs/group_edit.py:33
+#: gui/dialogs/group_edit.py:35
 msgid "Group properties"
 msgstr "Свойства группы"
 
-#: gui/dialogs/group_edit.py:45 gui/tabs/memory_model.py:426
+#: gui/dialogs/group_edit.py:47 gui/tabs/memory_model.py:432
 msgid "Full name"
 msgstr "Полное наименование"
 
-#: gui/dialogs/group_edit.py:49 gui/tabs/results.py:126
+#: gui/dialogs/group_edit.py:51 gui/tabs/results.py:126
 msgid "Course"
 msgstr "Дистанция"
 
-#: gui/dialogs/group_edit.py:54
+#: gui/dialogs/group_edit.py:55
 msgid "Is any course"
 msgstr "Любая дистанция"
 
-#: gui/dialogs/group_edit.py:59 gui/dialogs/person_edit.py:73
-#: gui/tabs/memory_model.py:223 gui/tabs/memory_model.py:427
+#: gui/dialogs/group_edit.py:59 gui/dialogs/person_edit.py:74
+#: gui/tabs/memory_model.py:223 gui/tabs/memory_model.py:433
 msgid "Sex"
 msgstr "Пол"
 
-#: gui/dialogs/group_edit.py:64 gui/tabs/memory_model.py:428
+#: gui/dialogs/group_edit.py:73 gui/tabs/memory_model.py:434
 msgid "Min age"
 msgstr "Минимальный возраст"
 
-#: gui/dialogs/group_edit.py:67 gui/tabs/memory_model.py:429
+#: gui/dialogs/group_edit.py:74 gui/tabs/memory_model.py:435
 msgid "Max age"
 msgstr "Максимальный возраст"
 
-#: gui/dialogs/group_edit.py:70
+#: gui/dialogs/group_edit.py:76
 msgid "Min year"
 msgstr "Минимальный год"
 
-#: gui/dialogs/group_edit.py:75
+#: gui/dialogs/group_edit.py:77
 msgid "Max year"
 msgstr "Максимальный год"
 
-#: gui/dialogs/group_edit.py:87 gui/dialogs/person_edit.py:118
+#: gui/dialogs/group_edit.py:79 gui/dialogs/person_edit.py:120
 #: gui/dialogs/start_handicap_dialog.py:31 gui/dialogs/start_preparation.py:198
-#: gui/dialogs/timekeeping_properties.py:52 gui/tabs/memory_model.py:430
+#: gui/dialogs/timekeeping_properties.py:52 gui/tabs/memory_model.py:436
 msgid "Start time"
 msgstr "Время старта"
 
-#: gui/dialogs/group_edit.py:88
+#: gui/dialogs/group_edit.py:80
 msgid "Start time for mass start (rogaining)"
 msgstr "Время старта для масс старта (рогейн)"
 
-#: gui/dialogs/group_edit.py:93 gui/tabs/memory_model.py:430
+#: gui/dialogs/group_edit.py:87 gui/tabs/memory_model.py:436
 msgid "Max time"
 msgstr "Контрольное время"
 
-#: gui/dialogs/group_edit.py:98
+#: gui/dialogs/group_edit.py:90
 msgid "Start corridor"
 msgstr "Стартовый коридор"
 
-#: gui/dialogs/group_edit.py:102
+#: gui/dialogs/group_edit.py:93
 msgid "Order in corridor"
 msgstr "Порядок в коридоре"
 
-#: gui/dialogs/group_edit.py:106 gui/dialogs/start_handicap_dialog.py:46
+#: gui/dialogs/group_edit.py:97 gui/dialogs/start_handicap_dialog.py:46
 msgid "Start interval"
 msgstr "Стартовый интервал"
 
-#: gui/dialogs/group_edit.py:111
+#: gui/dialogs/group_edit.py:102
 msgid "Start fee"
 msgstr "Стартовый взнос"
 
-#: gui/dialogs/group_edit.py:117 gui/tabs/memory_model.py:318
-#: gui/tabs/memory_model.py:321 gui/tabs/memory_model.py:426
+#: gui/dialogs/group_edit.py:106 gui/tabs/memory_model.py:324
+#: gui/tabs/memory_model.py:327 gui/tabs/memory_model.py:432
 msgid "Type"
 msgstr "Тип"
 
-#: gui/dialogs/group_edit.py:122 gui/dialogs/group_ranking.py:26
+#: gui/dialogs/group_edit.py:108 gui/dialogs/group_ranking.py:26
 msgid "Rank calculation"
 msgstr "Выполнение разрядов"
 
-#: gui/dialogs/group_edit.py:123
+#: gui/dialogs/group_edit.py:109
 msgid "Configuration"
 msgstr "Настройка"
+
+#: gui/dialogs/group_edit.py:118 gui/tabs/memory_model.py:233
+msgid "Subgroup"
+msgstr "Подгруппа"
+
+#: gui/dialogs/group_edit.py:118
+msgid "Min"
+msgstr "Мин."
+
+#: gui/dialogs/group_edit.py:118
+msgid "Max"
+msgstr "Макс."
+
+#: gui/dialogs/group_edit.py:121 gui/dialogs/sportorg_import_dialog.py:48
+#: gui/dialogs/start_time_change_dialog.py:29
+msgid "Add"
+msgstr "Добавить"
+
+#: gui/dialogs/group_edit.py:123 gui/dialogs/settings.py:173
+#: gui/menu/menu.py:112
+msgid "Delete"
+msgstr "Удалить"
 
 #: gui/dialogs/group_ranking.py:69 gui/dialogs/group_ranking.py:80
 #: gui/dialogs/group_ranking.py:109
@@ -339,7 +360,19 @@ msgstr "Макс. место"
 msgid "Result time"
 msgstr "Результат"
 
-#: gui/dialogs/live_dialog.py:30 gui/menu/menu.py:383
+#: gui/dialogs/help.py:17 gui/menu/menu.py:402 gui/menu/menu.py:405
+msgid "Help"
+msgstr "Помощь"
+
+#: gui/dialogs/help.py:36
+msgid "Back"
+msgstr "Назад"
+
+#: gui/dialogs/help.py:39
+msgid "Close"
+msgstr "Закрыть"
+
+#: gui/dialogs/live_dialog.py:30 gui/menu/menu.py:387
 msgid "Live"
 msgstr "Онлайн"
 
@@ -347,7 +380,7 @@ msgstr "Онлайн"
 msgid "Token"
 msgstr "Токен"
 
-#: gui/dialogs/live_dialog.py:49 gui/dialogs/settings.py:67
+#: gui/dialogs/live_dialog.py:49 gui/dialogs/settings.py:83
 #: gui/dialogs/telegram_dialog.py:43
 msgid "Enabled"
 msgstr "Включить"
@@ -378,7 +411,7 @@ msgstr "Исходный номер"
 
 #: gui/dialogs/number_change.py:61
 msgid "Ivan Churakoff M21 11:09:00"
-msgstr ""
+msgstr "Иван Чураков M21 11:09:00"
 
 #: gui/dialogs/number_change.py:62
 msgid "Target number"
@@ -386,7 +419,7 @@ msgstr "Присваиваемый номер"
 
 #: gui/dialogs/number_change.py:63
 msgid "Reserve M60 11:40:00"
-msgstr ""
+msgstr "Резерв M60 11:40:00"
 
 #: gui/dialogs/number_change.py:64
 msgid "Remove source"
@@ -396,91 +429,71 @@ msgstr "Удалять исходный номер"
 msgid "Replace source with reserve"
 msgstr "Создать резервного участника для исходного номера"
 
-#: gui/dialogs/organization_edit.py:27 gui/dialogs/person_edit.py:171
-msgid "Team properties"
-msgstr "Свойства команды"
-
-#: gui/dialogs/organization_edit.py:39 gui/tabs/memory_model.py:525
-msgid "Number"
-msgstr "Номер"
-
-#: gui/dialogs/organization_edit.py:51 gui/tabs/memory_model.py:525
-msgid "Code"
-msgstr "Код"
-
-#: gui/dialogs/organization_edit.py:55 gui/tabs/memory_model.py:525
-msgid "Country"
-msgstr "Страна"
-
-#: gui/dialogs/organization_edit.py:60 gui/tabs/memory_model.py:525
-msgid "Region"
-msgstr "Субъект РФ"
-
-#: gui/dialogs/organization_edit.py:65 gui/tabs/memory_model.py:525
-msgid "Contact"
-msgstr "Контактные данные"
-
-#: gui/dialogs/person_edit.py:42 gui/dialogs/result_edit.py:154
+#: gui/dialogs/person_edit.py:43 gui/dialogs/result_edit.py:154
 msgid "Entry properties"
 msgstr "Редактирование спортсмена"
 
-#: gui/dialogs/person_edit.py:48 gui/tabs/memory_model.py:223
-#: gui/tabs/memory_model.py:316 gui/tabs/memory_model.py:319
+#: gui/dialogs/person_edit.py:49 gui/tabs/memory_model.py:223
+#: gui/tabs/memory_model.py:322 gui/tabs/memory_model.py:325
 msgid "Last name"
 msgstr "Фамилия"
 
-#: gui/dialogs/person_edit.py:52 gui/tabs/memory_model.py:223
-#: gui/tabs/memory_model.py:316 gui/tabs/memory_model.py:319
+#: gui/dialogs/person_edit.py:53 gui/tabs/memory_model.py:223
+#: gui/tabs/memory_model.py:322 gui/tabs/memory_model.py:325
 msgid "First name"
 msgstr "Имя"
 
-#: gui/dialogs/person_edit.py:59
+#: gui/dialogs/person_edit.py:60
 msgid "Birthday"
 msgstr "Дата рождения"
 
-#: gui/dialogs/person_edit.py:66
+#: gui/dialogs/person_edit.py:67
 msgid "Year of birth"
 msgstr "Год рождения"
 
-#: gui/dialogs/person_edit.py:78 gui/tabs/memory_model.py:224
+#: gui/dialogs/person_edit.py:80 gui/tabs/memory_model.py:223
 msgid "Age"
 msgstr "Возр."
 
-#: gui/dialogs/person_edit.py:101 gui/dialogs/text_io.py:14
+#: gui/dialogs/person_edit.py:103 gui/dialogs/text_io.py:14
 #: gui/dialogs/text_io.py:297 gui/dialogs/text_io.py:349
 msgid "Qualification"
 msgstr "Квалификация"
 
-#: gui/dialogs/person_edit.py:108 gui/dialogs/person_edit.py:252
+#: gui/dialogs/person_edit.py:110 gui/dialogs/person_edit.py:261
 #: gui/dialogs/result_edit.py:108 gui/dialogs/text_io.py:14
 #: gui/dialogs/text_io.py:121 gui/dialogs/text_io.py:299
-#: gui/dialogs/text_io.py:353 gui/tabs/memory_model.py:224
-#: gui/tabs/memory_model.py:316 gui/tabs/memory_model.py:319
+#: gui/dialogs/text_io.py:353 gui/tabs/memory_model.py:225
+#: gui/tabs/memory_model.py:322 gui/tabs/memory_model.py:325
 #: modules/printing/printout_split.py:84
 msgid "Bib"
 msgstr "Номер"
 
-#: gui/dialogs/person_edit.py:130
+#: gui/dialogs/person_edit.py:132
 msgid "Punch card #"
 msgstr "Номер чипа"
 
-#: gui/dialogs/person_edit.py:221
+#: gui/dialogs/person_edit.py:173 gui/dialogs/team_edit.py:28
+msgid "Team properties"
+msgstr "Свойства команды"
+
+#: gui/dialogs/person_edit.py:230
 msgid "Number already exists"
 msgstr "Номер уже существует"
 
-#: gui/dialogs/person_edit.py:226
+#: gui/dialogs/person_edit.py:235
 msgid "Number is unique"
 msgstr "Номер уникален"
 
-#: gui/dialogs/person_edit.py:248
+#: gui/dialogs/person_edit.py:257
 msgid "Card number already exists"
 msgstr "Номер чипа уже существует"
 
-#: gui/dialogs/person_edit.py:255
+#: gui/dialogs/person_edit.py:264
 msgid "Card number is unique"
 msgstr "Номер чипа уникален"
 
-#: gui/dialogs/print_properties.py:28 gui/menu/menu.py:378
+#: gui/dialogs/print_properties.py:28 gui/menu/menu.py:382
 msgid "Printer settings"
 msgstr "Настройки печати"
 
@@ -570,7 +583,7 @@ msgstr "Эстафетные номера"
 msgid "First relay number"
 msgstr "Первый эстафетный номер"
 
-#: gui/dialogs/rent_cards_dialog.py:21 gui/menu/menu.py:392
+#: gui/dialogs/rent_cards_dialog.py:21 gui/menu/menu.py:396
 msgid "Rent cards"
 msgstr "Аренда чипов"
 
@@ -586,7 +599,7 @@ msgstr "Открыть в браузере"
 msgid "Save to last file"
 msgstr "Сохранить в последний файл"
 
-#: gui/dialogs/report_dialog.py:74 gui/menu/menu.py:338
+#: gui/dialogs/report_dialog.py:74 gui/menu/menu.py:342
 msgid "Send selected"
 msgstr "Отправить выбранные"
 
@@ -605,7 +618,7 @@ msgstr "Сохранить как HTML"
 #: gui/dialogs/result_edit.py:43 gui/dialogs/result_edit.py:122
 #: gui/dialogs/text_io.py:13 gui/dialogs/text_io.py:18
 #: gui/dialogs/text_io.py:268 gui/dialogs/text_io.py:325
-#: gui/tabs/memory_model.py:317 gui/tabs/memory_model.py:320
+#: gui/tabs/memory_model.py:323 gui/tabs/memory_model.py:326
 #: modules/printing/printout_split.py:124
 #: modules/printing/printout_split.py:126
 msgid "Result"
@@ -621,16 +634,16 @@ msgstr "Дней"
 
 #: gui/dialogs/result_edit.py:112 gui/dialogs/text_io.py:13
 #: gui/dialogs/text_io.py:258 gui/dialogs/text_io.py:308
-#: gui/tabs/memory_model.py:224 gui/tabs/memory_model.py:317
-#: gui/tabs/memory_model.py:320 gui/tabs/results.py:130
+#: gui/tabs/memory_model.py:225 gui/tabs/memory_model.py:323
+#: gui/tabs/memory_model.py:326 gui/tabs/results.py:130
 #: modules/printing/printout_split.py:86
 msgid "Start"
 msgstr "Старт"
 
 #: gui/dialogs/result_edit.py:113 gui/dialogs/text_io.py:13
 #: gui/dialogs/text_io.py:158 gui/dialogs/text_io.py:264
-#: gui/dialogs/text_io.py:315 gui/tabs/memory_model.py:317
-#: gui/tabs/memory_model.py:320 gui/tabs/results.py:131
+#: gui/dialogs/text_io.py:315 gui/tabs/memory_model.py:323
+#: gui/tabs/memory_model.py:326 gui/tabs/results.py:131
 #: modules/printing/printout_split.py:117
 msgid "Finish"
 msgstr "Финиш"
@@ -641,12 +654,12 @@ msgstr "Время"
 
 #: gui/dialogs/result_edit.py:116 gui/dialogs/text_io.py:13
 #: gui/dialogs/text_io.py:272 gui/dialogs/text_io.py:327
-#: gui/tabs/memory_model.py:320
+#: gui/tabs/memory_model.py:326
 msgid "Credit"
 msgstr "Отсечка"
 
-#: gui/dialogs/result_edit.py:117 gui/tabs/memory_model.py:317
-#: gui/tabs/memory_model.py:320 modules/printing/printout_split.py:121
+#: gui/dialogs/result_edit.py:117 gui/tabs/memory_model.py:323
+#: gui/tabs/memory_model.py:326 modules/printing/printout_split.py:121
 msgid "Penalty"
 msgstr "Штраф"
 
@@ -659,14 +672,18 @@ msgstr "Штрафные очки"
 msgid "Penalty legs"
 msgstr "Штраф, круги"
 
-#: gui/dialogs/result_edit.py:123 gui/tabs/memory_model.py:317
-#: gui/tabs/memory_model.py:320
+#: gui/dialogs/result_edit.py:123 gui/tabs/memory_model.py:323
+#: gui/tabs/memory_model.py:326
 msgid "Status"
 msgstr "Статус"
 
 #: gui/dialogs/result_edit.py:320
 msgid "Splits"
 msgstr "Сплиты"
+
+#: gui/dialogs/scores_dialog.py:22
+msgid "Scores assign"
+msgstr "Присвоение очков"
 
 #: gui/dialogs/scores_dialog.py:30
 msgid "Value list"
@@ -693,71 +710,71 @@ msgstr "Поиск не дал результатов"
 msgid "Languages"
 msgstr "Язык интерфейса"
 
-#: gui/dialogs/settings.py:36 gui/main_window.py:117
+#: gui/dialogs/settings.py:36 gui/main_window.py:118
 msgid "Auto save"
 msgstr "Автосохранение"
 
 #: gui/dialogs/settings.py:38
+msgid "Show toolbar"
+msgstr "Показывать панель инструментов"
+
+#: gui/dialogs/settings.py:42
 msgid "Open recent file"
 msgstr "Открыть последний файл"
 
-#: gui/dialogs/settings.py:42
+#: gui/dialogs/settings.py:46
 msgid "Use birthday"
 msgstr "Использовать день рождения, а не только год"
 
-#: gui/dialogs/settings.py:46 gui/menu/menu.py:406
+#: gui/dialogs/settings.py:50 gui/menu/menu.py:415
 msgid "Check updates"
 msgstr "Проверить обновления"
 
-#: gui/dialogs/settings.py:71
+#: gui/dialogs/settings.py:87
 msgid "Successful result"
 msgstr "Успешный результат"
 
-#: gui/dialogs/settings.py:77
+#: gui/dialogs/settings.py:93
 msgid "Unsuccessful result"
 msgstr "Неуспешный результат"
 
-#: gui/dialogs/settings.py:83
+#: gui/dialogs/settings.py:99
 msgid "Enable rented card sound"
 msgstr "Включить звук при аренде чипа"
 
-#: gui/dialogs/settings.py:87
+#: gui/dialogs/settings.py:103
 msgid "Rented card sound"
 msgstr "Звук при аренде чипа"
 
-#: gui/dialogs/settings.py:125 gui/menu/menu.py:11 gui/toolbar.py:7
+#: gui/dialogs/settings.py:141 gui/menu/menu.py:11 gui/toolbar.py:7
 msgid "New"
 msgstr "Новый"
 
-#: gui/dialogs/settings.py:133 gui/menu/menu.py:119
+#: gui/dialogs/settings.py:149 gui/menu/menu.py:119
 msgid "Copy"
 msgstr "Копировать"
 
-#: gui/dialogs/settings.py:141
+#: gui/dialogs/settings.py:157
 msgid "Move up"
 msgstr "Сдвинуть вверх"
 
-#: gui/dialogs/settings.py:149
+#: gui/dialogs/settings.py:165
 msgid "Move down"
 msgstr "Сдвинуть вниз"
 
-#: gui/dialogs/settings.py:157 gui/menu/menu.py:112
-msgid "Delete"
-msgstr "Удалить"
-
-#: gui/dialogs/settings.py:183
+#: gui/dialogs/settings.py:199
 msgid "Main settings"
 msgstr "Основные настройки"
 
-#: gui/dialogs/settings.py:184
+#: gui/dialogs/settings.py:200
 msgid "Sounds"
 msgstr "Звуки"
 
-#: gui/dialogs/settings.py:185
+#: gui/dialogs/settings.py:201
 msgid "Multi day"
 msgstr "Многодневные соревнования"
 
-#: gui/dialogs/settings.py:193 gui/menu/menu.py:38
+#: gui/dialogs/settings.py:209 gui/menu/menu.py:38
 msgid "Settings"
 msgstr "Настройки"
 
@@ -780,11 +797,6 @@ msgstr ""
 #: gui/dialogs/sportorg_import_dialog.py:46
 msgid "Action"
 msgstr "Действие"
-
-#: gui/dialogs/sportorg_import_dialog.py:48
-#: gui/dialogs/start_time_change_dialog.py:29
-msgid "Add"
-msgstr "Добавить"
 
 #: gui/dialogs/sportorg_import_dialog.py:50
 msgid "Overwrite"
@@ -915,8 +927,28 @@ msgstr "Смещение времени старта"
 msgid "Reduce"
 msgstr "Отнять"
 
-#: gui/dialogs/teamwork_properties.py:23 gui/menu/menu.py:334
-#: gui/menu/menu.py:373 gui/toolbar.py:12
+#: gui/dialogs/team_edit.py:40 gui/tabs/memory_model.py:531
+msgid "Number"
+msgstr "Номер"
+
+#: gui/dialogs/team_edit.py:52 gui/tabs/memory_model.py:531
+msgid "Code"
+msgstr "Код"
+
+#: gui/dialogs/team_edit.py:56 gui/tabs/memory_model.py:531
+msgid "Country"
+msgstr "Страна"
+
+#: gui/dialogs/team_edit.py:61 gui/tabs/memory_model.py:531
+msgid "Region"
+msgstr "Субъект РФ"
+
+#: gui/dialogs/team_edit.py:66 gui/tabs/memory_model.py:531
+msgid "Contact"
+msgstr "Контактные данные"
+
+#: gui/dialogs/teamwork_properties.py:23 gui/menu/menu.py:338
+#: gui/menu/menu.py:377
 msgid "Teamwork"
 msgstr "Командная работа"
 
@@ -944,7 +976,7 @@ msgstr "Порт"
 msgid "Client/Server"
 msgstr "Клиент/Сервер"
 
-#: gui/dialogs/telegram_dialog.py:23 gui/menu/menu.py:353 gui/menu/menu.py:388
+#: gui/dialogs/telegram_dialog.py:23 gui/menu/menu.py:357 gui/menu/menu.py:392
 msgid "Telegram"
 msgstr ""
 
@@ -1018,11 +1050,11 @@ msgstr "точка с запятой"
 msgid "custom"
 msgstr "пользовательский"
 
-#: gui/dialogs/text_io.py:129 gui/menu/menu.py:365
+#: gui/dialogs/text_io.py:129 gui/menu/menu.py:369
 msgid "Options"
 msgstr "Опции"
 
-#: gui/dialogs/timekeeping_properties.py:29 gui/menu/menu.py:368
+#: gui/dialogs/timekeeping_properties.py:29 gui/menu/menu.py:372
 msgid "Timekeeping settings"
 msgstr "Настройки хронометража"
 
@@ -1230,7 +1262,7 @@ msgstr "Определение результата"
 msgid "Scores"
 msgstr "Очки"
 
-#: gui/dialogs/timekeeping_properties.py:233 gui/menu/menu.py:282
+#: gui/dialogs/timekeeping_properties.py:233 gui/menu/menu.py:286
 msgid "Penalty calculation"
 msgstr "Расчет штрафа из сплитов"
 
@@ -1238,189 +1270,197 @@ msgstr "Расчет штрафа из сплитов"
 msgid "Time settings"
 msgstr "Настройки времени"
 
-#: gui/main_window.py:134
+#: gui/main_window.py:135
 msgid "Save file before exit?"
 msgstr "Сохранить изменения в файле?"
 
-#: gui/main_window.py:135 gui/main_window.py:473 gui/main_window.py:632
-#: gui/menu/actions.py:349 gui/menu/actions.py:358
+#: gui/main_window.py:136 gui/main_window.py:488 gui/main_window.py:647
+#: gui/menu/actions.py:350 gui/menu/actions.py:359
 msgid "Question"
 msgstr "Вопрос"
 
-#: gui/main_window.py:264
+#: gui/main_window.py:254
+msgid "Toolbar"
+msgstr "Панель инструментов"
+
+#: gui/main_window.py:275
 msgid "Competitors"
 msgstr "Участники"
 
-#: gui/main_window.py:266 gui/menu/menu.py:178 modules/orgeo/orgeo.py:161
+#: gui/main_window.py:277 gui/menu/menu.py:178 modules/orgeo/orgeo.py:161
 #: modules/winorient/winorient.py:56
 msgid "Groups"
 msgstr "Группы"
 
-#: gui/main_window.py:268 gui/menu/menu.py:188 modules/orgeo/orgeo.py:162
+#: gui/main_window.py:279 gui/menu/menu.py:188 modules/orgeo/orgeo.py:162
 #: modules/winorient/winorient.py:58
 msgid "Teams"
 msgstr "Команды"
 
-#: gui/main_window.py:315
+#: gui/main_window.py:281
+msgid "Logs"
+msgstr "Логи"
+
+#: gui/main_window.py:330
 msgid "Tab doesn't exist"
 msgstr "Раздел не существует"
 
-#: gui/main_window.py:473
+#: gui/main_window.py:488
 msgid "Are you sure you want to reassign the chip number"
 msgstr "Вы уверены, что хотите переприсвоить номер чипа"
 
-#: gui/main_window.py:511
+#: gui/main_window.py:526
 msgid "Create SportOrg file"
 msgstr "Создать файл SportOrg"
 
-#: gui/main_window.py:512 gui/menu/actions.py:80
+#: gui/main_window.py:527 gui/menu/actions.py:81
 msgid "SportOrg file (*.json)"
 msgstr "Файл SportOrg (*.json)"
 
-#: gui/main_window.py:530 gui/main_window.py:561 gui/main_window.py:563
-#: gui/main_window.py:651 gui/main_window.py:660 gui/main_window.py:669
-#: gui/menu/actions.py:138 gui/menu/actions.py:150 gui/menu/actions.py:163
-#: gui/menu/actions.py:175 gui/menu/actions.py:194 gui/menu/actions.py:206
-#: gui/menu/actions.py:217 gui/menu/actions.py:599
+#: gui/main_window.py:545 gui/main_window.py:576 gui/main_window.py:578
+#: gui/main_window.py:666 gui/main_window.py:675 gui/main_window.py:684
+#: gui/menu/actions.py:139 gui/menu/actions.py:151 gui/menu/actions.py:164
+#: gui/menu/actions.py:176 gui/menu/actions.py:195 gui/menu/actions.py:207
+#: gui/menu/actions.py:218 gui/menu/actions.py:613
 msgid "Error"
 msgstr "Ошибка"
 
-#: gui/main_window.py:530
+#: gui/main_window.py:545
 msgid "Cannot create file"
 msgstr "Файл не создан"
 
-#: gui/main_window.py:563
+#: gui/main_window.py:578
 msgid "Cannot read file, format unknown"
 msgstr "Не удается открыть файл, некорректный формат"
 
-#: gui/main_window.py:567 gui/menu/actions.py:454 gui/menu/actions.py:569
+#: gui/main_window.py:582 gui/menu/actions.py:463 gui/menu/actions.py:578
 msgid "No result selected"
 msgstr "Результат не выбран"
 
-#: gui/main_window.py:587
+#: gui/main_window.py:602
 msgid "No results to print"
 msgstr "Нет результатов для печати"
 
-#: gui/main_window.py:592
+#: gui/main_window.py:607
 msgid "No printer selected"
 msgstr "Принтер не выбран"
 
-#: gui/main_window.py:632
+#: gui/main_window.py:647
 msgid "Please confirm"
 msgstr "Пожалуйста, подтвердите действие"
 
-#: gui/main_window.py:652
+#: gui/main_window.py:667
 msgid "Cannot remove group"
 msgstr "Невозможно удалить группу"
 
-#: gui/main_window.py:661
+#: gui/main_window.py:676
 msgid "Cannot remove course"
 msgstr "Невозможно удалить дистанцию"
 
-#: gui/main_window.py:670
+#: gui/main_window.py:685
 msgid "Cannot remove team"
 msgstr "Невозможно удалить команду"
 
-#: gui/menu/actions.py:80
+#: gui/menu/actions.py:81
 msgid "Open SportOrg file"
 msgstr "Открыть файл SportOrg"
 
-#: gui/menu/actions.py:132
+#: gui/menu/actions.py:133
 msgid "Open CSV Winorient file"
 msgstr "Открыть файл CSV Winorient"
 
-#: gui/menu/actions.py:132
+#: gui/menu/actions.py:133
 msgid "CSV Winorient (*.csv)"
 msgstr "Файл CSV Winorient (*.csv)"
 
-#: gui/menu/actions.py:138 gui/menu/actions.py:150 gui/menu/actions.py:163
-#: gui/menu/actions.py:175 gui/menu/actions.py:217
+#: gui/menu/actions.py:139 gui/menu/actions.py:151 gui/menu/actions.py:164
+#: gui/menu/actions.py:176 gui/menu/actions.py:218
 msgid "Import error"
 msgstr "Ошибка импорта"
 
-#: gui/menu/actions.py:144
+#: gui/menu/actions.py:145
 msgid "Open Orgeo CSV file"
 msgstr "Открыть Orgeo CSV файл"
 
-#: gui/menu/actions.py:144
+#: gui/menu/actions.py:145
 msgid "Orgeo CSV (*.csv)"
 msgstr ""
 
-#: gui/menu/actions.py:156
+#: gui/menu/actions.py:157
 msgid "Open WDB Winorient file"
 msgstr "Открыть файл WDB Winorient"
 
-#: gui/menu/actions.py:156
+#: gui/menu/actions.py:157
 msgid "WDB Winorient (*.wdb)"
 msgstr "Файл WDB Winorient (*.wdb)"
 
-#: gui/menu/actions.py:169
+#: gui/menu/actions.py:170
 msgid "Open Ocad txt v8 file"
 msgstr "Открыть файл дистанций OCAD8"
 
-#: gui/menu/actions.py:169
+#: gui/menu/actions.py:170
 msgid "Ocad classes v8 (*.txt)"
 msgstr "Файл дистанций OCAD8 (*.txt)"
 
-#: gui/menu/actions.py:181
+#: gui/menu/actions.py:182
 msgid "Save As WDB file"
 msgstr "Сохранить в файл Winorient (WDB)"
 
-#: gui/menu/actions.py:181 modules/winorient/wdb_number_setter.py:30
+#: gui/menu/actions.py:182 modules/winorient/wdb_number_setter.py:30
 #: modules/winorient/wdb_number_setter.py:31
 #: modules/winorient/wdb_number_setter.py:36
 msgid "WDB file (*.wdb)"
 msgstr "Файл Winorient (*.wdb)"
 
-#: gui/menu/actions.py:194 gui/menu/actions.py:206
+#: gui/menu/actions.py:195 gui/menu/actions.py:207
 msgid "Export error"
 msgstr "Ошибка экспорта"
 
-#: gui/menu/actions.py:199
+#: gui/menu/actions.py:200
 msgid "Save As IOF xml"
 msgstr "Сохранение IOF xml"
 
-#: gui/menu/actions.py:199 gui/menu/actions.py:211
+#: gui/menu/actions.py:200 gui/menu/actions.py:212
 msgid "IOF xml (*.xml)"
 msgstr "Файл IOF xml (*.xml)"
 
-#: gui/menu/actions.py:211
+#: gui/menu/actions.py:212
 msgid "Open IOF xml"
 msgstr "Открыть IOF xml"
 
-#: gui/menu/actions.py:348 gui/menu/menu.py:227
+#: gui/menu/actions.py:349 gui/menu/menu.py:227
 msgid "Use bib as card number"
 msgstr "Заменить номера чипов нагрудными номерами"
 
-#: gui/menu/actions.py:357 gui/menu/menu.py:231
+#: gui/menu/actions.py:358 gui/menu/menu.py:231
 msgid "Use card number as bib"
 msgstr "Заменить нагрудные номера номерами чипов"
 
-#: gui/menu/actions.py:373 gui/menu/menu.py:244 gui/toolbar.py:13
+#: gui/menu/actions.py:382 gui/menu/menu.py:248 gui/toolbar.py:12
 msgid "Manual finish"
 msgstr "Ручной финиш"
 
-#: gui/menu/actions.py:473
+#: gui/menu/actions.py:482
 msgid "No results to change status"
 msgstr "Нет результата для изменения статуса"
 
-#: gui/menu/actions.py:592
+#: gui/menu/actions.py:606
 msgid "Update available"
 msgstr "Доступно обновление"
 
-#: gui/menu/actions.py:594
+#: gui/menu/actions.py:608
 msgid "You are using the latest version"
 msgstr "Вы используете последнюю версию"
 
-#: gui/menu/actions.py:596
+#: gui/menu/actions.py:610
 msgid "Info"
 msgstr "Информация"
 
-#: gui/menu/actions.py:620
+#: gui/menu/actions.py:634
 msgid "Open SportOrg json"
 msgstr "Открыть файл SportOrg"
 
-#: gui/menu/actions.py:620
+#: gui/menu/actions.py:634
 msgid "SportOrg (*.json)"
 msgstr "Файл SportOrg (*.json)"
 
@@ -1520,171 +1560,171 @@ msgstr "Режим присвоения номеров для эстафет"
 msgid "Split teams"
 msgstr "Разделить команды"
 
-#: gui/menu/menu.py:241
+#: gui/menu/menu.py:239
+msgid "Update subgroups"
+msgstr "Обновить подгруппы"
+
+#: gui/menu/menu.py:245
 msgid "Race"
 msgstr "Соревнование"
 
-#: gui/menu/menu.py:250
+#: gui/menu/menu.py:254
 msgid "Add SPORTident result"
 msgstr "Добавить SPORTident результат"
 
-#: gui/menu/menu.py:259
+#: gui/menu/menu.py:263
 msgid "Create report"
 msgstr "Создать протокол"
 
-#: gui/menu/menu.py:264
+#: gui/menu/menu.py:268
 msgid "Split printout"
 msgstr "Печать сплитов"
 
-#: gui/menu/menu.py:272
+#: gui/menu/menu.py:276
 msgid "Rechecking"
 msgstr "Перепроверить отметку"
 
-#: gui/menu/menu.py:277
+#: gui/menu/menu.py:281
 msgid "Find group by punches"
 msgstr "Найти группу по отметкам"
 
-#: gui/menu/menu.py:286
+#: gui/menu/menu.py:290
 msgid "Penalty removing"
 msgstr "Обнуление штрафа"
 
-#: gui/menu/menu.py:290
+#: gui/menu/menu.py:294
 msgid "Change status"
 msgstr "Изменить статус"
 
-#: gui/menu/menu.py:296
+#: gui/menu/menu.py:300
 msgid "Set DNS numbers"
 msgstr "Ввести номера со статусом DNS"
 
-#: gui/menu/menu.py:304
+#: gui/menu/menu.py:308
 msgid "Assign result by bib"
 msgstr "Присвоить результат по номеру"
 
-#: gui/menu/menu.py:308
+#: gui/menu/menu.py:312
 msgid "Assign result by card number"
 msgstr "Присвоить результат по номеру чипа"
 
-#: gui/menu/menu.py:314
+#: gui/menu/menu.py:318
 msgid "Service"
 msgstr "Сервис"
 
-#: gui/menu/menu.py:317
+#: gui/menu/menu.py:321
 msgid "on/off SPORTident readout"
 msgstr "Запустить/остановить чтение чипов SPORTident"
 
-#: gui/menu/menu.py:323
+#: gui/menu/menu.py:327
 msgid "on/off Sportiduino readout"
 msgstr "Запустить/остановить чтение чипов Sportiduino"
 
-#: gui/menu/menu.py:329
+#: gui/menu/menu.py:333
 msgid "on/off SFR readout"
 msgstr "Запустить/остановить чтение чипов SFR"
 
-#: gui/menu/menu.py:347
+#: gui/menu/menu.py:351
 msgid "On/Off"
 msgstr "Включить/Выключить"
 
-#: gui/menu/menu.py:356
+#: gui/menu/menu.py:360
 msgid "Send results"
 msgstr "Отправить результаты"
 
-#: gui/menu/menu.py:398
-msgid "Help"
-msgstr "Помощь"
-
 #: gui/tabs/memory_model.py:223
-msgid "Qualification title"
-msgstr "Квал."
-
-#: gui/tabs/memory_model.py:224
 msgid "Year title"
 msgstr "ГР"
 
-#: gui/tabs/memory_model.py:224 gui/tabs/memory_model.py:316
-#: gui/tabs/memory_model.py:319
+#: gui/tabs/memory_model.py:224
+msgid "Qualification title"
+msgstr "Квал."
+
+#: gui/tabs/memory_model.py:225 gui/tabs/memory_model.py:322
+#: gui/tabs/memory_model.py:325
 msgid "Card title"
 msgstr "№ чипа"
-
-#: gui/tabs/memory_model.py:224 gui/tabs/memory_model.py:288
-#: gui/tabs/memory_model.py:318 gui/tabs/memory_model.py:321
-#: gui/tabs/memory_model.py:360
-msgid "Rented card"
-msgstr "Аренда чипа"
-
-#: gui/tabs/memory_model.py:225
-msgid "World code title"
-msgstr "Межд. код"
-
-#: gui/tabs/memory_model.py:225
-msgid "National code title"
-msgstr "Нац. код"
-
-#: gui/tabs/memory_model.py:225
-msgid "Out of competition title"
-msgstr "В/К"
 
 #: gui/tabs/memory_model.py:226
 msgid "Result count title"
 msgstr "Финиш"
 
-#: gui/tabs/memory_model.py:288 gui/tabs/memory_model.py:360
+#: gui/tabs/memory_model.py:226 gui/tabs/memory_model.py:296
+#: gui/tabs/memory_model.py:324 gui/tabs/memory_model.py:327
+#: gui/tabs/memory_model.py:366
+msgid "Rented card"
+msgstr "Аренда чипа"
+
+#: gui/tabs/memory_model.py:227
+msgid "World code title"
+msgstr "Межд. код"
+
+#: gui/tabs/memory_model.py:227
+msgid "National code title"
+msgstr "Нац. код"
+
+#: gui/tabs/memory_model.py:228
+msgid "Out of competition title"
+msgstr "В/К"
+
+#: gui/tabs/memory_model.py:296 gui/tabs/memory_model.py:366
 msgid "Rented stub"
 msgstr "Свой чип"
 
-#: gui/tabs/memory_model.py:295 models/memory.py:771
+#: gui/tabs/memory_model.py:302 models/memory.py:819
 msgid "o/c"
 msgstr "в/к"
 
-#: gui/tabs/memory_model.py:318 gui/tabs/memory_model.py:321
+#: gui/tabs/memory_model.py:324 gui/tabs/memory_model.py:327
 #: modules/printing/printout_split.py:133
 msgid "Place"
 msgstr "Место"
 
-#: gui/tabs/memory_model.py:318 gui/tabs/memory_model.py:321
+#: gui/tabs/memory_model.py:324 gui/tabs/memory_model.py:327
 msgid "Readout"
 msgstr "Cчит-е"
 
-#: gui/tabs/memory_model.py:320
+#: gui/tabs/memory_model.py:326
 msgid "Penalty legs title"
 msgstr "Штр.круги"
 
-#: gui/tabs/memory_model.py:426
+#: gui/tabs/memory_model.py:432
 msgid "Course name"
 msgstr "Дистанция"
 
-#: gui/tabs/memory_model.py:426
+#: gui/tabs/memory_model.py:432
 msgid "Start fee title"
 msgstr "Взнос"
 
-#: gui/tabs/memory_model.py:426 gui/tabs/memory_model.py:485
+#: gui/tabs/memory_model.py:432 gui/tabs/memory_model.py:491
 msgid "Length title"
 msgstr "Длина,м"
 
-#: gui/tabs/memory_model.py:427 gui/tabs/memory_model.py:485
+#: gui/tabs/memory_model.py:433 gui/tabs/memory_model.py:491
 msgid "Point count title"
 msgstr "КП"
 
-#: gui/tabs/memory_model.py:427 gui/tabs/memory_model.py:485
+#: gui/tabs/memory_model.py:433 gui/tabs/memory_model.py:491
 msgid "Climb title"
 msgstr "Набор,м"
 
-#: gui/tabs/memory_model.py:428
+#: gui/tabs/memory_model.py:434
 msgid "Min year title"
 msgstr "Мин. ГР"
 
-#: gui/tabs/memory_model.py:429
+#: gui/tabs/memory_model.py:435
 msgid "Max year title"
 msgstr "Макс. ГР"
 
-#: gui/tabs/memory_model.py:430
+#: gui/tabs/memory_model.py:436
 msgid "Start interval title"
 msgstr "Интервал"
 
-#: gui/tabs/memory_model.py:430
+#: gui/tabs/memory_model.py:436
 msgid "Start corridor title"
 msgstr "Коридор"
 
-#: gui/tabs/memory_model.py:431
+#: gui/tabs/memory_model.py:437
 msgid "Order in corridor title"
 msgstr "Порядок в кор."
 
@@ -1712,7 +1752,7 @@ msgstr "М"
 msgid "F"
 msgstr "Ж"
 
-#: models/memory.py:643 models/memory.py:665 models/memory.py:695
+#: models/memory.py:691 models/memory.py:713 models/memory.py:743
 msgid "points"
 msgstr "очк."
 
@@ -1880,15 +1920,6 @@ msgstr "места"
 
 msgid "Team results"
 msgstr "Командные результаты"
-
-msgid "Toolbar"
-msgstr "Панель инструментов"
-
-msgid "Show toolbar"
-msgstr "Показывать панель инструментов"
-
-msgid "Logs"
-msgstr "Логи"
 
 msgid "No file to auto save"
 msgstr "Имя файла не задано, автосохранение отменено"
