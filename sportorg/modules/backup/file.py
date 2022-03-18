@@ -26,8 +26,8 @@ class File:
         }
 
     @staticmethod
-    def backup(file_name, func, mode='wb'):
-        with open(file_name, mode) as f:
+    def backup(file_name, func, mode='wb', encoding='utf-8'):
+        with open(file_name, mode, encoding=encoding) as f:
             func(f)
 
     def create(self):
@@ -42,4 +42,10 @@ class File:
 
     def open(self):
         self._logger.info('Open ' + self._file_name)
-        self.backup(self._file_name, self._factory[self._format].load, self._factory_mode_read[self._format])
+        try:
+            # Try open with UTF-8
+            self.backup(self._file_name, self._factory[self._format].load, self._factory_mode_read[self._format])
+        except UnicodeDecodeError:
+            # Read file created by previous versions of the software
+            self.backup(self._file_name, self._factory[self._format].load, self._factory_mode_read[self._format], 'cp1251')
+        
