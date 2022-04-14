@@ -27,8 +27,8 @@ class OrgeoCSVReader:
                 'Код': 'code',
                 'Регион': 'district',
                 'Квал.': 'qual_str',
-                'Дата рожд.': 'date_of_birn',
-                'Год': 'date_of_birn',
+                'Дата рожд.': 'date_of_birth',
+                'Год': 'date_of_birth',
                 '№ чипа': 'sportident_card',
                 'Примечания': 'comment',
                 'Кем подана': 'representative',
@@ -65,8 +65,8 @@ class OrgeoCSVReader:
 
         if 'code' in person_dict:
             person_dict['code'] = int(person_dict['code'])
-        if 'date_of_birn' in person_dict:
-            person_dict['date_of_birn'] = dateutil.parser.isoparse(person_dict['date_of_birn']).date()
+        if 'date_of_birth' in person_dict:
+            person_dict['date_of_birth'] = dateutil.parser.parse(person_dict['date_of_birth'], dayfirst=True).date()
         if 'claim_id' in person_dict:
             person_dict['claim_id'] = int(person_dict['claim_id'])
             if 'team_name' in person_dict:
@@ -127,7 +127,7 @@ def import_csv(source):
             person_team.contact += ' ' + person_dict['cell_number']
         if 'email' in person_dict:
             person_team.contact += ' ' + person_dict['email']
-        person_team.code = str(person_dict['code'])
+        person_team.code = str(person_dict['code']) if 'code' in person_dict else ''
         person_team.region = person_dict['district']
 
         person = memory.Person()
@@ -136,7 +136,7 @@ def import_csv(source):
         if 'sex' in person_dict:
             person.sex = Sex.M if person_dict['sex'] == 'М' else Sex.F
         person.bib = person_dict['bib'] if 'bib' in person_dict else 0
-        person.birth_date = person_dict['date_of_birn']
+        person.birth_date = person_dict['date_of_birth']
         if 'sportident_card' in person_dict and person_dict['sportident_card'].isdigit():
             person.card_number = int(person_dict['sportident_card'])
         person.group = memory.find(obj.groups, name=person_dict['group_name'])
