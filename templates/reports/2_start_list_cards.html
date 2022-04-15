@@ -112,6 +112,7 @@
                     prevTeamBib = teamBib;
                 } else {
                     r.team = ''
+                    r.team_number = ''
                     r.start = ''
                 }
                 results.push(r);
@@ -128,6 +129,7 @@
             {key: 'year', title: 'ГР', size: 5},
             {key: 'qual', title: 'Разряд', size: 7},
             {key: 'team', title: 'Команда', size: 20},
+            {key: 'team_number', title: '№ команды', size: 9},
             {key: 'bib', title: 'Номер', size: 6},
             {key: 'comment', title: '', size: 20},
             {key: 'start', title: 'Время старта', size: 13, active: false}
@@ -255,15 +257,15 @@
                 render()
             }
         },
+        */
         {
-            title: 'Номер чипа',
-            value: Fields.isActive('card_number'),
+            title: 'Номер команды',
+            value: Fields.isActive('team_number'),
             change: function (checked) {
-                Fields.active('card_number', checked);
+                Fields.active('team_number', checked);
                 render()
             }
         },
-        */
         {
             title: 'Автоскролл',
             value: Scrolling.enabled,
