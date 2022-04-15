@@ -135,6 +135,11 @@ class Config(metaclass=Singleton):
     def ranking(self):
         return self._configurations[ConfigFile.RANKING]
 
+    def set_option(self, section, option, value):
+        if not self.parser.has_section(section):
+            self.parser.add_section(section)
+        self.parser.set(section, option, str(value))
+
     def read(self):
         self.parser.read(sportorg_config.CONFIG_INI)
 

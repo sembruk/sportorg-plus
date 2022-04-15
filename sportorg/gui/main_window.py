@@ -163,7 +163,8 @@ class MainWindow(QMainWindow):
                 logging.error(str(e))
 
     def conf_write(self):
-        Configuration().parser[ConfigFile.GEOMETRY]['main'] = self.saveGeometry().toHex().data().decode()
+        Configuration().set_option(ConfigFile.GEOMETRY, 'main', self.saveGeometry().toHex().data().decode())
+        Configuration().set_option(ConfigFile.PATH, 'recent_files', self.recent_files)
         Configuration().save()
 
     def post_show(self):
@@ -186,9 +187,7 @@ class MainWindow(QMainWindow):
         self._menu_disable(self.current_tab)
 
     def _setup_ui(self):
-        geometry = ConfigFile.GEOMETRY
-
-        geom = bytearray.fromhex(Configuration().parser.get(geometry, 'main',  fallback='00'))
+        geom = bytearray.fromhex(Configuration().parser.get(ConfigFile.GEOMETRY, 'main',  fallback='00'))
         if len(geom) == 1:
             self.resize(880, 470)
         self.restoreGeometry(geom)
@@ -404,9 +403,6 @@ class MainWindow(QMainWindow):
     def add_recent_file(self, file):
         self.delete_from_recent_files(file)
         self.recent_files.insert(0, file)
-        Configuration().parser[ConfigFile.PATH] = {
-            'recent_files': self.recent_files
-        }
 
     def delete_from_recent_files(self, file):
         if file in self.recent_files:

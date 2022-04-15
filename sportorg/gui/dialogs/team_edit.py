@@ -125,7 +125,7 @@ class TeamEditDialog(QDialog):
 
         team.number = self.item_number.value()
         team.name = self.item_name.text()
-        if (team.group and org.group.name != self.item_group.currentText()) or\
+        if (team.group and team.group.name != self.item_group.currentText()) or\
                 (team.group is None and len(self.item_group.currentText()) > 0):
             team.group = find(race().groups, name=self.item_group.currentText())
 
