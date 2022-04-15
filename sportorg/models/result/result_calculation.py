@@ -3,7 +3,7 @@ import logging
 from sportorg.common.otime import OTime
 from sportorg.models.constant import RankingTable
 from sportorg.models.memory import Result, Person, Group, Qualification, RankingItem, \
-    RelayTeam, Team, RaceType, find
+    RelayTeam, Team, TeamResult, RaceType, find
 from sportorg.modules.configs.configs import Config
 
 
@@ -120,6 +120,8 @@ class ResultCalculation(object):
                         person.team.group = person_group
                         self.race.teams.append(person.team)
                     if person.group is group:
+                        if not person.team.id in teams_results:
+                            person.team.result = TeamResult()
                         person.team.result.add_result(res)
                         teams_results[person.team.id] = person.team.result
                         for sgr in person.team.subgroup_result:
