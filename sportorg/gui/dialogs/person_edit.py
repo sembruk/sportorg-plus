@@ -364,8 +364,9 @@ class PersonEditDialog(QDialog):
             person.bib = self.item_bib.value()
 
         new_time = time_to_otime(self.item_start.time())
-        if self.item_start.isEnabled() and person.start_time != new_time:
-            person.start_time = new_time
+        if race().get_setting('system_start_source', 'protocol') == 'protocol':
+            if self.item_start.isEnabled() and person.start_time != new_time:
+                person.start_time = new_time
 
         if person.start_group != self.item_start_group.value() and self.item_start_group.value():
             person.start_group = self.item_start_group.value()

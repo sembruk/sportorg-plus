@@ -289,6 +289,10 @@ class ToTeamsAction(Action, metaclass=ActionFactory):
     def execute(self):
         self.app.select_tab(4)
 
+class ToLogAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        self.app.select_tab(5)
+
 
 class StartPreparationAction(Action, metaclass=ActionFactory):
     def execute(self):
