@@ -1,5 +1,13 @@
 # SportOrgPlus Changelog
 
+## 2022-05-13 v1.2.0
+
+* Subgroups
+* Updated report tempates
+* UTF-8 for JSON file
+* Fix Orgeo CSV import
+* Fix team result update after manual result edit
+
 ## 2021-12-23 v1.1.1
 
 * Autobuild for Windows
