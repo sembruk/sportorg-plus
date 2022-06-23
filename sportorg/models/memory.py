@@ -1241,6 +1241,7 @@ class Person(Model):
             'comment': self.comment,
             'start_time': self.start_time.to_msec() if self.start_time else None,
             'start_group': self.start_group,
+            'subgroups_str': self.subgroups_str(),
         }
 
     def update_data(self, data):

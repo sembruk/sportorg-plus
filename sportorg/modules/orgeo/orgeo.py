@@ -63,7 +63,7 @@ class OrgeoCSVReader:
             if i in self._headers:
                 person_dict[self._headers[i]] = person[i]
 
-        if 'code' in person_dict:
+        if 'code' in person_dict and person_dict['code'].isdigit():
             person_dict['code'] = int(person_dict['code'])
         if 'date_of_birth' in person_dict:
             person_dict['date_of_birth'] = dateutil.parser.parse(person_dict['date_of_birth'], dayfirst=True).date()

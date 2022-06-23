@@ -54,6 +54,7 @@
                     year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
                     start: isMassStart ? toHHMMSS(group.start_time) : toHHMMSS(person.start_time),
                     start_time: person.start_time,
+                    subgroup: isTeamRace ? person.subgroups_str : '',
                     comment: person.comment
                 });
             }
@@ -131,7 +132,8 @@
             {key: 'team', title: 'Команда', size: 20},
             {key: 'team_number', title: '№ команды', size: 9},
             {key: 'bib', title: 'Номер', size: 6},
-            {key: 'comment', title: '', size: 20},
+            {key: 'subgroup', title: 'П/группа', size: 8},
+            {key: 'comment', title: '', size: 20, active: false},
             {key: 'start', title: 'Время старта', size: 13, active: false}
         ],
         active: function (key, val) {
