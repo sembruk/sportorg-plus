@@ -1,6 +1,6 @@
 # SportOrgPlus Changelog
 
-## 2022-07-06 v1.2.1
+## v1.2.1 - 2022-07-06
 
 * Fixed file loading with invalid scores_array
 * Fixed Orgeo CSV import
@@ -8,7 +8,7 @@
 
 [All changes](https://github.com/sembruk/sportorg-plus/compare/v1.2.0...v1.2.1)
 
-## 2022-05-13 v1.2.0
+## v1.2.0 - 2022-05-13
 
 * Subgroups
 * Updated report tempates
@@ -18,11 +18,11 @@
 
 [All changes](https://github.com/sembruk/sportorg-plus/compare/v1.1.1...v1.2.0)
 
-## 2021-12-23 v1.1.1
+## v1.1.1 - 2021-12-23
 
 * Autobuild for Windows
 
-## 2021-11-29 v1.1.0
+## v1.1.0 - 2021-11-29
 
 * Split-teams action
 * CP coords for splits from course description (e.g. '\*|31;100;200')
@@ -35,7 +35,7 @@
 
 [All changes](https://github.com/sembruk/sportorg-plus/compare/v1.0.0...v1.1.0)
 
-## 2021-04-22 v1.0.0
+## v1.0.0 - 2021-04-22
 
 * Added rogaining full support (teams)
 * Added some columns at tabs
