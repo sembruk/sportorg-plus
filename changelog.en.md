@@ -1,5 +1,13 @@
 # SportOrgPlus Changelog
 
+## 2022-07-06 v1.2.1
+
+* Fixed file loading with invalid scores_array
+* Fixed Orgeo CSV import
+* Subgroups in start report
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.2.0...v1.2.1)
+
 ## 2022-05-13 v1.2.0
 
 * Subgroups
@@ -7,6 +15,8 @@
 * UTF-8 for JSON file
 * Fix Orgeo CSV import
 * Fix team result update after manual result edit
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.1.1...v1.2.0)
 
 ## 2021-12-23 v1.1.1
 

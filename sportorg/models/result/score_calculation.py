@@ -42,10 +42,10 @@ class ScoreCalculation(object):
                 if scores_type == 'array':
                     scores_array = str(self.race.get_setting('scores_array', '0')).split(',')
                     if len(scores_array):
-                        if place > len(scores_array):
-                            result.scores = int(scores_array[-1])
-                        else:
-                            result.scores = int(scores_array[place - 1])
+                        scores = scores_array[-1]
+                        if place <= len(scores_array):
+                            scores = scores_array[place - 1]
+                        result.scores = int(scores) if scores.isdigit() else 0
                     else:
                         result.scores = 0
                 elif scores_type == 'formula':
