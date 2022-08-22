@@ -13,6 +13,14 @@
     <h2>ПРОТОКОЛ СТАРТА</h2>
 </div>
 <div id="start-list-tables"></div>
+<div>
+    <table class="empty-table">
+        <tr>
+            <td>Всего участников:</td>
+            <td id="persons-count">0</td>
+        </tr>
+    </table>
+</div>
 {% if race.data.chief_referee or race.data.secretary %}
 <div>
     <table class="empty-table">
@@ -40,6 +48,7 @@
         var isMassStart = race.settings.system_start_source === "group";
         var isRogaining = race.settings.result_processing_mode === "scores" && race.settings.result_processing_score_mode == "rogain";
         var results = [];
+        var person_count = 0;
         for (var _i = 0, _a = race.persons; _i < _a.length; _i++) {
             var person = _a[_i];
             if (person.group && person.group.id === group.id) {
@@ -199,6 +208,8 @@
                 resultBlock.appendChild(new TableTextGenerator(getStartListByGroup(group), Fields.fields).getTable());
             }
         }
+        var personsCountElement = document.getElementById('persons-count');
+        personsCountElement.innerHTML = race.persons.length.toString();
     }
     render();
 

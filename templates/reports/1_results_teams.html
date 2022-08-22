@@ -7,6 +7,14 @@
     <h2>РЕЗУЛЬТАТЫ</h2>
 </div>
 <div id="results-tables"></div>
+<div>
+    <table class="empty-table">
+        <tr>
+            <td>Участников в протоколе:</td>
+            <td id="persons-count">0</td>
+        </tr>
+    </table>
+</div>
 {% if race.data.chief_referee or race.data.secretary %}
 <div>
     <table class="empty-table">
@@ -330,6 +338,7 @@
     } catch (e) {}
 
     function render() {
+        
         var resultBlock = document.getElementById('results-tables');
         resultBlock.innerHTML = '';
         Fields.active('group', store.showProtocolByCourse);
@@ -338,6 +347,17 @@
         } else {
             var _a = race.groups;
         }
+        var person_count = 0;
+        for (var i = 0, a = race.results; i < a.length; i++) {
+            var result = a[i];
+            var person = result.person;
+            if (result.status !== 13 && person) {
+                ++person_count;
+            }
+        }
+        var personsCountElement = document.getElementById('persons-count');
+        personsCountElement.innerHTML = person_count.toString();
+    
         for (var _i = 0; _i < _a.length; _i++) {
             if (store.showProtocolByCourse){
                 var course = _a[_i];
@@ -374,6 +394,7 @@
                 resultBlock.appendChild(newPage);
             }
         }
+
         var query = {
             by_course: store.showProtocolByCourse ? 1 : 0,
             penalty_time: Fields.isActive('penalty_time') ? 1 : 0
