@@ -139,8 +139,6 @@
             {key: 'index', title: '№', size: 4},
             {key: 'team', title: 'Команда', size: 20},
             {key: 'name', title: 'Участники (№ чипа)', size: 30},
-            {key: 'bib', title: 'Номер', size: 6},
-            //{key: 'card_number', title: 'Чип', size: 11},
             {key: 'subgroup', title: 'П/группа', size: 8},
             {key: 'comment', title: '', size: 20},
             {key: 'start', title: 'Время старта', size: 13, active: false}
@@ -179,7 +177,6 @@
             try {
                 var isTeamRace = race.data.race_type === 6
                 var isRogaining = race.settings.result_processing_mode === "scores" && race.settings.result_processing_score_mode == "rogain";
-                this.getField('bib').active = !isTeamRace
                 this.getField('subgroup').active = isRogaining
             } catch (e){}
             return this;
@@ -249,22 +246,6 @@
     }.init();
 
     new SettingsGenerator([
-        {
-            title: 'Номер',
-            value: Fields.isActive('bib'),
-            change: function (checked) {
-                Fields.active('bib', checked);
-                render()
-            }
-        },
-        {
-            title: 'Номер чипа',
-            value: Fields.isActive('card_number'),
-            change: function (checked) {
-                Fields.active('card_number', checked);
-                render()
-            }
-        },
         {
             title: 'Автоскролл',
             value: Scrolling.enabled,
