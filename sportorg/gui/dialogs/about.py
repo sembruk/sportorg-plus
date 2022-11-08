@@ -43,7 +43,7 @@ class AboutDialog(QDialog):
 
         home_page_text = QLabel()
         home_page_text.setText(
-            '\n{0}: <a href="{1}">{1}</a>'.format(_('Home page'), 'https://sportorg.github.io/pysport/')
+            '\n{0}: <a href="{1}">{1}</a>'.format(_('Home page'), 'https://github.com/sembruk/sportorg-plus/')
         )
         home_page_text.setOpenExternalLinks(True)
 
@@ -61,7 +61,7 @@ class AboutDialog(QDialog):
         licence_text.setMinimumHeight(220)
         licence_text.setMaximumHeight(220)
         licence_text.setReadOnly(True)
-        licence_text.setText("""
+        licence_text.setMarkdown("""
 
 ### GNU GENERAL PUBLIC LICENSE
 

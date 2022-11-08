@@ -142,7 +142,7 @@
     <code>
         {{ race.data.title }}
         <br> {{ race.data.start_datetime|date }}
-        <h2>{{ person.surname }} {{ person.name }} - {{ group.name }}</h2>
+        <h2>{{ person.name }} {{ person.surname }} - {{ group.name }}</h2>
         <br> Команда: {{team.number}} {{team.name}}
         <br> Номер: {{person.bib}} Чип: {{person.card_number}}
         <br> Старт: {{result.start_msec|tohhmmss}}
@@ -152,7 +152,7 @@
                 <th>КП</th>
                 <th>Время</th>
                 <th>Сплит</th>
-                <th>Ск-ть</th>
+                <th></th>
                 <th>Место</th>
             </tr>
         {% for leg in result.splits %}
@@ -183,6 +183,7 @@
         {% endfor %}
         </table>
         <br> Финиш: {{result.finish_msec|tohhmmss}} {{result.speed}}
+        <br> Время:  {{(result.result_msec - result.penalty_time)|tohhmmss}} {{result.speed}}
         <br> Сумма: {{result.scores + result.penalty_points}}
         <br> Штраф: {{result.penalty_points}}
         <br> <b>Результат: {{result.result}}</b>
@@ -201,13 +202,13 @@
                     {% if item.result.place|int != ns.last_place %}
                         <tr>
                             <td>{{item.result.place}}</td>
-                            <td>{{item.person.surname}} {{item.person.name}}</td>
+                            <td>{{item.person.name}} {{item.person.surname}}</td>
                             <td>{{item.result.result}}</td>
                         </tr>
                     {% else %}
                         <tr>
                             <td></td>
-                            <td>{{item.person.surname}} {{item.person.name}}</td>
+                            <td>{{item.person.name}} {{item.person.surname}}</td>
                         </tr>
                     {% endif %}
                     {% set ns.last_place = item.result.place|int %}

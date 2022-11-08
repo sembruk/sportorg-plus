@@ -1,5 +1,6 @@
 import platform
 
+from sportorg import config
 from sportorg.common.template import get_text_from_file
 from sportorg.models.memory import race, Team
 from sportorg.modules.configs.configs import Config
@@ -71,8 +72,8 @@ def split_printout(result):
             team=team.to_dict(),
             items=s.to_dict()
         )
-        #if not printer:
-        #    raise NoPrinterSelectedException('No printer selected')
+        if not config.DEBUG and not printer:
+            raise NoPrinterSelectedException('No printer selected')
         print_html(
             printer,
             template,

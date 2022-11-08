@@ -81,7 +81,7 @@ class PrintPropertiesDialog(QDialog):
         self.layout.addRow(self.margin_group_box)
 
         self.item_scale = QSpinBox()
-        self.item_scale.setRange(1, 100)
+        self.item_scale.setRange(1, 200)
         self.layout.addRow(QLabel(_('Scale (%)')), self.item_scale)
 
         self.set_values()

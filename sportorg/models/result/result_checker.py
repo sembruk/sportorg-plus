@@ -20,12 +20,12 @@ class ResultChecker:
         if self.person.group is None:
             return True
 
+        course = race().find_course(result)
+
         if race().get_setting('result_processing_mode', 'time') == 'scores':
-            # process by score (rogain)
+            result.check(course)
             result.scores, result.penalty_points = self.calculate_scores_rogaining(result)
             return True
-
-        course = race().find_course(result)
 
         if race().get_setting('marked_route_dont_dsq', False):
             # mode: competition without disqualification for mispunching (add penalty for missing cp)
@@ -209,10 +209,11 @@ class ResultChecker:
         user_array = []
         points = 0
         for cur_split in result.splits:
-            code = str(cur_split.code)
-            if code not in user_array:
-                user_array.append(code)
-                points += ResultChecker.get_control_score(code)
+            if cur_split.is_correct:
+                code = str(cur_split.code)
+                if code not in user_array:
+                    user_array.append(code)
+                    points += ResultChecker.get_control_score(code)
         penalty_points = 0
         if result.person and result.person.group:
             user_time = result.get_result_otime()

@@ -1,5 +1,9 @@
 {% raw %}
 <style>
+    body {
+      font-family: sans;
+    }
+
     p,
     blockquote,
     ul,
@@ -35,14 +39,48 @@
 
     table.sportorg-table tr {
         background-color: #fff;
-        /*border-top: 1px solid #ccc;*/
-        white-space: nowrap;
+        border-bottom: 1px solid #ccc;
+        white-space: pre-wrap;
         overflow: hidden;
     }
 
     /*table.sportorg-table tr:nth-child(2n) {*/
         /*background-color: #f8f8f8;*/
     /*}*/
+
+    table.blue-table {
+        background-color: #EEEEEE;
+        text-align: left;
+        word-break: keep-all;
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+    table.blue-table tr {
+        border-bottom: 1px solid #ccc;
+        overflow: hidden;
+    }
+    table.blue-table td,
+    table.blue-table th {
+        padding: 3px 13px;
+        white-space: pre-wrap;
+    }
+    table.blue-table tr:nth-child(even) {
+        background: #D0E4F5;
+    }
+    table.blue-table thead {
+      background: #1C6EA4;
+      background: -moz-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+      background: -webkit-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+      background: linear-gradient(to bottom, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+      /*border-bottom: 2px solid #444444;*/
+    }
+    table.blue-table thead th {
+      font-weight: bold;
+      color: #FFFFFF;
+    }
+    table.blue-table thead th:first-child {
+      border-left: none;
+    }
 
     table.empty-table {
         width: auto;

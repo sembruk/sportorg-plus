@@ -3,7 +3,7 @@ import logging
 from PySide2.QtCore import QTime
 from PySide2.QtWidgets import QFormLayout, QLabel, QDialog, \
      QTimeEdit, QSpinBox, QRadioButton, QCheckBox, QDialogButtonBox, QWidget, QTabWidget, \
-     QGroupBox, QLineEdit
+     QGroupBox, QLineEdit, QScrollArea, QVBoxLayout
 
 from sportorg.common.otime import OTime
 from sportorg.gui.global_access import GlobalAccess
@@ -25,13 +25,13 @@ class TimekeepingPropertiesDialog(QDialog):
         return super().exec_()
 
     def init_ui(self):
-        # self.setFixedWidth(500)
+        self.setMinimumWidth(600)
         self.setWindowTitle(_('Timekeeping settings'))
         # self.setWindowIcon(QIcon(icon_dir('sportident.png')))
         self.setSizeGripEnabled(False)
         self.setModal(True)
 
-        self.tab_widget = QTabWidget()
+        tab_widget = QTabWidget()
 
         # timekeeping tab
         self.timekeeping_tab = QWidget()
@@ -72,6 +72,20 @@ class TimekeepingPropertiesDialog(QDialog):
         self.finish_layout = QFormLayout()
         self.item_finish_station = QRadioButton(_('Finish station'))
         self.finish_layout.addRow(self.item_finish_station)
+
+        self.missed_finish_group_box = QGroupBox(_('Missed finish'))
+        self.missed_finish_layout = QFormLayout()
+        self.missed_finish_zero = QRadioButton(_('00:00:00'))
+        self.missed_finish_layout.addRow(self.missed_finish_zero)
+        self.missed_finish_dsq = QRadioButton(_('DSQ'))
+        self.missed_finish_layout.addRow(self.missed_finish_dsq)
+        self.missed_finish_readout = QRadioButton(_('Readout time'))
+        self.missed_finish_layout.addRow(self.missed_finish_readout)
+        self.missed_finish_penalty = QRadioButton(_('Last control + penalty'))
+        self.missed_finish_layout.addRow(self.missed_finish_penalty)
+        self.missed_finish_group_box.setLayout(self.missed_finish_layout)
+        self.finish_layout.addRow(self.missed_finish_group_box)
+
         self.item_finish_cp = QRadioButton(_('Control point'))
         self.item_finish_cp_value = QSpinBox()
         self.item_finish_cp_value.setMaximum(999)
@@ -122,6 +136,7 @@ class TimekeepingPropertiesDialog(QDialog):
         self.rp_time_radio = QRadioButton(_('by time'))
         self.result_proc_layout.addRow(self.rp_time_radio)
         self.rp_scores_radio = QRadioButton(_('by scores'))
+        self.rp_scores_radio.toggled.connect(self.on_rp_mode_changed)
         self.result_proc_layout.addRow(self.rp_scores_radio)
 
         self.rp_scores_group = QGroupBox()
@@ -212,11 +227,11 @@ class TimekeepingPropertiesDialog(QDialog):
 
         self.time_settings_tab.setLayout(self.time_settings_layout)
 
-        self.tab_widget.addTab(self.timekeeping_tab, _('SPORTident (Sportiduino, ...) settings'))
-        self.tab_widget.addTab(self.result_proc_tab, _('Result processing'))
-        self.tab_widget.addTab(self.scores_tab, _('Scores'))
-        self.tab_widget.addTab(self.marked_route_tab, _('Penalty calculation'))
-        self.tab_widget.addTab(self.time_settings_tab, _('Time settings'))
+        tab_widget.addTab(self.timekeeping_tab, _('SPORTident (Sportiduino, ...) settings'))
+        tab_widget.addTab(self.result_proc_tab, _('Result processing'))
+        tab_widget.addTab(self.scores_tab, _('Scores'))
+        tab_widget.addTab(self.marked_route_tab, _('Penalty calculation'))
+        tab_widget.addTab(self.time_settings_tab, _('Time settings'))
 
         def cancel_changes():
             self.close()
@@ -236,22 +251,33 @@ class TimekeepingPropertiesDialog(QDialog):
         self.button_cancel.setText(_('Cancel'))
         self.button_cancel.clicked.connect(cancel_changes)
 
-        self.layout = QFormLayout(self)
-        self.layout.addRow(self.tab_widget)
-        self.layout.addRow(button_box)
+        vertical_layout = QVBoxLayout(self)
+        scroll_area = QScrollArea()
+        scroll_area.setWidget(tab_widget)
+        scroll_area.setWidgetResizable(True)
+        vertical_layout.addWidget(scroll_area)
+        vertical_layout.addWidget(button_box)
 
         self.set_values_from_model()
 
         self.show()
 
     def on_assignment_mode(self):
-        mode = False
-        if self.assignment_mode.isChecked():
-            mode = True
+        mode = self.assignment_mode.isChecked()
         self.start_group_box.setDisabled(mode)
         self.finish_group_box.setDisabled(mode)
         self.chip_reading_box.setDisabled(mode)
         self.chip_duplicate_box.setDisabled(mode)
+
+    def on_rp_mode_changed(self):
+        if self.rp_scores_radio.isChecked():
+            self.disable_mr_tab()
+        else:
+            self.marked_route_tab.setEnabled(True)
+
+    def disable_mr_tab(self):
+        self.mr_off_radio.setChecked(True)
+        self.marked_route_tab.setDisabled(True)
 
     def set_values_from_model(self):
         cur_race = race()
@@ -259,6 +285,7 @@ class TimekeepingPropertiesDialog(QDialog):
         start_source = cur_race.get_setting('system_start_source', 'protocol')
         start_cp_number = cur_race.get_setting('system_start_cp_number', 31)
         finish_source = cur_race.get_setting('system_finish_source', 'station')
+        missed_finish = cur_race.get_setting('system_missed_finish', 'zero')
         finish_cp_number = cur_race.get_setting('system_finish_cp_number', 90)
         assign_chip_reading = cur_race.get_setting('system_assign_chip_reading', 'off')
         duplicate_chip_processing = cur_race.get_setting('system_duplicate_chip_processing', 'several_results')
@@ -288,6 +315,15 @@ class TimekeepingPropertiesDialog(QDialog):
             self.item_finish_cp.setChecked(True)
         elif finish_source == 'beam':
             self.item_finish_beam.setChecked(True)
+
+        if missed_finish == 'zero':
+            self.missed_finish_zero.setChecked(True)
+        elif missed_finish == 'dsq':
+            self.missed_finish_dsq.setChecked(True)
+        elif missed_finish == 'readout':
+            self.missed_finish_readout.setChecked(True)
+        elif missed_finish == 'penalty':
+            self.missed_finish_penalty.setChecked(True)
 
         self.item_finish_cp_value.setValue(finish_cp_number)
 
@@ -323,8 +359,7 @@ class TimekeepingPropertiesDialog(QDialog):
             self.rp_time_radio.setChecked(True)
         else:
             self.rp_scores_radio.setChecked(True)
-            self.mr_off_radio.setChecked(True)
-            self.marked_route_tab.setDisabled(True)
+            self.disable_mr_tab()
 
         if rp_score_mode == 'rogain':
             self.rp_rogain_scores_radio.setChecked(True)
@@ -405,6 +440,14 @@ class TimekeepingPropertiesDialog(QDialog):
         elif self.item_finish_beam.isChecked():
             finish_source = 'beam'
 
+        missed_finish = 'penalty'
+        if self.missed_finish_zero.isChecked():
+            missed_finish = 'zero'
+        elif self.missed_finish_dsq.isChecked():
+            missed_finish = 'dsq'
+        elif self.missed_finish_readout.isChecked():
+            missed_finish = 'readout'
+
         assign_chip_reading = 'off'
         if self.chip_reading_unknown.isChecked():
             assign_chip_reading = 'only_unknown_members'
@@ -434,6 +477,7 @@ class TimekeepingPropertiesDialog(QDialog):
 
         obj.set_setting('system_start_source', start_source)
         obj.set_setting('system_finish_source', finish_source)
+        obj.set_setting('system_missed_finish', missed_finish)
 
         obj.set_setting('system_start_cp_number', start_cp_number)
         obj.set_setting('system_finish_cp_number', finish_cp_number)

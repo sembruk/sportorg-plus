@@ -12,7 +12,7 @@ from sportorg.common.singleton import singleton
 from sportorg.gui.dialogs.course_edit import CourseEditDialog
 from sportorg.gui.dialogs.person_edit import PersonEditDialog
 from sportorg.gui.dialogs.group_edit import GroupEditDialog
-from sportorg.gui.dialogs.organization_edit import TeamEditDialog
+from sportorg.gui.dialogs.team_edit import TeamEditDialog
 from sportorg.models.constant import RentCards
 from sportorg.models.memory import Race, race, NotEmptyException, new_event, set_current_race_index
 from sportorg.models.result.result_calculation import ResultCalculation
@@ -27,7 +27,7 @@ from sportorg.modules.sportident.result_generation import ResultSportidentGenera
 from sportorg.common.broker import Broker
 from sportorg.gui.dialogs.file_dialog import get_save_file_name
 from sportorg.gui.menu import menu_list, Factory
-from sportorg.gui.tabs import persons, groups, teams, results, courses
+from sportorg.gui.tabs import persons, groups, teams, results, courses, log
 from sportorg.gui.tabs.memory_model import PersonMemoryModel, ResultMemoryModel, GroupMemoryModel, \
     CourseMemoryModel, TeamMemoryModel
 from sportorg.gui.toolbar import toolbar_list
@@ -85,6 +85,7 @@ class MainWindow(QMainWindow):
         self._set_style()
         self._setup_ui()
         self._setup_menu()
+        self._setup_toolbar()
         self._setup_tab()
         self._setup_statusbar()
         self.show()
@@ -98,10 +99,12 @@ class MainWindow(QMainWindow):
 
     def interval(self):
         if SIReaderClient().is_alive() != self.sportident_status:
+            pass
+        # FIXME
+        """
             self.toolbar_property['sportident'].setIcon(
                 QtGui.QIcon(config.icon_dir(self.sportident_icon[SIReaderClient().is_alive()])))
             self.sportident_status = SIReaderClient().is_alive()
-        """
         if Teamwork().is_alive() != self.teamwork_status:
             self.toolbar_property['teamwork'].setIcon(
                 QtGui.QIcon(config.icon_dir(self.teamwork_icon[Teamwork().is_alive()])))
@@ -160,7 +163,8 @@ class MainWindow(QMainWindow):
                 logging.error(str(e))
 
     def conf_write(self):
-        Configuration().parser[ConfigFile.GEOMETRY] = self.get_size()
+        Configuration().set_option(ConfigFile.GEOMETRY, 'main', self.saveGeometry().toHex().data().decode())
+        Configuration().set_option(ConfigFile.PATH, 'recent_files', self.recent_files)
         Configuration().save()
 
     def post_show(self):
@@ -183,17 +187,14 @@ class MainWindow(QMainWindow):
         self._menu_disable(self.current_tab)
 
     def _setup_ui(self):
-        geometry = ConfigFile.GEOMETRY
-        x = Configuration().parser.getint(geometry, 'x', fallback=480)
-        y = Configuration().parser.getint(geometry, 'y', fallback=320)
-        width = Configuration().parser.getint(geometry, 'width', fallback=880)
-        height = Configuration().parser.getint(geometry, 'height', fallback=474)
+        geom = bytearray.fromhex(Configuration().parser.get(ConfigFile.GEOMETRY, 'main',  fallback='00'))
+        if len(geom) == 1:
+            self.resize(880, 470)
+        self.restoreGeometry(geom)
 
-        self.setMinimumSize(QtCore.QSize(480, 320))
-        self.setGeometry(x, y, 480, 320)
         self.setWindowIcon(QtGui.QIcon(config.ICON))
         self.set_title()
-        self.resize(width, height)
+
         self.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.setDockNestingEnabled(False)
         self.setDockOptions(QtWidgets.QMainWindow.AllowTabbedDocks
@@ -248,6 +249,17 @@ class MainWindow(QMainWindow):
         self.setMenuBar(self.menubar)
         self._create_menu(self.menubar, menu_list())
 
+    def _setup_toolbar(self):
+        self.toolbar = self.addToolBar(_('Toolbar'))
+        for tb in toolbar_list():
+            tb_action = QtWidgets.QAction(QtGui.QIcon(tb[0]), tb[1], self)
+            tb_action.triggered.connect(self.menu_factory.get_action(tb[2]))
+            if len(tb) == 4:
+                self.toolbar_property[tb[3]] = tb_action
+            self.toolbar.addAction(tb_action)
+        if not self.get_configuration().get('show_toolbar'):
+            self.toolbar.hide()
+
     def _setup_statusbar(self):
         self.statusbar = QtWidgets.QStatusBar()
         self.setStatusBar(self.statusbar)
@@ -264,6 +276,8 @@ class MainWindow(QMainWindow):
         self.tabwidget.addTab(groups.Widget(), _('Groups'))
         self.tabwidget.addTab(courses.Widget(), _('Courses'))
         self.tabwidget.addTab(teams.Widget(), _('Teams'))
+        self.logging_tab = log.Widget()
+        self.tabwidget.addTab(self.logging_tab, _('Logs'))
         self.tabwidget.currentChanged.connect(self._menu_disable)
 
     def _menu_disable(self, tab_index):
@@ -274,12 +288,14 @@ class MainWindow(QMainWindow):
                 item[0].setDisabled(False)
 
     def get_size(self):
+
         return {
-            'x': self.x() + 8,
-            'y': self.y() + 30,
+            'x': self.geometry().x(),
+            'y': self.geometry().y(),
             'width': self.width(),
             'height': self.height(),
         }
+
 
     def set_title(self, title=None):
         main_title = '{} {}'.format(config.NAME, config.VERSION)
@@ -387,9 +403,6 @@ class MainWindow(QMainWindow):
     def add_recent_file(self, file):
         self.delete_from_recent_files(file)
         self.recent_files.insert(0, file)
-        Configuration().parser[ConfigFile.PATH] = {
-            'recent_files': self.recent_files
-        }
 
     def delete_from_recent_files(self, file):
         if file in self.recent_files:
@@ -555,7 +568,10 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 logging.exception(str(e))
                 self.delete_from_recent_files(file_name)
-                QMessageBox.warning(self, _('Error'), _('Cannot read file, format unknown') + ': ' + file_name)
+                if isinstance(e, FileNotFoundError):
+                    QMessageBox.warning(self, _('Error'), str(e))
+                else:
+                    QMessageBox.warning(self, _('Error'), _('Cannot read file, format unknown') + ': ' + file_name)
 
     def split_printout_selected(self):
         if self.current_tab != 1:

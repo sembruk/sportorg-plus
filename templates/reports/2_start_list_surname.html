@@ -13,6 +13,14 @@
     <h2>ПРОТОКОЛ СТАРТА</h2>
 </div>
 <div id="start-list-tables"></div>
+<div>
+    <table class="empty-table">
+        <tr>
+            <td>Участников в протоколе:</td>
+            <td id="persons-count">0</td>
+        </tr>
+    </table>
+</div>
 {% if race.data.chief_referee or race.data.secretary %}
 <div>
     <table class="empty-table">
@@ -34,103 +42,60 @@
     var race = {% endraw %}{{race|tojson}}{%raw %};
     racePreparation(race);
 
-    function getStartListByGroup(group) {
-        var isRelay = group.__type ? group.__type === 3 : race.data.race_type === 3;
-        var isTeamRace = group.__type ? group.__type === 6 : race.data.race_type === 6;
+    function getStartList() {
+        var isTeamRace = race.data.race_type === 6;
         var isMassStart = race.settings.system_start_source === "group";
         var isRogaining = race.settings.result_processing_mode === "scores" && race.settings.result_processing_score_mode == "rogain";
         var results = [];
         for (var _i = 0, _a = race.persons; _i < _a.length; _i++) {
             var person = _a[_i];
-            if (person.group && person.group.id === group.id) {
-                results.push({
+            if (person.group) {
+                var r = {
                     index: 0,
-                    name: person.surname + ' ' + person.name,
+                    name: person.name,
+                    surname: person.surname.toUpperCase(),
                     team: (person.team && String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
-                    qual: Qualification[person.qual],
                     bib: person.bib,
+                    age: person.age ? person.age : '',
+                    sex: person.sex > 0 ? (person.sex == 1 ? 'М' : 'Ж') : '',
                     card_number: person.card_number,
                     team_number: person.team && person.team.number || 0,
+                    team_id: person.team_id || '',
                     year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
-                    start: isMassStart ? toHHMMSS(group.start_time) : toHHMMSS(person.start_time),
+                    start: isMassStart ? toHHMMSS(person.group.start_time) : toHHMMSS(person.start_time),
                     start_time: person.start_time,
+                    group: person.group.name,
                     subgroup: person.subgroups_str ? person.subgroups_str : '',
                     comment: person.comment
-                });
+                };
+                r.age = r.sex + r.age;
+                results.push(r);
             }
         }
         results.sort(function (a, b) {
-            if (isRelay && a.start_time === b.start_time) {
-                if (a.bib % 1000 === b.bib % 1000) {
-                    return ~~(a.bib / 1000) - ~~(b.bib / 1000)
-                } else {
-                    return a.bib % 1000 - b.bib % 1000
-                }
+            if (a.surname === b.surname) {
+                return a.name.localeCompare(b.name)
             }
-            if (isTeamRace) {
-                if (a.team_number === b.team_number) {
-                    return a.bib - b.bib
-                }
-                return a.team_number - b.team_number
-            }
-            if (a.start_time === b.start_time) {
-                return a.bib - b.bib
-            }
-            return a.start_time - b.start_time
+            return a.surname.localeCompare(b.surname)
         });
         var index = 0;
         results.forEach(function (elem) {
             index++;
             elem.index = index
         });
-        if (isRelay) {
-            index = 0;
-            var prevBib = 0;
-            var resultsList = results.slice();
-            results = [];
-            for (var _i = 0, resultsList_ = resultsList; _i < resultsList_.length; _i++) {
-                var r = resultsList_[_i];
-                r.index = '';
-                if (r.bib % 1000 !== prevBib) {
-                    index++;
-                    results.push({index: index});
-                    prevBib = r.bib % 1000;
-                }
-                results.push(r);
-            }
-        } else if (isTeamRace) {
-            index = 0;
-            var prevTeamBib = 0;
-            var resultsList = results.slice();
-            results = [];
-            for (var _i = 0, resultsList_ = resultsList; _i < resultsList_.length; _i++) {
-                var r = resultsList_[_i];
-                r.index = '';
-                var teamBib = r.team_number
-                if (teamBib == 0 || teamBib !== prevTeamBib) {
-                    index++;
-                    results.push({index: teamBib});
-                    prevTeamBib = teamBib;
-                } else {
-                    r.team = ''
-                    r.start = ''
-                }
-                results.push(r);
-            }
-        }
         return results;
     }
 
     var Fields = {
         fields: [
-            {key: 'index', title: '№', size: 4, active: false},
-            {key: 'card_number', title: 'Чип', size: 3},
-            {key: 'name', title: 'Участник', size: 30},
-            {key: 'year', title: 'ГР', size: 5},
-            {key: 'qual', title: 'Разряд', size: 7},
+            {key: 'team_number', title: '№ ком-ды', size: 6},
+            {key: 'name', title: 'Имя', size: 30},
+            {key: 'surname', title: 'Фамилия', size: 30},
+            {key: 'age', title: '', size: 4},
             {key: 'team', title: 'Команда', size: 20},
             {key: 'bib', title: 'Номер', size: 6},
-            {key: 'card_number', title: 'Номер чипа', size: 11},
+            {key: 'card_number', title: 'Чип', size: 11, active: false},
+            {key: 'group', title: 'Группа', size: 8},
             {key: 'subgroup', title: 'П/группа', size: 8},
             {key: 'comment', title: '', size: 20},
             {key: 'start', title: 'Время старта', size: 13, active: false}
@@ -169,8 +134,7 @@
             try {
                 var isTeamRace = race.data.race_type === 6
                 var isRogaining = race.settings.result_processing_mode === "scores" && race.settings.result_processing_score_mode == "rogain";
-                this.getField('bib').active = false
-                this.getField('qual').active = !isTeamRace
+                this.getField('bib').active = !isTeamRace
                 this.getField('subgroup').active = isRogaining
             } catch (e){}
             return this;
@@ -178,26 +142,26 @@
     }.init();
 
     var store = {};
+    store.tableView = true;
 
     function render() {
         var resultBlock = document.getElementById('start-list-tables');
         resultBlock.innerHTML = '';
-        for (var _i = 0, _a = race.groups; _i < _a.length; _i++) {
-            var group = _a[_i];
-            var titleBlock = document.createElement('h2');
-            titleBlock.id = group.name;
-            titleBlock.appendChild(document.createTextNode(group.name));
-            resultBlock.appendChild(titleBlock);
-            var desk = document.createElement('h5');
-            desk.appendChild(document.createTextNode(group.long_name));
-            resultBlock.appendChild(desk);
-            resultBlock.appendChild(getGroupsBlockElement(race));
-            if (store.tableView) {
-                resultBlock.appendChild(new TableGenerator(getStartListByGroup(group), Fields.fields).getTable({className: 'sportorg-table'}));
-            } else {
-                resultBlock.appendChild(new TableTextGenerator(getStartListByGroup(group), Fields.fields).getTable());
+        if (store.tableView) {
+            resultBlock.appendChild(new TableGenerator(getStartList(), Fields.fields).getTable({className: 'blue-table'}));
+        } else {
+            resultBlock.appendChild(new TableTextGenerator(getStartList(), Fields.fields).getTable());
+        }
+
+        var person_count = 0;
+        for (var i = 0, a = race.persons; i < a.length; i++) {
+            var person = a[i];
+            if (person.group) {
+                ++person_count;
             }
         }
+        var personsCountElement = document.getElementById('persons-count');
+        personsCountElement.innerHTML = person_count.toString();
     }
     render();
 
@@ -243,16 +207,7 @@
 
     new SettingsGenerator([
         {
-            title: 'Табличный вид',
-            value: !!store.tableView,
-            change: function (checked) {
-                store.tableView = checked;
-                render()
-            }
-        },
-        /*
-        {
-            title: 'Номер',
+            title: 'Номер участника',
             value: Fields.isActive('bib'),
             change: function (checked) {
                 Fields.active('bib', checked);
@@ -267,7 +222,6 @@
                 render()
             }
         },
-        */
         {
             title: 'Автоскролл',
             value: Scrolling.enabled,

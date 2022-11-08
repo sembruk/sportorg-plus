@@ -66,6 +66,13 @@ class Sex(_TitleType):
     M = 1
     F = 2
 
+# For Poedit
+sexTranslations = [
+    _('Mf'),
+    _('M'),
+    _('F'),
+]
+
 
 class RaceType(_TitleType):
     INDIVIDUAL_RACE = 0
@@ -241,6 +248,29 @@ class Course(Model):
                     controls.append(cp)
         return controls
 
+class Subgroup(Model):
+    def __init__(self):
+        self.name = ''
+        self.min_age = 0
+        self.max_age = 0
+
+    def __repr__(self):
+        return 'Subgroup {}'.format(self.name)
+
+    def to_dict(self):
+        return {
+            'object': self.__class__.__name__,
+            'name': self.name,
+            'min_age': self.min_age,
+            'max_age': self.max_age,
+        }
+   
+    def update_data(self, data):
+        self.name = str(data['name'])
+        self.min_age = int(data['min_age'])
+        self.max_age = int(data['max_age'])
+
+
 class Group(Model):
     def __init__(self):
         self.id = uuid.uuid4()
@@ -271,6 +301,8 @@ class Group(Model):
         self.__type = None  # type: RaceType
         self.relay_legs = 0
 
+        self.subgroups = []  # type: List[Subgroup]
+
     def __repr__(self):
         return 'Group {}'.format(self.name)
 
@@ -294,6 +326,7 @@ class Group(Model):
         return self.get_type() == RaceType.TEAM_RACE
 
     def to_dict(self):
+        subgroups = [sg.to_dict() for sg in self.subgroups]
         return {
             'object': self.__class__.__name__,
             'id': str(self.id),
@@ -318,7 +351,7 @@ class Group(Model):
             'ranking': self.ranking.to_dict() if self.ranking else None,
             '__type': self.__type.value if self.__type else None,
             'relay_legs': self.relay_legs,
-
+            'subgroups': subgroups
         }
 
     def update_data(self, data):
@@ -346,6 +379,12 @@ class Group(Model):
             self.is_any_course = bool(data['is_any_course'])
         if data['__type']:
             self.__type = RaceType(int(data['__type']))
+        self.subgroups = []
+        if 'subgroups' in data:
+            for item in data['subgroups']:
+                sg = Subgroup()
+                sg.update_data(item)
+                self.subgroups.append(sg)
 
 
 class Team(Model):
@@ -358,6 +397,7 @@ class Team(Model):
         self.contact = ''
         self.code = ''
         self.group = None  # type: Group
+        self.subgroup_result = []   # Rogaining, type: List[SubgroupResult]
         self.result = TeamResult()
         self.count_person = 0
 
@@ -380,6 +420,7 @@ class Team(Model):
             'contact': self.contact,
             'code': self.code,
             'count_person': self.count_person,  # readonly
+            'subgroup_result': [sgr.to_dict() for sgr in self.subgroup_result],
         }
 
     def update_data(self, data):
@@ -399,6 +440,20 @@ class Team(Model):
         new_team.code = self.code
         new_team.group = self.group
         return new_team
+
+    def update_subgroups(self):
+        persons = race().get_persons_by_team(self)
+        self.subgroup_result = []
+        if self.group and persons:
+            group = self.group
+            for sg in group.subgroups:
+                sg_ok = True
+                for p in persons:
+                    if p.age < sg.min_age or p.age > sg.max_age:
+                        sg_ok = False
+                        break
+                if sg_ok:
+                    self.subgroup_result.append(SubgroupResult(sg.name))
 
 
 class Split(Model):
@@ -1146,6 +1201,14 @@ class Person(Model):
         else:
             self._group = group
 
+    def subgroups(self): 
+        if self.team:
+            return [sgr.name for sgr in self.team.subgroup_result]
+        return []
+
+    def subgroups_str(self):
+        return ', '.join(self.subgroups())
+
     def __repr__(self):
         return '{} {} {}'.format(self.full_name, self.bib, self.group)
 
@@ -1168,8 +1231,8 @@ class Person(Model):
 
     @staticmethod
     def get_age_by_birthdate(birth_date):
-        today = date.today()
-        return today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+        start = race().data.get_start_datetime()
+        return start.year - birth_date.year - ((start.month, start.day) < (birth_date.month, birth_date.day))
 
     @property
     def age(self):
@@ -1195,6 +1258,7 @@ class Person(Model):
             'bib': self.bib,
             'birth_date': str(self.birth_date) if self.birth_date else None,
             'year': self.get_year() if self.get_year() else 0,  # back compatibility with 1.0
+            'age': self.age,
             'group_id': str(self.group.id) if self.group else None,
             'team_id': str(self.team.id) if self.team else None,
             'world_code': self.world_code,
@@ -1207,6 +1271,7 @@ class Person(Model):
             'comment': self.comment,
             'start_time': self.start_time.to_msec() if self.start_time else None,
             'start_group': self.start_group,
+            'subgroups_str': self.subgroups_str(),
         }
 
     def update_data(self, data):
@@ -1593,6 +1658,9 @@ class Race(Model):
 
     def get_persons_by_group(self, group):
         return find(self.persons, group=group, return_all=True)
+
+    def get_persons_by_team(self, team):
+        return find(self.persons, team=team, return_all=True)
 
     def get_persons_by_corridor(self, corridor):
         ret = []
@@ -2179,6 +2247,17 @@ def race(i=None):
     else:
         return Race()
 
+class SubgroupResult(object):
+    def __init__(self, name, place=0):
+        self.name = name
+        self.place = place
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'place': self.place,
+        }
+    
 
 class TeamResult(object):
     def __init__(self):

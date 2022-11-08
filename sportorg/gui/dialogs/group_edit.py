@@ -2,8 +2,9 @@ import logging
 from datetime import date
 
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QFormLayout, QLabel, QLineEdit, QDialog, QPushButton, QSpinBox, QTimeEdit, QCheckBox, \
-    QDialogButtonBox
+from PySide2.QtWidgets import QFormLayout, QLabel, QLineEdit, QDialog, QPushButton, QSpinBox, \
+    QTextEdit, QTimeEdit, QCheckBox, QDialogButtonBox, QTableWidget, \
+    QTableWidgetItem, QHeaderView, QHBoxLayout, QVBoxLayout
 
 from sportorg import config
 from sportorg.gui.dialogs.group_ranking import GroupRankingDialog
@@ -11,8 +12,9 @@ from sportorg.gui.global_access import GlobalAccess
 from sportorg.gui.utils.custom_controls import AdvComboBox
 from sportorg.language import _
 from sportorg.models.constant import get_race_courses
-from sportorg.models.memory import race, Group, find, Sex, Limit, RaceType
+from sportorg.models.memory import race, Group, Subgroup, find, Sex, Limit, RaceType
 from sportorg.models.result.result_calculation import ResultCalculation
+from sportorg.models.start.start_preparation import update_subgroups
 from sportorg.modules.teamwork import Teamwork
 from sportorg.utils.time import time_to_qtime, time_to_otime
 
@@ -37,91 +39,96 @@ class GroupEditDialog(QDialog):
 
         self.layout = QFormLayout(self)
 
-        self.label_name = QLabel(_('Name'))
         self.item_name = QLineEdit()
         self.item_name.textChanged.connect(self.check_name)
-        self.layout.addRow(self.label_name, self.item_name)
+        self.layout.addRow(_('Name'), self.item_name)
 
-        self.label_full_name = QLabel(_('Full name'))
         self.item_full_name = QLineEdit()
-        self.layout.addRow(self.label_full_name, self.item_full_name)
+        self.layout.addRow(_('Full name'), self.item_full_name)
 
-        self.label_course = QLabel(_('Course'))
         self.item_course = AdvComboBox()
         self.item_course.addItems(get_race_courses())
-        self.layout.addRow(self.label_course, self.item_course)
+        self.layout.addRow(_('Course'), self.item_course)
 
-        self.label_is_any_course = QLabel(_('Is any course'))
         self.item_is_any_course = QCheckBox()
         self.item_is_any_course.stateChanged.connect(self.is_any_course_update)
-        self.layout.addRow(self.label_is_any_course, self.item_is_any_course)
+        self.layout.addRow(_('Is any course'), self.item_is_any_course)
 
-        self.label_sex = QLabel(_('Sex'))
         self.item_sex = AdvComboBox()
         self.item_sex.addItems(Sex.get_titles())
-        self.layout.addRow(self.label_sex, self.item_sex)
+        self.layout.addRow(_('Sex'), self.item_sex)
 
-        self.label_age_min = QLabel(_('Min age'))
         self.item_age_min = QSpinBox()
-
-        self.label_age_max = QLabel(_('Max age'))
         self.item_age_max = QSpinBox()
 
-        self.label_year_min = QLabel(_('Min year'))
         self.item_year_min = QSpinBox()
         self.item_year_min.setMaximum(date.today().year)
         self.item_year_min.editingFinished.connect(self.year_change)
-        
-        self.label_year_max = QLabel(_('Max year'))
+
         self.item_year_max = QSpinBox()
         self.item_year_max.setMaximum(date.today().year)
         self.item_year_max.editingFinished.connect(self.year_change)
 
         if race().is_team_race():
-            self.layout.addRow(self.label_age_min, self.item_age_min)
-            self.layout.addRow(self.label_age_max, self.item_age_max)
+            self.layout.addRow(_('Min age'), self.item_age_min)
+            self.layout.addRow(_('Max age'), self.item_age_max)
         else:
-            self.layout.addRow(self.label_year_min, self.item_year_min)
-            self.layout.addRow(self.label_year_max, self.item_year_max)
+            self.layout.addRow(_('Min year'), self.item_year_min)
+            self.layout.addRow(_('Max year'), self.item_year_max)
 
-        self.label_start_time = QLabel(_('Start time'))
-        self.label_start_time.setToolTip(_('Start time for mass start (rogaining)'))
+        label_start_time = QLabel(_('Start time'))
+        label_start_time.setToolTip(_('Start time for mass start (rogaining)'))
         self.item_start_time = QTimeEdit()
         self.item_start_time.setDisplayFormat(self.time_format)
-        self.layout.addRow(self.label_start_time, self.item_start_time)
+        self.layout.addRow(label_start_time, self.item_start_time)
 
-        self.label_max_time = QLabel(_('Max time'))
         self.item_max_time = QTimeEdit()
         self.item_max_time.setDisplayFormat(self.time_format)
-        self.layout.addRow(self.label_max_time, self.item_max_time)
+        self.layout.addRow(_('Max time'), self.item_max_time)
 
-        self.label_corridor = QLabel(_('Start corridor'))
         self.item_corridor = QSpinBox()
-        self.layout.addRow(self.label_corridor, self.item_corridor)
+        self.layout.addRow(_('Start corridor'), self.item_corridor)
 
-        self.label_corridor_order = QLabel(_('Order in corridor'))
         self.item_corridor_order = QSpinBox()
-        self.layout.addRow(self.label_corridor_order, self.item_corridor_order)
+        self.layout.addRow(_('Order in corridor'), self.item_corridor_order)
 
-        self.label_start_interval = QLabel(_('Start interval'))
         self.item_start_interval = QTimeEdit()
         self.item_start_interval.setDisplayFormat(self.time_format)
-        self.layout.addRow(self.label_start_interval, self.item_start_interval)
+        self.layout.addRow(_('Start interval'), self.item_start_interval)
 
-        self.label_price = QLabel(_('Start fee'))
         self.item_price = QSpinBox()
         self.item_price.setSingleStep(50)
         self.item_price.setMaximum(Limit.PRICE)
-        self.layout.addRow(self.label_price, self.item_price)
+        self.layout.addRow(_('Start fee'), self.item_price)
 
-        self.type_label = QLabel(_('Type'))
         self.type_combo = AdvComboBox()
         self.type_combo.addItems(RaceType.get_titles())
-        self.layout.addRow(self.type_label, self.type_combo)
+        self.layout.addRow(_('Type'), self.type_combo)
 
         self.rank_checkbox = QCheckBox(_('Rank calculation'))
         self.rank_button = QPushButton(_('Configuration'))
         self.layout.addRow(self.rank_checkbox, self.rank_button)
+
+        def delete_subgroup():
+            row = self.subgroups_table.currentRow()
+            if row >= 0:
+                self.subgroups_table.removeRow(row)
+
+        self.subgroups_table = QTableWidget(0, 3)
+        self.subgroups_table.setHorizontalHeaderLabels( (_("Subgroup"), _("Min"), _("Max")) )
+        self.subgroups_table.verticalHeader().setVisible(False)
+        self.subgroups_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.add_subgroup_button = QPushButton(_('Add'))
+        self.add_subgroup_button.clicked.connect(self.add_subgroup)
+        self.delete_subgroup_button = QPushButton(_('Delete'))
+        self.delete_subgroup_button.clicked.connect(delete_subgroup)
+        vbox_layout = QVBoxLayout()
+        vbox_layout.addWidget(self.add_subgroup_button)
+        vbox_layout.addWidget(self.delete_subgroup_button)
+        hbox_layout = QHBoxLayout()
+        hbox_layout.addWidget(self.subgroups_table)
+        hbox_layout.addLayout(vbox_layout)
+        self.layout.addRow(hbox_layout)
 
         def cancel_changes():
             self.close()
@@ -178,6 +185,24 @@ class GroupEditDialog(QDialog):
         else:
             self.item_course.setDisabled(False)
 
+    def add_subgroup(self, name='', min_age=0, max_age=100):
+        r = self.subgroups_table.rowCount()
+        self.subgroups_table.setRowCount(r + 1)
+        name_item = QTableWidgetItem(name)
+        self.subgroups_table.setItem(r, 0, name_item)
+        min_age_spin_box = QSpinBox(self.subgroups_table)
+        min_age_spin_box.setMinimum(0)
+        min_age_spin_box.setMaximum(150)
+        min_age_spin_box.setValue(min_age)
+        self.subgroups_table.setCellWidget(r, 1, min_age_spin_box)
+        max_age_spin_box = QSpinBox(self.subgroups_table)
+        max_age_spin_box.setMinimum(0)
+        max_age_spin_box.setMaximum(150)
+        max_age_spin_box.setValue(max_age)
+        self.subgroups_table.setCellWidget(r, 2, max_age_spin_box)
+        if not name:
+            self.subgroups_table.editItem(name_item)
+
     def set_values_from_model(self):
 
         self.item_name.setText(self.current_object.name)
@@ -218,6 +243,9 @@ class GroupEditDialog(QDialog):
             GroupRankingDialog(group).exec_()
 
         self.rank_button.clicked.connect(rank_configuration)
+
+        for sg in self.current_object.subgroups:
+            self.add_subgroup(sg.name, sg.min_age, sg.max_age)
 
     def apply_changes_impl(self):
         group = self.current_object
@@ -281,5 +309,16 @@ class GroupEditDialog(QDialog):
 
         group.is_any_course = self.item_is_any_course.isChecked()
 
+        group.subgroups.clear()
+        for row in range(0, self.subgroups_table.rowCount()):
+            sg = Subgroup()
+            sg.name = self.subgroups_table.item(row, 0).text()
+            sg.min_age = self.subgroups_table.cellWidget(row, 1).value()
+            sg.max_age = self.subgroups_table.cellWidget(row, 2).value()
+            if sg.name:
+                group.subgroups.append(sg)
+
+
         ResultCalculation(race()).set_rank(group)
+        update_subgroups(group)
         Teamwork().send(group.to_dict())

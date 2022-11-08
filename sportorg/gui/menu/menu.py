@@ -188,6 +188,11 @@ def menu_list():
                     'title': _('Teams'),
                     'shortcut': 'Ctrl+5',
                     'action': 'ToTeamsAction'
+                },
+                {
+                    'title': _('Log'),
+                    'shortcut': 'Ctrl+6',
+                    'action': 'ToLogAction'
                 }
             ]
         },
@@ -234,6 +239,10 @@ def menu_list():
                 {
                     'title': _('Split teams'),
                     'action': 'SplitTeamsAction'
+                },
+                {
+                    'title': _('Update subgroups'),
+                    'action': 'UpdateSubroups'
                 },
             ]
         },
@@ -403,8 +412,13 @@ def menu_list():
             'title': _('Help'),
             'actions': [
                 {
-                    'title': _('About'),
+                    'title': _('Help'),
                     'shortcut': 'F1',
+                    'action': 'HelpAction'
+                },
+
+                {
+                    'title': _('About'),
                     'action': 'AboutAction'
                 },
                 {

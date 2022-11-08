@@ -80,6 +80,8 @@ class Config(metaclass=Singleton):
                 'use_birthday': False,
                 'check_updates': True,
                 'autosave_interval': 0,
+                'logging_level': 'INFO',
+                'log_window_row_count': 1000
             }),
             ConfigFile.SOUND: Configurations({
                 'enabled': False,
@@ -132,6 +134,11 @@ class Config(metaclass=Singleton):
     @property
     def ranking(self):
         return self._configurations[ConfigFile.RANKING]
+
+    def set_option(self, section, option, value):
+        if not self.parser.has_section(section):
+            self.parser.add_section(section)
+        self.parser.set(section, option, str(value))
 
     def read(self):
         self.parser.read(sportorg_config.CONFIG_INI)

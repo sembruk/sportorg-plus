@@ -1,0 +1,15 @@
+boltons >= 20
+cx_Freeze >= 6
+docxtpl >= 0
+jinja2 >= 2
+playsound >= 1
+polib >= 1
+pydantic >= 1
+PySide2 >= 5
+python-dateutil >= 2
+python-dotenv >= 0.14
+requests >= 2
+shiboken2 >= 5.15
+sportident >= 1
+
+

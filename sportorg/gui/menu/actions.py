@@ -10,6 +10,7 @@ from PySide2.QtWidgets import QMessageBox, QApplication, QTableView
 from sportorg import config
 from sportorg.common.otime import OTime
 from sportorg.gui.dialogs.about import AboutDialog
+from sportorg.gui.dialogs.help import HelpDialog
 from sportorg.gui.dialogs.cp_delete import CPDeleteDialog
 from sportorg.gui.dialogs.entry_filter import DialogFilter
 from sportorg.gui.dialogs.entry_mass_edit import MassEditDialog
@@ -39,7 +40,7 @@ from sportorg.libs.winorient.wdb import write_wdb
 from sportorg.models.memory import race, ResultStatus, ResultManual, find
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.result.result_checker import ResultChecker
-from sportorg.models.start.start_preparation import guess_corridors_for_groups, copy_bib_to_card_number, copy_card_number_to_bib, split_teams
+from sportorg.models.start.start_preparation import guess_corridors_for_groups, copy_bib_to_card_number, copy_card_number_to_bib, split_teams, update_subgroups
 from sportorg.modules.backup.json import get_races_from_file
 from sportorg.modules.iof import iof_xml
 from sportorg.modules.ocad import ocad
@@ -288,6 +289,10 @@ class ToTeamsAction(Action, metaclass=ActionFactory):
     def execute(self):
         self.app.select_tab(4)
 
+class ToLogAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        self.app.select_tab(5)
+
 
 class StartPreparationAction(Action, metaclass=ActionFactory):
     def execute(self):
@@ -364,6 +369,18 @@ class SplitTeamsAction(Action, metaclass=ActionFactory):
     def execute(self):
         split_teams()
         self.app.refresh()
+
+class SplitTeamsAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        split_teams()
+        self.app.refresh()
+
+
+class UpdateSubroups(Action, metaclass=ActionFactory):
+    def execute(self):
+        update_subgroups()
+        self.app.refresh()
+
 
 class ManualFinishAction(Action, metaclass=ActionFactory):
     def execute(self):
@@ -583,6 +600,11 @@ class TelegramSendAction(Action, metaclass=ActionFactory):
 class AboutAction(Action, metaclass=ActionFactory):
     def execute(self):
         AboutDialog().exec_()
+
+
+class HelpAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        HelpDialog().exec_()
 
 
 class CheckUpdatesAction(Action, metaclass=ActionFactory):
