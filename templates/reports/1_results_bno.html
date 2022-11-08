@@ -1,0 +1,543 @@
+{% extends "base.html" %}
+{% block title %}Результаты - {{ race.data.description }}{% endblock %}
+{% block head %}{{ super() }}{% endblock %}
+{% block content %}
+<div class="text-center">
+    <h3>{{ race.data.description }} <br>{{ race.data.start_datetime|date }} {{ race.data.location }}</h3>
+    <h2>РЕЗУЛЬТАТЫ</h2>
+</div>
+<div id="results-tables"></div>
+<div>
+    <table class="empty-table">
+        <tr>
+            <td>Участников в протоколе:</td>
+            <td id="persons-count">0</td>
+        </tr>
+    </table>
+</div>
+{% if race.data.chief_referee or race.data.secretary %}
+<div>
+    <table class="empty-table">
+        <tr>
+            <td><b>Главный судья:</b></td>
+            <td width="150px"></td>
+            <td><b>{{ race.data.chief_referee }}</b></td>
+        </tr>
+        <tr>
+            <td><b>Главный секретарь:</b></td>
+            <td width="150px"></td>
+            <td><b>{{ race.data.secretary }}</b></td>
+        </tr>
+    </table>
+</div>
+{% endif %}
+{% raw %}
+<script>
+    var race = {% endraw %}{{race|tojson}}{% raw %};
+    var selected = {% endraw %}{{selected|tojson}}{% raw %};
+    racePreparation(race);
+
+    function getPersonResult(result) {
+        var person = result.person
+        var r = {
+            index: 0,
+            name: (person.name + ' ' + person.surname).slice(0, MAX_PERSON_NAME),
+            team: (person.team && String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
+            team_number: person.team && person.team.number || 0,
+            team_id: person.team_id || '',
+            qual: Qualification[person.qual],
+            bib: person.bib,
+            group: person.group.name,
+            age: person.age ? person.age : '',
+            sex: person.sex > 0 ? (person.sex == 1 ? 'М' : 'Ж') : '',
+            year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
+            credit_time: result.credit_time > 0 ? toHHMMSS(result.credit_time) : '',
+            penalty_time: result.penalty_time > 0 ? toHHMMSS(result.penalty_time) : '',
+            penalty_points: result.penalty_points > 0 ? result.penalty_points : '',
+            result: result.result,
+            time: result.finish_msec > result.start_msec ? toHHMMSS(result.finish_msec - result.start_msec) : toHHMMSS(result.finish_msec + 86400000 - result.start_msec),
+            result_msec: result.result_msec,
+            result_team_time: toHHMMSS(result.result_team_msec),
+            diff: race.settings.result_processing_mode === 'scores' ? result.diff_scores : toHHMMSS(result.diff),
+            place: result.place,
+            status: result.status,
+            scores: result.scores,
+            scores_without_penalty: result.scores + result.penalty_points,
+            place_show: person.is_out_of_competition ? 'в/к' : result.place === 0 ? '' : result.place === -1 ? '' : result.place,
+            is_out_of_competition: person.is_out_of_competition,
+            subgroup: '',
+            data: result
+        };
+        if (result.person.team) {
+            var sgr = []
+            result.person.team.subgroup_result.forEach(function (elem) {
+                if (elem.place < 4) {
+                    elem.place = '<b>' + elem.place + '</b>';
+                }
+                sgr.push(elem.name + ':' + elem.place);
+            });
+            subgroup_str = sgr.join(" ");
+            r.subgroup = document.createElement('div');
+            r.subgroup.innerHTML = subgroup_str;
+        }
+        r.name += ' ' + r.year;
+        // Uncomment for RogainingRoutes team page
+        //var a = document.createElement('a');
+        //a.href = 'team' + r.team_number + '.html';
+        //a.appendChild(document.createTextNode(r.team));
+        //r.team = a
+        if (result.status !== 1) {
+            r.diff = '';
+            r.place_show = '';
+            r.scores = '';
+            r.credit_time = '';
+            r.penalty_time = '';
+            r.penalty_points = '';
+        }
+        return r
+    }
+
+    function getResultsByGroup(group, showFirstCount) {
+        showFirstCount = +showFirstCount || 0;
+        var isTeamRace = group.__type ? group.__type === 6 : race.data.race_type === 6;
+        var results = [];
+        for (var _i = 0, _a = race.results; _i < _a.length; _i++) {
+            var result = _a[_i];
+            var person = result.person
+            if (result.status !== 13 && person && person.group && person.group.id === group.id
+                    && (showFirstCount > 0 ? result.place <= showFirstCount && result.place > 0 : true)) {
+                var r = getPersonResult(result)
+
+                results.push(r);
+            }
+        }
+        results.sort(function (a, b) {
+            if (a.status !== 1 && b.status !== 1) {
+                return STATUS_PRIORITY.indexOf(a.status) - STATUS_PRIORITY.indexOf(b.status);
+            }
+            if (a.status !== 1) {
+                return 1
+            }
+            if (b.status !== 1) {
+                return -1
+            }
+            if (a.is_out_of_competition || b.is_out_of_competition) {
+                if (race.settings.result_processing_mode === 'scores' && a.scores !== b.scores) {
+                    return a.scores - b.scores;
+                }
+                return a.result_msec - b.result_msec;
+            }
+            if (a.place < 1) {
+                return 1
+            }
+            if (b.place < 1) {
+                return -1
+            }
+            return a.place - b.place
+        });
+        var index = 0;
+        if (isTeamRace) {
+            var prevTeamId = '';
+            var resultsList = results.slice();
+            results = [];
+            var teamResult;
+            for (var i = 0, resultsList_ = resultsList; i < resultsList_.length; i++) {
+                var r = resultsList_[i]
+                var teamId = r.team_id;
+                if (teamId !== prevTeamId) {
+                    if (teamResult) {
+                        results.push(teamResult);
+                    }
+                    teamResult = r;
+                    teamResult.index = ++index;
+                    teamResult.time = teamResult.result_team_time
+                    prevTeamId = teamId;
+                } else if (teamResult) {
+                    teamResult.name += '\n' + r.name;
+                }
+            }
+            if (teamResult) {
+                results.push(teamResult);
+            }
+        } else {
+            results.forEach(function (elem) {
+                index++;
+                elem.index = index;
+            })
+        }
+        return results;
+    }
+	function getResultsByCourse(group, showFirstCount) {
+		//showFirstCount = +showFirstCount || 0;
+        //var isTeamRace = group.__type ? group.__type === 6 : race.data.race_type === 6;
+        //var results = [];
+        //for (var _i = 0, _a = race.results; _i < _a.length; _i++) {
+        //    var result = _a[_i];
+        //    var person = result.person
+        //    if (result.status !== 13 && person && person.group && person.group.course && person.group.course.id === group.id) { //} && (showFirstCount ? result.place <= showFirstCount && result.place > 0 : 1)) {
+        //        var r = getPersonResult(result)
+
+        //        results.push(r);
+        //    }
+        //}
+        //results.sort(function (a, b) {
+        //    if (a.status !== 1 && b.status !== 1) {
+        //        return STATUS_PRIORITY.indexOf(a.status) - STATUS_PRIORITY.indexOf(b.status);
+        //    }
+        //    if (a.status !== 1) {
+        //        return 1
+        //    }
+        //    if (b.status !== 1) {
+        //        return -1
+        //    }
+        //    if (race.settings.result_processing_mode === 'scores' && a.scores !== b.scores) {
+        //        return b.scores - a.scores;
+        //    }
+        //    return a.result_msec - b.result_msec;
+        //});
+        //var index = 0;
+        //if (isTeamRace) {
+        //    var prevTeamBib = 0;
+        //    var resultsList = results.slice();
+        //    results = [];
+        //    for (var _i = 0, resultsList_ = resultsList; _i < resultsList_.length; _i++) {
+        //        var r = resultsList_[_i];
+        //        r.index = '';
+        //        var teamBib = r.team_number
+        //        if (teamBib == 0 || teamBib !== prevTeamBib) {
+        //            index++;
+        //            results.push({index: index});
+        //            prevTeamBib = teamBib;
+        //        } else {
+        //            r.result = ''
+        //            r.scores = ''
+        //            r.scores_without_penalty = ''
+        //            r.result_team_time = ''
+        //            r.place_show = ''
+        //            r.team = ''
+        //            r.group = ''
+        //        }
+        //        results.push(r);
+        //    }
+        //} else {
+		//	var newplace = 1;
+		//	var doubleplace = -1;
+		//	var best_result_msec = results[0] ? results[0].result_msec : 0;
+		//	var last_result_msec = results[0] ? results[0].result_msec : 0;
+        //    var binary_search = function(arr,required){
+		//		if (!arr){
+		//			return 0;
+		//		}
+        //        var l = -1;
+        //        var r = arr.length-1;
+        //        while (r-l>1){
+        //            var m = Math.floor((l+r)/2);
+        //            if (arr[m]>=required){
+        //                r = m;
+        //            } else {
+        //                l = m;
+        //            }
+        //        }
+        //        if (arr[r]==required){
+        //            return r+1;
+        //        }
+        //        return 0;
+        //    }
+        //    results.forEach(function (elem) {
+        //        index++;
+        //        elem.index = index;
+		//		if (!elem.data.person.is_out_of_competition && elem.place !== 0 && elem.place !== -1) {
+		//			if (last_result_msec < elem.result_msec){
+		//				newplace += 1 + doubleplace;
+		//				doubleplace = 0;
+		//				last_result_msec = elem.result_msec;
+		//			} else {
+		//				doubleplace++;
+		//			}
+		//			elem.diff = race.settings.result_processing_mode === 'scores' ? elem.diff_scores : toHHMMSS(elem.result_msec - best_result_msec);
+		//			elem.place = newplace;
+		//			elem.place_show = newplace;
+        //        }
+        //    });
+        //}
+        //return results;
+    }
+
+    var Fields = {
+        fields: [
+            /*{key: 'index', title: '№', size: 4},*/
+            {key: 'place_show', title: 'Место', size: 6},
+            {key: 'group', title: 'Группа', size: 10, active: false},
+            {key: 'team', title: 'Команда', size: 20},
+            {key: 'name', title: 'Участники', size: 30},
+            {key: 'qual', title: 'Разряд', size: 7},
+            {key: 'team_number', title: 'Номер', size: 6, active: false},
+            {key: 'time', title: 'Время', size: 6},
+            {key: 'scores_without_penalty', title: 'Очки', size: 5, active: false},
+            {key: 'penalty_points', title: 'Штраф', size: 9, active: false},
+            {key: 'penalty_time', title: 'Штраф', size: 9, active: true},
+            {key: 'credit_time', title: 'Бонусы', size: 9},
+            {key: 'result', title: 'Результат', size: 16},
+            {key: 'scores', title: 'Результат', size: 5, active: false},
+            {key: 'diff', title: 'Отставание', size: 11, active: false},
+            {key: 'subgroup', title: 'П/группа', size: 8, active: false},
+        ],
+        active: function (key, val) {
+            for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                if (key === obj.key) {
+                    obj.active = val;
+                }
+            }
+        },
+        isActive: function (key) {
+            for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                if (key === obj.key) {
+                    if (obj.active === void 0) {
+                        return true;
+                    }
+                    else {
+                        return !!obj.active;
+                    }
+                }
+            }
+            return false;
+        },
+        getField: function (key) {
+            for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                if (key === obj.key) {
+                    return obj
+                }
+            }
+        },
+        getCopyFields: function () {
+            return JSON.parse(JSON.stringify(this.fields))
+        },
+        init: function () {
+            try {
+                var isTeamRace = race.data.race_type === 6
+                var isRogaining = race.settings.result_processing_mode === 'scores'
+                //this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
+
+                this.getField('scores_without_penalty').active = isRogaining
+                this.getField('scores').active = isRogaining
+                this.getField('penalty_points').active = isRogaining
+                this.getField('result').active = !isRogaining
+                //this.getField('diff').active = !isRogaining
+                this.getField('qual').active = !isTeamRace
+            } catch (e){}
+            return this;
+        }
+    }.init();
+
+    store = {
+        showLinkForGroups: true,
+        tableView: true
+    };
+
+    try {
+        store.showProtocolByCourse = location.href.indexOf('by_course=1') > -1;
+    } catch (e) {}
+
+    function render() {
+        
+        var resultBlock = document.getElementById('results-tables');
+        resultBlock.innerHTML = '';
+        Fields.active('group', store.showProtocolByCourse);
+        if (store.showProtocolByCourse){
+            var _a = race.courses;
+        } else {
+            var _a = race.groups;
+        }
+        var person_count = 0;
+        for (var i = 0, a = race.results; i < a.length; i++) {
+            var result = a[i];
+            var person = result.person;
+            if (result.status !== 13 && person) {
+                ++person_count;
+            }
+        }
+        var personsCountElement = document.getElementById('persons-count');
+        personsCountElement.innerHTML = person_count.toString();
+    
+        for (var _i = 0; _i < _a.length; _i++) {
+            if (store.showProtocolByCourse){
+                var course = _a[_i];
+                var rows = getResultsByCourse(course, store.showFirstCount);
+                var groupName = course.name;
+            } else {
+                var group = _a[_i];
+                var rows = getResultsByGroup(group, store.showFirstCount);
+                var course = group.course;
+                var groupName = group.name;
+            }
+            if (!rows.length) {
+                continue;
+            }
+            var titleBlock = document.createElement('h2');
+            titleBlock.id = groupName;
+            var groupTitle = groupName;
+            if (course && course.controls && course.controls.length){
+                groupTitle += ', ' + course.controls.length + ' КП';
+            }
+            if (course && course.length){
+                groupTitle += ', ' + course.length / 1000 + ' км';
+            }
+            titleBlock.appendChild(document.createTextNode(groupTitle));
+            resultBlock.appendChild(titleBlock);
+            if (!store.showProtocolByCourse && store.showLinkForGroups) {
+                resultBlock.appendChild(getGroupsBlockElement(race));
+            }
+            var fields = Fields.getCopyFields();
+            resultBlock.appendChild(new TableGenerator(rows, fields).getTable({className: 'blue-table'}));
+            if (store.newPage && _i < _a.length - 1) {
+                var newPage = document.createElement('div');
+                newPage.className = 'new-page';
+                resultBlock.appendChild(newPage);
+            }
+        }
+
+        var query = {
+            by_course: store.showProtocolByCourse ? 1 : 0,
+            //penalty_time: Fields.isActive('penalty_time') ? 1 : 0
+        };
+        var queryString = '';
+        Object.keys(query).forEach(function (key) {
+            if (query[key]) {
+                if (queryString === '') {
+                    queryString += '?';
+                } else {
+                    queryString += '&'
+                }
+                queryString += key + '=' + query[key];
+            }
+        });
+        try {
+            var href = location.href.split('?')[0];
+            history.pushState({}, null, href + queryString);
+        } catch (e) {}
+    }
+
+    render();
+
+    var Scrolling = {
+        direction: 1,
+        enabled: false,
+        lock: false,
+        prev: 0,
+        intervalTimer: 0,
+        init: function () {
+            var _this = this;
+            if (_this.intervalTimer) {
+                clearInterval(_this.intervalTimer)
+            }
+            _this.intervalTimer = setInterval(function () {
+                _this.lock = !_this.lock;
+            }, 5000);
+            window.onscroll = function () {
+                var d = document.documentElement;
+                var offset = d.scrollTop + window.innerHeight;
+                var height = d.offsetHeight;
+
+                if (offset === height) {
+                    _this.direction = -1;
+                }
+                if (offset <= window.innerHeight) {
+                    _this.direction = 1;
+                }
+            };
+            this.pageScroll();
+            return this;
+        },
+        pageScroll: function () {
+            var _this = this;
+            if (_this.enabled && ! _this.lock) {
+                window.scrollBy(10, _this.direction);
+            }
+            setTimeout(function () {
+                _this.pageScroll();
+            }, 10);
+        }
+    }.init();
+
+    new SettingsGenerator([
+        {
+            title: 'Ссылки на группы',
+            value: !!store.showLinkForGroups,
+            change: function (checked) {
+                store.showLinkForGroups = checked;
+                render()
+            }
+        },
+        //{
+        //    title: 'Протокол по дистанциям',
+        //    value: !!store.showProtocolByCourse,
+        //    change: function (checked) {
+        //        store.showProtocolByCourse = checked;
+        //        render()
+        //    }
+        //},
+        //{
+        //    title: 'Номер',
+        //    value: Fields.isActive('team_number'),
+        //    change: function (checked) {
+        //        Fields.active('team_number', checked);
+        //        render()
+        //    }
+        //},
+        {% endraw %}{% if race.settings.result_processing_mode != 'scores' %}
+        {
+            title: 'Штрафное время',
+            value: Fields.isActive('penalty_time'),
+            change: function (checked) {
+                Fields.active('penalty_time', checked);
+                render()
+            }
+        },
+        {
+            title: 'Отставание',
+            value: Fields.isActive('diff'),
+            change: function (checked) {
+                Fields.active('diff', checked);
+                render()
+            }
+        },
+        {% endif %}{% raw %}
+        {
+            title: 'Показать первые: ',
+            value: [
+                {text: 'Все результаты', value: 0},
+                {text: '1', value: 1},
+                {text: '3', value: 3},
+                {text: '4', value: 4},
+                {text: '5', value: 5},
+                {text: '6', value: 6},
+                {text: '10', value: 10}
+            ],
+            change: function (arr) {
+                store.showFirstCount = arr[0];
+                render();
+            }
+        },
+        {
+            title: 'Печатать на отдельной странице',
+            value: false,
+            change: function (checked) {
+                store.newPage = checked;
+                render()
+            }
+        },
+        {
+            title: 'Автоскролл',
+            value: Scrolling.enabled,
+            change: function (checked) {
+                Scrolling.enabled = checked;
+            }
+        },
+    ]).show();
+</script>
+{% endraw %}
+{% endblock %}
+
