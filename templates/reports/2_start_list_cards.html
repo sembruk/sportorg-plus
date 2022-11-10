@@ -42,72 +42,47 @@
     var race = {% endraw %}{{race|tojson}}{%raw %};
     racePreparation(race);
 
-    function getStartListByGroup(group) {
-        var isRelay = group.__type ? group.__type === 3 : race.data.race_type === 3;
-        var isTeamRace = group.__type ? group.__type === 6 : race.data.race_type === 6;
-        var isMassStart = race.settings.system_start_source === "group";
+    function getStartListByGroup() {
+        var isTeamRace = race.data.race_type === 6;
         var isRogaining = race.settings.result_processing_mode === "scores" && race.settings.result_processing_score_mode == "rogain";
         var results = [];
         var person_count = 0;
         for (var _i = 0, _a = race.persons; _i < _a.length; _i++) {
             var person = _a[_i];
-            if (person.group && person.group.id === group.id) {
-                results.push({
-                    index: 0,
-                    name: person.surname + ' ' + person.name,
-                    team: (person.team && String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
-                    qual: Qualification[person.qual],
-                    bib: person.bib,
-                    card_number: person.card_number,
-                    team_number: person.team && person.team.number || 0,
-                    year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
-                    start: isMassStart ? toHHMMSS(group.start_time) : toHHMMSS(person.start_time),
-                    start_time: person.start_time,
-                    subgroup: isTeamRace ? person.subgroups_str : '',
-                    comment: person.comment
-                });
-            }
+            results.push({
+                index: 0,
+                name: person.surname + ' ' + person.name,
+                team: (person.team && String(person.team.name).slice(0, MAX_ORG_NAME)) || '',
+                group: person.group && person.group.name || '',
+                qual: Qualification[person.qual],
+                bib: person.bib,
+                card_number: person.card_number,
+                team_number: person.team && person.team.number || 0,
+                year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
+                start: toHHMMSS(person.start_time),
+                start_time: person.start_time,
+                subgroup: isTeamRace ? person.subgroups_str : '',
+                comment: person.comment
+            });
         }
         results.sort(function (a, b) {
-            if (isRelay && a.start_time === b.start_time) {
-                if (a.bib % 1000 === b.bib % 1000) {
-                    return ~~(a.bib / 1000) - ~~(b.bib / 1000)
-                } else {
-                    return a.bib % 1000 - b.bib % 1000
-                }
-            }
             if (isTeamRace) {
                 if (a.team.number === b.team.number) {
                     return a.card_number - b.card_number
                 }
                 return a.team.number - b.team.number
             }
-            if (a.start_time === b.start_time) {
+            if (a.name === b.name) {
                 return a.bib - b.bib
             }
-            return a.start_time - b.start_time
+            return a.name.localeCompare(b.name)
         });
         var index = 0;
         results.forEach(function (elem) {
             index++;
             elem.index = index
         });
-        if (isRelay) {
-            index = 0;
-            var prevBib = 0;
-            var resultsList = results.slice();
-            results = [];
-            for (var _i = 0, resultsList_ = resultsList; _i < resultsList_.length; _i++) {
-                var r = resultsList_[_i];
-                r.index = '';
-                if (r.bib % 1000 !== prevBib) {
-                    index++;
-                    results.push({index: index});
-                    prevBib = r.bib % 1000;
-                }
-                results.push(r);
-            }
-        } else if (isTeamRace) {
+        if (isTeamRace) {
             index = 0;
             var prevTeamBib = 0;
             var resultsList = results.slice();
@@ -137,12 +112,13 @@
             {key: 'card_number', title: 'Чип', size: 3},
             {key: 'name', title: 'Участник', size: 30},
             {key: 'year', title: 'ГР', size: 5},
-            {key: 'qual', title: 'Разряд', size: 7},
+            {key: 'qual', title: 'Разряд', size: 7, active: false},
             {key: 'team', title: 'Команда', size: 20},
-            {key: 'team_number', title: '№ команды', size: 9},
+            {key: 'group', title: 'Группа', size: 6},
+            {key: 'team_number', title: '№ команды', size: 9, active: false},
             {key: 'bib', title: 'Номер', size: 6},
-            {key: 'subgroup', title: 'П/группа', size: 8},
-            {key: 'comment', title: '', size: 20, active: false},
+            {key: 'subgroup', title: 'П/группа', size: 8, active: false},
+            {key: 'comment', title: '', size: 20},
             {key: 'start', title: 'Время старта', size: 13, active: false}
         ],
         active: function (key, val) {
@@ -180,7 +156,7 @@
                 var isTeamRace = race.data.race_type === 6
                 var isRogaining = race.settings.result_processing_mode === "scores" && race.settings.result_processing_score_mode == "rogain";
                 this.getField('bib').active = false
-                this.getField('qual').active = !isTeamRace
+                //this.getField('qual').active = !isTeamRace
             } catch (e){}
             return this;
         }
@@ -192,22 +168,22 @@
     function render() {
         var resultBlock = document.getElementById('start-list-tables');
         resultBlock.innerHTML = '';
-        for (var _i = 0, _a = race.groups; _i < _a.length; _i++) {
-            var group = _a[_i];
-            var titleBlock = document.createElement('h2');
-            titleBlock.id = group.name;
-            titleBlock.appendChild(document.createTextNode(group.name));
-            resultBlock.appendChild(titleBlock);
-            var desk = document.createElement('h5');
-            desk.appendChild(document.createTextNode(group.long_name));
-            resultBlock.appendChild(desk);
-            resultBlock.appendChild(getGroupsBlockElement(race));
-            if (store.tableView) {
-                resultBlock.appendChild(new TableGenerator(getStartListByGroup(group), Fields.fields).getTable({className: 'sportorg-table'}));
-            } else {
-                resultBlock.appendChild(new TableTextGenerator(getStartListByGroup(group), Fields.fields).getTable());
-            }
+        //for (var _i = 0, _a = race.groups; _i < _a.length; _i++) {
+        //var group = _a[_i];
+        //var titleBlock = document.createElement('h2');
+        //titleBlock.id = group.name;
+        //titleBlock.appendChild(document.createTextNode(group.name));
+        //resultBlock.appendChild(titleBlock);
+        //var desk = document.createElement('h5');
+        //desk.appendChild(document.createTextNode(group.long_name));
+        //resultBlock.appendChild(desk);
+        //resultBlock.appendChild(getGroupsBlockElement(race));
+        if (store.tableView) {
+            resultBlock.appendChild(new TableGenerator(getStartListByGroup(), Fields.fields).getTable({className: 'sportorg-table'}));
+        } else {
+            resultBlock.appendChild(new TableTextGenerator(getStartListByGroup(), Fields.fields).getTable());
         }
+        //}
         var personsCountElement = document.getElementById('persons-count');
         personsCountElement.innerHTML = race.persons.length.toString();
     }
@@ -262,24 +238,22 @@
                 render()
             }
         },
-        /*
-        {
-            title: 'Номер',
-            value: Fields.isActive('bib'),
-            change: function (checked) {
-                Fields.active('bib', checked);
-                render()
-            }
-        },
-        */
-        {
-            title: 'Номер команды',
-            value: Fields.isActive('team_number'),
-            change: function (checked) {
-                Fields.active('team_number', checked);
-                render()
-            }
-        },
+        //{
+        //    title: 'Номер',
+        //    value: Fields.isActive('bib'),
+        //    change: function (checked) {
+        //        Fields.active('bib', checked);
+        //        render()
+        //    }
+        //},
+        //{
+        //    title: 'Номер команды',
+        //    value: Fields.isActive('team_number'),
+        //    change: function (checked) {
+        //        Fields.active('team_number', checked);
+        //        render()
+        //    }
+        //},
         {
             title: 'Автоскролл',
             value: Scrolling.enabled,
