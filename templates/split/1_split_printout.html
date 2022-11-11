@@ -143,8 +143,8 @@
         {{ race.data.title }}
         <br> {{ race.data.start_datetime|date }}
         <h2>{{ person.name }} {{ person.surname }} - {{ group.name }}</h2>
-        <br> Команда: {{team.number}} {{team.name}}
-        <br> Номер: {{person.bib}} Чип: {{person.card_number}}
+        <br> Команда: {{team.name}}
+        <br> Чип: {{person.card_number}}
         <br> Старт: {{result.start_msec|tohhmmss}}
         <table>
           <tr>
