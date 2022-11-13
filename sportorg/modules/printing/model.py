@@ -28,6 +28,8 @@ def split_printout(result):
 
     obj = race()
     course = obj.find_course(result)
+    if not course:
+        print('Unknown course for result with bib', result.bib)
 
     if person.group and course:
         printer = Config().printer.get('split')

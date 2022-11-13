@@ -1002,11 +1002,11 @@ class ResultSportident(Result):
         # BNO2022: reset credit_time for bonuses
         self.credit_time = OTime()
         unique_bonuses = set()
+        check_only_bonus = False
 
         for i in range(len(self.splits)):
             try:
                 split = self.splits[i]
-                template = controls[course_index].get_course_cp_template()
                 cur_code = split.code
 
                 # BNO2022: check bonuses
@@ -1017,6 +1017,12 @@ class ResultSportident(Result):
                         if int(cur_code) < 84:
                             self.credit_time += OTime(minute=15)
                     continue
+                elif check_only_bonus:
+                    if i == len(self.splits)-1:
+                        return True
+                    continue
+
+                template = controls[course_index].get_course_cp_template()
 
                 list_exists = False
                 list_contains = False
@@ -1094,7 +1100,8 @@ class ResultSportident(Result):
                             course_index += 1
 
                 if course_index == count_controls:
-                    return True
+                    check_only_bonus = True
+                    #return True
 
             except KeyError:
                 return False
