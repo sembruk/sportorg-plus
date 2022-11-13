@@ -280,10 +280,11 @@ class StartNumberManager(object):
         known_teams = {}
         if persons and len(persons) > 0:
             for current_person in persons:
-                if current_person.bib == 0:
-                    current_person.bib = cur_number
+                if current_person.bib != 0:
+                    #current_person.bib = cur_number
                     cur_number += interval
                     if self.race.is_team_race():
+                        print(cur_team_number)
                         if current_person.team.id in known_teams:
                             current_person.team.number = known_teams[current_person.team.id]
                         else:

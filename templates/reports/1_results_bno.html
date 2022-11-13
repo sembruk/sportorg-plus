@@ -58,6 +58,7 @@
             time: result.finish_msec > result.start_msec ? toHHMMSS(result.finish_msec - result.start_msec) : toHHMMSS(result.finish_msec + 86400000 - result.start_msec),
             result_msec: result.result_msec,
             result_team_time: toHHMMSS(result.result_team_msec),
+            result_team_msec_without_penalty: result.result_team_msec - result.penalty_time,
             diff: race.settings.result_processing_mode === 'scores' ? result.diff_scores : toHHMMSS(result.diff),
             place: result.place,
             status: result.status,
@@ -82,11 +83,14 @@
         }
         r.name += ' ' + r.year;
         // Uncomment for RogainingRoutes team page
-        //var a = document.createElement('a');
-        //a.href = 'team' + r.team_number + '.html';
-        //a.appendChild(document.createTextNode(r.team));
-        //r.team = a
-        if (result.status !== 1) {
+        var a = document.createElement('a');
+        a.href = 'team' + r.team_number + '.html';
+        a.appendChild(document.createTextNode(r.team));
+        r.team = a
+        if (result.status == 8) {
+            r.result = "КВ"
+            r.place_show = '';
+        } else if (result.status !== 1) {
             r.diff = '';
             r.place_show = '';
             r.scores = '';
@@ -113,6 +117,9 @@
         }
         results.sort(function (a, b) {
             if (a.status !== 1 && b.status !== 1) {
+                if (a.status === 8 && b.status === 8) {
+                    return a.result_team_msec_without_penalty - b.result_team_msec_without_penalty;
+                }
                 return STATUS_PRIORITY.indexOf(a.status) - STATUS_PRIORITY.indexOf(b.status);
             }
             if (a.status !== 1) {
@@ -150,7 +157,7 @@
                     }
                     teamResult = r;
                     teamResult.index = ++index;
-                    teamResult.time = teamResult.result_team_time
+                    //teamResult.time = teamResult.result_team_time
                     prevTeamId = teamId;
                 } else if (teamResult) {
                     teamResult.name += '\n' + r.name;

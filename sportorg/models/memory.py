@@ -1004,11 +1004,20 @@ class ResultSportident(Result):
         unique_bonuses = set()
         check_only_bonus = False
 
+        prev_code = None
         for i in range(len(self.splits)):
             try:
                 split = self.splits[i]
                 cur_code = split.code
+                if prev_code is None:
+                    prev_code = cur_code
+                ss = prev_code+'-'+cur_code
+                if int(prev_code) > int(cur_code):
+                    ss = cur_code+'-'+prev_code
+                if ss == '34-43' or ss == '33-44' or ss == '52-58':
+                    self.status = ResultStatus.DISQUALIFIED
 
+                prev_code = cur_code
                 # BNO2022: check bonuses
                 # CP 82, 83 - 15 minutes
                 if int(cur_code)//10 == 8:
