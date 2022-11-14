@@ -1014,7 +1014,9 @@ class ResultSportident(Result):
                 ss = prev_code+'-'+cur_code
                 if int(prev_code) > int(cur_code):
                     ss = cur_code+'-'+prev_code
-                if ss == '34-43' or ss == '33-44' or ss == '52-58':
+                # ss == '34-43' or 
+                # or ss == '52-58'
+                if ss == '33-44':
                     self.status = ResultStatus.DISQUALIFIED
 
                 prev_code = cur_code
