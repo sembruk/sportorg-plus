@@ -348,6 +348,8 @@ class PersonEditDialog(QDialog):
         if (person.group and person.group.name != self.item_group.currentText()) or\
                 (person.group is None and len(self.item_group.currentText()) > 0):
             person.group = find(race().groups, name=self.item_group.currentText())
+            if person.team and person.team.group != person.group:
+                person.team.group = person.group
         if (person.team and person.team.full_name != self.item_team.currentText()) or \
                 (person.team is None and len(self.item_team.currentText()) > 0):
             team = find(race().teams, full_name=self.item_team.currentText())
