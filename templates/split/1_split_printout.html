@@ -6,7 +6,7 @@
     {% raw %}
     <style>
         td {
-            padding-right: 7px;
+            padding-right: 18px;
         }
         body {
             font-weight: bold;
@@ -187,7 +187,7 @@
         <br> Бонус: -{{result.credit_time|tohhmmss}}
         <br> Результат: {{result.result}} ({{result.length}})
         {% if result.place > 0 %}
-            <br> Место: {{result.place}} из {{group.count_finished}} (всего {{group.count_person}})
+            <br> Место: {{result.place}} из {{group.count_finished}} финишировавших
             {% if "can_win_count" in result and result.can_win_count is not none %}
                 {% if result.can_win_count > 0 %}
                     <br>У Вас могут выиграть: {{result.can_win_count}} чел.
@@ -198,10 +198,14 @@
             {% endif %}
         {% endif %}
         {% if result.status != 1 %}
+          {% if result.status == 8 %}
+			  <h3>Превышение КВ</h3>
+          {% else %}<br>
             {% for control in course.controls %}
                 {{control.code}}
             {% endfor %}<br>
 			  <h3>ПЛОХАЯ ОТМЕТКА</h3>
+          {% endif %}
         {% endif %}
         <br>
         <!--<table>

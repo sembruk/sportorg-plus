@@ -705,7 +705,7 @@ class Result:
 
         ret = ''
         if race().get_setting('result_processing_mode', 'time') == 'scores':
-            ret += str(self.scores) + ' ' + _('points') + ' '
+            ret += str(int(self.scores)) + ' ' + _('points') + ' '
 
         time_accuracy = race().get_setting('time_accuracy', 0)
         if self.person.group is None:
@@ -727,7 +727,7 @@ class Result:
 
         ret = ''
         if race().get_setting('result_processing_mode', 'time') == 'scores':
-            ret += str(self.scores) + ' ' + _('points') + ' '
+            ret += str(int(self.scores)) + ' ' + _('points') + ' '
 
         # time_accuracy = race().get_setting('time_accuracy', 0)
         start = hhmmss_to_time(self.person.comment)
