@@ -999,7 +999,7 @@ class ResultSportident(Result):
             i.has_penalty = True
             i.course_index = -1
 
-        # BNO2022: reset credit_time for bonuses
+        # ZG2023: reset credit_time for bonuses
         self.credit_time = OTime()
         unique_bonuses = set()
         check_only_bonus = False
@@ -1009,24 +1009,24 @@ class ResultSportident(Result):
             try:
                 split = self.splits[i]
                 cur_code = split.code
-                if prev_code is None:
-                    prev_code = cur_code
-                ss = prev_code+'-'+cur_code
-                if int(prev_code) > int(cur_code):
-                    ss = cur_code+'-'+prev_code
-                # ss == '34-43' or 
-                # or ss == '52-58'
-                if ss == '33-44':
-                    self.status = ResultStatus.DISQUALIFIED
 
-                prev_code = cur_code
-                # BNO2022: check bonuses
-                # CP 82, 83 - 15 minutes
-                if int(cur_code)//10 == 8:
+                #if prev_code is None:
+                #    prev_code = cur_code
+                #ss = prev_code+'-'+cur_code
+                #if int(prev_code) > int(cur_code):
+                #    ss = cur_code+'-'+prev_code
+                ## ss == '34-43' or 
+                ## or ss == '52-58'
+                #if ss == '33-44':
+                #    self.status = ResultStatus.DISQUALIFIED
+                #prev_code = cur_code
+
+                # ZG2023: check bonuses
+                # CP 45 - 15 minutes
+                if int(cur_code) == 45:
                     if cur_code not in unique_bonuses:
                         unique_bonuses.add(cur_code)
-                        if int(cur_code) < 84:
-                            self.credit_time += OTime(minute=15)
+                        self.credit_time += OTime(minute=15)
                     continue
                 elif check_only_bonus:
                     if i == len(self.splits)-1:

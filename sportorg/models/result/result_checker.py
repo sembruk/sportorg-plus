@@ -54,9 +54,7 @@ class ResultChecker:
                 if not result.status_comment:
                     result.status_comment = StatusComments().remove_hint(StatusComments().get())
             elif result.person.group and result.person.group.max_time.to_msec():
-                # BNO2021
-                result_time = result.get_result_otime() - result.get_penalty_time()
-                if result_time > result.person.group.max_time:
+                if result.get_result_otime() > result.person.group.max_time:
                     if race().get_setting('result_processing_mode', 'time') == 'time':
                         result.status = ResultStatus.OVERTIME
                     elif race().get_setting('result_processing_mode', 'time') == 'scores':
@@ -195,9 +193,10 @@ class ResultChecker:
     @staticmethod
     def get_control_score(code):
         obj = race()
-        control = find(obj.controls, code=str(code))
-        if control and control.score:
-            return control.score
+        if obj.controls is not None and str(code) in obj.controls:
+            control = obj.controls[str(code)]
+            if control.score:
+                return control.score
 
         if obj.get_setting('result_processing_score_mode', 'fixed') == 'fixed':
             return obj.get_setting('result_processing_fixed_score_value', 1.0)  # fixed score per control
