@@ -135,8 +135,12 @@ class ReportDialog(QDialog):
 
         if selected_items['groups']:
             current_race['groups'] = selected_items['groups']
+
+        # Remove some private data
         for team in current_race['teams']:
             team.pop('contact', None)
+        for person in current_race['persons']:
+            person.pop('birth_date', None)
 
         template_path_items = template_path.split('/')[-1]
         template_path_items = '.'.join(template_path_items.split('.')[:-1]).split('_')
