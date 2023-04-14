@@ -81,10 +81,10 @@
         }
         r.name += ' ' + r.sex + r.age;
         // Uncomment for RogainingRoutes team page
-        //var a = document.createElement('a');
-        //a.href = 'team' + r.team_number + '.html';
-        //a.appendChild(document.createTextNode(r.team));
-        //r.team = a
+        var a = document.createElement('a');
+        a.href = 'team' + r.team_number + '.html';
+        a.appendChild(document.createTextNode(r.team));
+        r.team = a
         if (result.status !== 1) {
             r.diff = '';
             r.place_show = '';
