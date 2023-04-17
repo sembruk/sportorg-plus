@@ -54,12 +54,14 @@ class ResultChecker:
                 if not result.status_comment:
                     result.status_comment = StatusComments().remove_hint(StatusComments().get())
             elif result.person.group and result.person.group.max_time.to_msec():
-                if result.get_result_otime() > result.person.group.max_time:
+                # ZG2023 result time without credit time
+                result_otime = result.get_result_otime() + result.get_credit_time()
+                if result_otime > result.person.group.max_time:
                     if race().get_setting('result_processing_mode', 'time') == 'time':
                         result.status = ResultStatus.OVERTIME
                     elif race().get_setting('result_processing_mode', 'time') == 'scores':
                         max_delay_ms = race().get_setting('result_processing_scores_max_delay', 30)*60000
-                        if result.get_result_otime().to_msec() > result.person.group.max_time.to_msec() + max_delay_ms: 
+                        if result_otime.to_msec() > result.person.group.max_time.to_msec() + max_delay_ms: 
                             result.status = ResultStatus.OVERTIME
 
         return o

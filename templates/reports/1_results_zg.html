@@ -54,7 +54,8 @@
             penalty_points: result.penalty_points > 0 ? result.penalty_points : '',
             credit_time: result.credit_time > 0 ? toHHMMSS(result.credit_time) : '',
             result: result.result,
-            time: result.finish_msec > result.start_msec ? toHHMMSS(result.finish_msec - result.start_msec) : toHHMMSS(result.finish_msec + 86400000 - result.start_msec),
+            //time: result.finish_msec > result.start_msec ? toHHMMSS(result.finish_msec - result.start_msec) : toHHMMSS(result.finish_msec + 86400000 - result.start_msec),
+            time: toHHMMSS(result.result_team_msec + result.credit_time),
             result_msec: result.result_msec,
             result_team_time: toHHMMSS(result.result_team_msec),
             diff: race.settings.result_processing_mode === 'scores' ? result.diff_scores : toHHMMSS(result.diff),
@@ -155,7 +156,8 @@
                     }
                     teamResult = r;
                     teamResult.index = ++index;
-                    teamResult.result_time = teamResult.result_team_time
+                    //teamResult.time = r.result_team_time + r.credit_time
+                    //teamResult.result_time = r.result_team_time
                     prevTeamId = teamId;
                 } else if (teamResult) {
                     teamResult.name += '\n' + r.name;
@@ -189,7 +191,7 @@
             {key: 'penalty_points', title: 'Штраф', size: 9, active: false},
             {key: 'penalty_time', title: 'Штраф', size: 9, active: false},
             {key: 'credit_time', title: 'Бонусы', size: 9},
-            {key: 'result_time', title: 'Результат', size: 16},
+            {key: 'result_team_time', title: 'Результат', size: 16},
             {key: 'scores', title: 'Результат', size: 5, active: false},
             {key: 'diff', title: 'Отставание', size: 11},
             {key: 'subgroup', title: 'П/группа', size: 8, active: false},
