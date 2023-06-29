@@ -923,7 +923,10 @@ class ResultSportident(Result):
         elif start_source == 'gate':
             pass
         elif start_source == 'group':
-            if self.person and self.person.group:
+            # If have start punch in result use one
+            if self.start_time and self.start_time.to_msec():
+                return self.start_time
+            elif self.person and self.person.group:
                 if self.person.group.start_time and self.person.group.start_time.to_msec():
                     return self.person.group.start_time
 
