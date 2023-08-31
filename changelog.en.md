@@ -1,5 +1,11 @@
 # SportOrgPlus Changelog
 
+## v1.2.2 - 2023-08-31
+
+* If change group for person also change group for team
+* Remove birth dates from reports
+* If start time source is 'group' and a result has start time from station use station time
+
 ## v1.2.1 - 2022-07-06
 
 * Fixed file loading with invalid scores_array
