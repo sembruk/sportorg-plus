@@ -2,7 +2,7 @@ import os
 import sys
 import logging.config
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 from sportorg.common.version import Version
 
