@@ -1017,10 +1017,8 @@ class ResultSportident(Result):
                 ss = prev_code+'-'+cur_code
                 if int(prev_code) > int(cur_code):
                     ss = cur_code+'-'+prev_code
-                # ss == '34-43' or 
-                # or ss == '52-58'
-                if ss == '33-44':
-                    self.status = ResultStatus.DISQUALIFIED
+                #if ss == '33-44':
+                #    self.status = ResultStatus.DISQUALIFIED
 
                 prev_code = cur_code
                 # BNO2022: check bonuses
@@ -1114,8 +1112,8 @@ class ResultSportident(Result):
                             course_index += 1
 
                 if course_index == count_controls:
-                    check_only_bonus = True
-                    #return True
+                    #check_only_bonus = True
+                    return True
 
             except KeyError:
                 return False
