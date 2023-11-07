@@ -127,7 +127,8 @@ class ResultEditDialog(QDialog):
             start_source = race().get_setting('system_start_source', 'protocol')
             finish_source = race().get_setting('system_finish_source', 'station')
             if start_source == 'protocol' or start_source == 'cp' or start_source == 'group':
-                self.item_start.setDisabled(True)
+                #self.item_start.setDisabled(True)
+                pass
             if finish_source == 'cp':
                 self.item_finish.setDisabled(True)
             self.layout.addRow(self.splits.widget)
@@ -184,13 +185,14 @@ class ResultEditDialog(QDialog):
             self.item_created_at.setTime(time_to_qtime(datetime.fromtimestamp(self.current_object.created_at)))
         if self.current_object.finish_time:
             self.item_finish.setTime(time_to_qtime(self.current_object.finish_time))
-        if race().get_setting('system_start_source', 'protocol') == 'group':
-            if self.current_object.person.group and self.current_object.person.group.start_time:
-                self.item_start.setTime(time_to_qtime(self.current_object.person.group.start_time))
-        elif self.current_object.start_time:
-            self.item_start.setTime(time_to_qtime(self.current_object.start_time))
-        elif self.current_object.person.start_time:
-            self.item_start.setTime(time_to_qtime(self.current_object.person.start_time))
+        #if race().get_setting('system_start_source', 'protocol') == 'group':
+        #    if self.current_object.person.group and self.current_object.person.group.start_time:
+        #        self.item_start.setTime(time_to_qtime(self.current_object.person.group.start_time))
+        #elif self.current_object.start_time:
+        #    self.item_start.setTime(time_to_qtime(self.current_object.start_time))
+        #elif self.current_object.person.start_time:
+        #    self.item_start.setTime(time_to_qtime(self.current_object.person.start_time))
+        self.item_start.setTime(time_to_qtime(self.current_object.get_start_time()))
         self.item_time.setTime(time_to_qtime(self.current_object.get_result_otime()))
         if self.current_object.finish_time:
             self.item_result.setText(str(self.current_object.get_result()))

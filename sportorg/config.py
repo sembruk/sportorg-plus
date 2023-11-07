@@ -2,7 +2,7 @@ import os
 import sys
 import logging.config
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 from sportorg.common.version import Version
 
@@ -14,7 +14,7 @@ class Env(BaseSettings):
         env_file = '.env'
 
 NAME = 'SportOrgPlus'
-VERSION = Version(1, 2, 1, 0, 'v')
+VERSION = Version(1, 2, 2, 0, 'v')
 
 
 def is_executable():
