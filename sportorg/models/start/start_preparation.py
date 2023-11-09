@@ -220,11 +220,11 @@ class StartNumberManager(object):
         Assign new start numbers
 
     """
-    def process(self, mode='interval', first_number=None, interval=None, mix_groups=False):
+    def process(self, mode='interval', first_number=None, interval=None, mix_groups=False, skip_list=[]):
         if mode == 'interval':
             cur_num = first_number
             for cur_corridor in get_corridors():
-                cur_num = self.process_corridor_by_order(cur_corridor, cur_num, interval)
+                cur_num = self.process_corridor_by_order(cur_corridor, cur_num, interval, skip_list)
         else:
             first_number = 1
             cur_num = first_number
@@ -235,11 +235,11 @@ class StartNumberManager(object):
                     cur_num = self.process_corridor_by_order(cur_corridor, cur_num)
                 cur_num = cur_num - (cur_num % 100) + 101
 
-    def process_corridor_by_order(self, corridor, first_number=1, interval=1):
+    def process_corridor_by_order(self, corridor, first_number=1, interval=1, skip_list=[]):
         current_race = self.race
         persons = current_race.get_persons_by_corridor(corridor)  # get persons of current corridor
         # persons = sorted(persons, key=lambda item: item.start_time)  # sort by start time
-        return self.set_numbers_by_order(persons, first_number, interval)
+        return self.set_numbers_by_order(persons, first_number, interval, skip_list)
 
     def process_corridor_by_minute(self, corridor, first_number=1):
         current_race = self.race
@@ -274,23 +274,23 @@ class StartNumberManager(object):
             return max_assigned_num + 1
         return first_number
 
-    def set_numbers_by_order(self, persons, first_number=1, interval=1):
+    def set_numbers_by_order(self, persons, first_number=1, interval=1, skip_list=[]):
         cur_number = first_number
         cur_team_number = first_number
         known_teams = {}
         if persons and len(persons) > 0:
             for current_person in persons:
-                if current_person.bib != 0:
-                    #current_person.bib = cur_number
+                while cur_number in skip_list:
                     cur_number += interval
-                    if self.race.is_team_race():
-                        print(cur_team_number)
-                        if current_person.team.id in known_teams:
-                            current_person.team.number = known_teams[current_person.team.id]
-                        else:
-                            current_person.team.number = cur_team_number
-                            known_teams[current_person.team.id] = cur_team_number
-                            cur_team_number += interval
+                current_person.bib = cur_number
+                cur_number += interval
+                if self.race.is_team_race():
+                    if current_person.team.id in known_teams:
+                        current_person.team.number = known_teams[current_person.team.id]
+                    else:
+                        current_person.team.number = cur_team_number
+                        known_teams[current_person.team.id] = cur_team_number
+                        cur_team_number += interval
         return cur_number
 
 class StartTimeManager(object):
