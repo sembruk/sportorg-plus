@@ -78,7 +78,7 @@ def time_to_hhmmss(value):
 
 
 def hhmmss_to_time(value):
-    arr = str(value).split(':')
+    arr = str(value).split(' ')[-1].split(':')
     if len(arr) == 3:
         msec = 0
         secs = arr[2].split('.')
