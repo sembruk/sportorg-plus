@@ -5,6 +5,16 @@ from sportorg.language import _
 from sportorg.models import memory
 from sportorg.models.memory import Qualification, Sex
 
+def detect_encoding(file_path):
+    for encoding in ['utf-8', 'cp1251']:
+        try:
+            with open (file_path, encoding=encoding) as file:
+                _ = file.read()  # Attempt to read the file
+            return encoding
+        except UnicodeDecodeError:
+            pass  # Continue to the next encoding
+    return None
+
 class OrgeoCSVReader:
     def __init__(self, data=None):
         self._data = [] if data is None else data
@@ -15,7 +25,10 @@ class OrgeoCSVReader:
         self._headers = {}
 
     def parse(self, source):
-        with open(source, encoding='cp1251') as csv_file:
+        encoding = detect_encoding(source)
+        if encoding is None:
+            print("Unable to detect the encoding.")
+        with open(source, encoding=encoding) as csv_file:
             spam_reader = csv.reader(csv_file, delimiter=';')
 
             headers_dict = {
