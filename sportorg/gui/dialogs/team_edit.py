@@ -40,7 +40,7 @@ class TeamEditDialog(QDialog):
         self.label_number = QLabel(_('Number'))
         self.item_number= QSpinBox()
         self.item_number.setMinimum(0)
-        self.item_number.setMaximum(1000000)
+        self.item_number.setMaximum(10000000)
         self.item_number.valueChanged.connect(self.check_number)
         self.layout.addRow(self.label_number, self.item_number)
 

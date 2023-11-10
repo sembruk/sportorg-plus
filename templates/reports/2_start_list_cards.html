@@ -58,7 +58,7 @@
                 bib: person.bib,
                 card_number: person.card_number,
                 team_number: person.team && person.team.number || 0,
-                year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
+                year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : person.year,
                 start: toHHMMSS(person.start_time),
                 start_time: person.start_time,
                 subgroup: isTeamRace ? person.subgroups_str : '',
