@@ -321,7 +321,10 @@ def menu_list():
                     'title': _('Find pursuits'),
                     'action': 'FindPursuitsAction'
                 },
-
+                {
+                    'title': 'Исправить МЖ группы',
+                    'action': 'FixMixGroupsAction'
+                },
             ]
         },
         {

@@ -2,7 +2,7 @@ import logging
 
 from sportorg.common.otime import OTime
 from sportorg.models.constant import StatusComments
-from sportorg.models.memory import Person, ResultStatus, race, Result, find, Split, Team
+from sportorg.models.memory import Person, ResultStatus, race, Result, find, Split, Team, Sex
 from sportorg.models.result.result_calculation import ResultCalculation
 
 
@@ -228,6 +228,18 @@ class ResultChecker:
         if points < 0:
             points = 0
         return points, penalty_points
+
+    @staticmethod
+    def fix_mix_groups():
+        logging.debug('Fix mixed groups')
+        for result in race().results:
+            p = result.person
+            if p.group.sex != Sex.MF and p.group.sex != p.sex:
+                old_group_name = p.group.name
+                new_group_name = old_group_name.replace('-М', '-МЖ').replace('-Ж', '-МЖ')
+                print('Change group for', p.name, p.surname, 'from', old_group_name, 'to', new_group_name)
+                p.group = find(race().groups, name=new_group_name)
+        
 
     @staticmethod
     def find_pursuits():

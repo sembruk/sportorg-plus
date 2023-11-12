@@ -5,6 +5,17 @@
 <div class="text-center">
     <h3>{{ race.data.description }} <br>{{ race.data.start_datetime|date }} {{ race.data.location }}</h3>
     <h2>РЕЗУЛЬТАТЫ</h2>
+    <h3 class="text-left">
+      <!--<a href="https://orgeo.ru/live/#/bno2023">Live трансляция на Orgeo</a>
+      <br>-->
+      &#128506;
+      <a href="map1.png">Карта 1 выбора</a>
+      <a href="map2.png">Карта 2 выбора</a>
+      <a href="mapzn.png">Карта ЗН</a>
+      <br>
+      &#128752;
+      <a href="https://viewer.o-gps-center.ru/viewer/event/17762/">Трансляция O-GPS Center</a>
+    </h3>
 </div>
 <div id="results-tables"></div>
 <div>
@@ -283,7 +294,7 @@
             {key: 'scores_without_penalty', title: 'Очки', size: 5, active: false},
             {key: 'penalty_points', title: 'Штраф', size: 9, active: false},
             {key: 'penalty_time', title: 'Штраф', size: 9, active: true},
-            {key: 'credit_time', title: 'Бонусы', size: 9},
+            {key: 'credit_time', title: 'Бонусы', size: 9, active: false},
             {key: 'result', title: 'Результат', size: 16},
             {key: 'scores', title: 'Результат', size: 5, active: false},
             {key: 'diff', title: 'Отставание', size: 11, active: false},

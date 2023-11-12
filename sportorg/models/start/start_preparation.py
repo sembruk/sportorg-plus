@@ -280,11 +280,11 @@ class StartNumberManager(object):
         known_teams = {}
         if persons and len(persons) > 0:
             for current_person in persons:
-                if current_person.bib != 0:
-                    continue
+                #if current_person.bib != 0:
+                #    continue
                 while cur_number in skip_list:
                     cur_number += interval
-                current_person.bib = cur_number
+                #current_person.bib = cur_number
                 cur_number += interval
                 if self.race.is_team_race():
                     if current_person.team.id in known_teams:
