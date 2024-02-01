@@ -1,0 +1,27 @@
+{%set qual_dict = {0:"б/р", 1:"Iю", 2:"IIю", 3:"IIIю", 4:"I", 5:"II", 6:"III", 7:"КМС", 8:"МС", 9:"МСМК", 10:"ЗМС"} -%}
+
+{% macro time(t) %}
+{{ '%02d' % (t / 3600000 | int) }}:{{ '%02d' % (t / 60000 % 60 | int) }}:{{ '%02d' % (t /1000 % 60 | int) }}
+{% endmacro -%}
+
+Группа;Имя;Фамилия;Команда;Номер команды;Квалификация;Номер участника;Год рождения;Результат;Место;Баллы;
+{% for group in race.groups -%}
+    {% for result in race.results | sort(attribute="place") | sort(attribute="status") -%}
+        {% for person in race.persons | selectattr("id", "equalto", result.person_id) | selectattr("group_id", "equalto", group.id) -%}
+            {% for team in race.teams|selectattr("id", "equalto", person.team_id) -%}
+                {{- group.name}};
+                {{- person.name}};
+                {{- person.surname}};
+                {{- team.name}};
+                {{- team.number}};
+                {{- qual_dict[person.qual]}};
+                {{- person.bib}};
+                {{- person.year}};
+                {{- result.result}};
+                {{- result.place}};
+                {{- result.scores}};
+{% endfor -%}
+        {% endfor -%}
+    {% endfor -%}
+{% endfor -%}
+

@@ -18,7 +18,9 @@ def get_templates(path='', exclude_path=''):
                 f = f.replace(exclude_path, '')
                 f = f.replace('\\', '/')
         else:
-            if full_path.endswith('.html') or full_path.endswith('.docx'):
+            if (full_path.endswith('.html')
+                    or full_path.endswith('.docx')
+                    or full_path.endswith('.csv')):
                 full_path = full_path.replace(exclude_path, '')
                 full_path = full_path.replace('\\', '/')
                 files.append(full_path)
