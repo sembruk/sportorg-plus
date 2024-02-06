@@ -42,6 +42,7 @@ class OrgeoCSVReader:
                 'Квал.': 'qual_str',
                 'Дата рожд.': 'date_of_birth',
                 'Год': 'date_of_birth',
+                'Дата рождения': 'date_of_birth',
                 '№ чипа': 'sportident_card',
                 'Примечания': 'comment',
                 'Кем подана': 'representative',
@@ -133,15 +134,18 @@ def import_csv(source):
             obj.teams.append(team)
 
     for person_dict in orgeo_data.data:
-        
-        person_team = memory.find(obj.teams, number=person_dict['claim_id'])
-        person_team.contact = person_dict['representative']
-        if 'cell_number' in person_dict:
-            person_team.contact += ' ' + person_dict['cell_number']
-        if 'email' in person_dict:
-            person_team.contact += ' ' + person_dict['email']
-        person_team.code = str(person_dict['code']) if 'code' in person_dict else ''
-        person_team.region = person_dict['district']
+        person_team = None
+        if 'claim_id' in person_dict:
+            person_team = memory.find(obj.teams, number=person_dict['claim_id'])
+            if 'representative' in person_dict:
+                person_team.contact = person_dict['representative']
+            if 'cell_number' in person_dict:
+                person_team.contact += ' ' + person_dict['cell_number']
+            if 'email' in person_dict:
+                person_team.contact += ' ' + person_dict['email']
+            person_team.code = str(person_dict['code']) if 'code' in person_dict else ''
+            if 'district' in person_dict:
+                person_team.region = person_dict['district']
 
         person = memory.Person()
         person.name = person_dict['name']
@@ -153,9 +157,10 @@ def import_csv(source):
         if 'sportident_card' in person_dict and person_dict['sportident_card'].isdigit():
             person.card_number = int(person_dict['sportident_card'])
         person.group = memory.find(obj.groups, name=person_dict['group_name'])
-        if obj.is_team_race():
-            person_team.group = person.group
-        person.team = person_team
+        if person_team is not None:
+            if obj.is_team_race():
+                person_team.group = person.group
+            person.team = person_team
         if 'qual_id' in person_dict and person_dict['qual_id'].isdigit():
             person.qual = Qualification(int(person_dict['qual_id']))
         elif 'qual_str' in person_dict:
