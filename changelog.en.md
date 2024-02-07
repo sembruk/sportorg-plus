@@ -1,5 +1,13 @@
 # SportOrgPlus Changelog
 
+## v1.3.0 - 2024-02-07
+
+* Export results to CSV file using jinja2 template
+* Orgeo CSV import improved
+* Start preparation dialog updated
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.2.2...v1.3.0)
+
 ## v1.2.2 - 2023-08-31
 
 * If change group for person also change group for team
