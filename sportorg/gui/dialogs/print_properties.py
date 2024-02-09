@@ -1,3 +1,4 @@
+import platform
 import logging
 
 from PySide2 import QtPrintSupport
@@ -48,12 +49,14 @@ class PrintPropertiesDialog(QDialog):
         self.layout.addRow(self.selected_split_printer)
 
         self.label_template = QLabel(_('Template'))
+        self.layout.addRow(self.label_template)
         self.item_template = AdvComboBox()
-        self.item_template.setMaximumWidth(200)
-        self.item_template.addItem(_('Internal printing'))
-        self.item_template.addItem(_('Internal printing') + ' ' + _('scale') + '=75')
+        #self.item_template.setMaximumWidth(300)
+        if platform.system() == 'Windows':
+            self.item_template.addItem(_('Internal printing'))
+            self.item_template.addItem(_('Internal printing') + ' ' + _('scale') + '=75')
         self.item_template.addItems(get_templates(config.template_dir('split')))
-        self.layout.addRow(self.label_template, self.item_template)
+        self.layout.addRow(self.item_template)
 
         self.item_custom_path = QPushButton(_('Choose template'))
 

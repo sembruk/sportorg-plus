@@ -31,7 +31,7 @@ def get_templates(path='', exclude_path=''):
 def get_text_from_file(path, **kwargs):
     kwargs['name'] = config.NAME
     kwargs['version'] = str(config.VERSION)
+    searchpath = config.template_dir()
     if os.path.isfile(path):
-        return template.get_text_from_path(path, **kwargs)
-    else:
-        return template.get_text_from_template(config.template_dir(), path, **kwargs)
+        searchpath = '/'
+    return template.get_text_from_template(searchpath, path, **kwargs)
