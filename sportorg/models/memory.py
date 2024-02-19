@@ -233,6 +233,22 @@ class Course(Model):
             control.update_data(item)
             self.controls.append(control)
 
+    def get_unrolled_controls(self):
+        # return unrolled controls list, e.g. '*(31-45)[3]' -> '*(31-45) *(31-45) *(31-45)'
+        unrolled_controls = []
+        for control in self.controls:
+            template = control.get_course_cp_template()
+            match = re.search(r'\[(\d+)(?:-(\d+))?\]', template)
+            if match:
+                copies = int(match.group(1))
+                # TODO Second number isn't used yet
+                # second_number = int(match.group(2)) if match.group(2) else None
+                for i in range(copies):
+                    unrolled_controls.append(control)
+            else:
+                unrolled_controls.append(control)
+        return unrolled_controls
+
     def get_cp_coords(self):
         controls = []
         for cp in self.controls:
@@ -970,8 +986,7 @@ class ResultSportident(Result):
     def check(self, course=None):
         if not course:
             return super().check()
-        controls = course.controls
-        course_index = 0
+        controls = course.get_unrolled_controls()
         count_controls = len(controls)
         if count_controls == 0:
             return True
@@ -985,6 +1000,7 @@ class ResultSportident(Result):
             i.has_penalty = True
             i.course_index = -1
 
+        course_index = 0
         for i in range(len(self.splits)):
             try:
                 split = self.splits[i]
