@@ -983,6 +983,63 @@ class ResultSportident(Result):
                 splits.append(split)
         return splits
 
+    def check_split(self, split, template, prev_unique_cp_list):
+        cur_code = split.code
+
+        list_exists = False
+        list_contains = False
+        ind_begin = template.find('(')
+        ind_end = template.find(')')
+        if ind_begin > 0 and ind_end > 0:
+            list_exists = True
+            # any control from the list e.g. '%(31,32,35-45)'
+            arr = re.split(r'\s*,\s*', template[ind_begin + 1:ind_end])
+            for cp in arr:
+                cp_range = re.split(r'\s*-\s*', cp)
+                if int(cur_code) == int(cp_range[0]):
+                    list_contains = True
+                elif len(cp_range) > 1:
+                    if int(cur_code) > int(cp_range[0]) and int(cur_code) <= int(cp_range[len(cp_range)-1]):
+                        list_contains = True
+
+        if template.find('%') > -1:
+            # non-unique control
+            if not list_exists or list_contains:
+                # any control '%' or '%(31,32,33)' or '31%'
+                split.is_correct = True
+                split.has_penalty = False
+                return True
+
+        elif template.find('*') > -1:
+            # unique control '*' or '*(31,32,33)' or '31*'
+            if not list_exists or list_contains:
+                if not cur_code in prev_unique_cp_list:
+                    split.is_correct = True
+                    split.has_penalty = False
+                    prev_unique_cp_list.append(cur_code)
+                    return True
+
+        else:
+            # simple pre-ordered control '31 989' or '31(31,32,33) 989'
+            if list_exists:
+                # control with optional codes '31(31,32,33) 989'
+                if list_contains:
+                    split.is_correct = True
+
+                    correct_code = template.split('(')[0].strip()
+                    if cur_code == correct_code:
+                        split.has_penalty = False
+
+                    return True
+            else:
+                # just cp '31 989'
+                if str(cur_code) == template:
+                    split.is_correct = True
+                    split.has_penalty = False
+                    return True
+        return False
+
+
     def check(self, course=None):
         if not course:
             return super().check()
@@ -991,102 +1048,41 @@ class ResultSportident(Result):
         if count_controls == 0:
             return True
 
-        # list of indexes, coincide with course, used for mixed course order
-        recognized_indexes = []
-
         # invalidate all splits before check
-        for i in self.splits:
-            i.is_correct = False
-            i.has_penalty = True
-            i.course_index = -1
+        for s in self.splits:
+            s.is_correct = False
+            s.has_penalty = True
+            s.course_index = -1
 
         course_index = 0
-        for i in range(len(self.splits)):
+        prev_unique_cp_list = []
+        for split in self.splits:
             try:
-                split = self.splits[i]
                 template = controls[course_index].get_course_cp_template()
-                cur_code = split.code
 
-                list_exists = False
-                list_contains = False
-                ind_begin = template.find('(')
-                ind_end = template.find(')')
-                if ind_begin > 0 and ind_end > 0:
-                    list_exists = True
-                    # any control from the list e.g. '%(31,32,35-45)'
-                    arr = re.split(r'\s*,\s*', template[ind_begin + 1:ind_end])
-                    for cp in arr:
-                        cp_range = re.split(r'\s*-\s*', cp)
-                        if int(cur_code) == int(cp_range[0]):
-                            list_contains = True
-                        elif len(cp_range) > 1:
-                            if int(cur_code) > int(cp_range[0]) and int(cur_code) <= int(cp_range[len(cp_range)-1]):
-                                list_contains = True
-
-                if template.find('%') > -1:
-                    # non-unique control
-                    if not list_exists or list_contains:
-                        # any control '%' or '%(31,32,33)' or '31%'
-                        split.is_correct = True
-                        split.has_penalty = False
-                        recognized_indexes.append(i)
-                        course_index += 1
-
-                elif template.find('*') > -1:
-                    # unique control '*' or '*(31,32,33)' or '31*'
-                    if list_exists and not list_contains:
-                        # not in list
-                        continue
-                    # test previous splits
-                    is_unique = True
-                    course_index_current = -1
-                    for j in range(i):
-                        prev_split = self.splits[j]
-
-                        if prev_split.is_correct:
-                            course_index_current += 1
-
-                        if prev_split.code == cur_code and j in recognized_indexes:
-
-                            if course_index_current < 0 or controls[course_index_current].get_course_cp_template().find('*') < 0:
-                                # check only free order controls to be duplicated
-                                continue
-
-                            is_unique = False
-                            break
-                    if is_unique:
-                        split.is_correct = True
-                        split.has_penalty = False
-                        recognized_indexes.append(i)
-                        course_index += 1
-
-                else:
-                    # simple pre-ordered control '31 989' or '31(31,32,33) 989'
-                    if list_exists:
-                        # control with optional codes '31(31,32,33) 989'
-                        if list_contains:
-                            split.is_correct = True
-                            recognized_indexes.append(i)
-
-                            correct_code = controls[course_index].get_course_cp_template().split('(')[0].strip()
-                            if split.code == correct_code:
-                                split.has_penalty = False
-
-                            course_index += 1
+                if self.check_split(split, template, prev_unique_cp_list):
+                    if template.find('[]') > -1:
+                        count_controls = -1
                     else:
-                        # just cp '31 989'
-                        is_equal = str(cur_code) == controls[course_index].get_course_cp_template()
-                        if is_equal:
-                            split.is_correct = True
-                            split.has_penalty = False
-                            recognized_indexes.append(i)
+                        course_index += 1
+                elif template.find('[]') > -1 \
+                        and course_index < len(controls) - 1:
+                    # check next
+                    template = controls[course_index + 1].get_course_cp_template()
+                    if self.check_split(split, template, prev_unique_cp_list):
+                        if template.find('[]') > -1:
                             course_index += 1
+                        else:
+                            course_index += 2
 
                 if course_index == count_controls:
                     return True
 
             except KeyError:
                 return False
+
+        if count_controls < 0:
+            return True
 
         return False
 
