@@ -33,6 +33,16 @@ def time_to_otime(t):
     return OTime()
 
 
+def time_iof_to_otime(t):
+    str_t = str(t)
+    if str_t.find('T') > 0:
+        time_part = str_t[str_t.find('T') + 1 :]
+        if time_part.find('+') > 0:
+            time_part = time_part[: time_part.find('+')]
+        return hhmmss_to_time(time_part)
+    return OTime()
+
+
 def time_to_datetime(t):
     if isinstance(t, datetime.datetime):
         return t
@@ -146,3 +156,9 @@ def date_to_str(value, separator='-'):
 def str_to_date(value, separator='-'):
     day, month, year = str(value).split(separator)
     return date(int(year), int(month), int(day))
+
+
+def yyyymmdd_to_date(value, separator='-'):
+    year, month, day = str(value).split(separator)
+    return date(int(year), int(month), int(day))
+

@@ -160,6 +160,8 @@ def import_csv(source):
         person.birth_date = person_dict['date_of_birth']
         if 'sportident_card' in person_dict and person_dict['sportident_card'].isdigit():
             person.card_number = int(person_dict['sportident_card'])
+        else:
+            person.is_rented_card = True
         person.group = memory.find(obj.groups, name=person_dict['group_name'])
         if person_team is not None:
             if obj.is_team_race():
