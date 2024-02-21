@@ -45,11 +45,13 @@ class OrgeoCSVReader:
                 'Год': 'date_of_birth',
                 'Дата рождения': 'date_of_birth',
                 '№ чипа': 'sportident_card',
+                'Номер чипа': 'sportident_card',
                 'Примечания': 'comment',
                 'Кем подана': 'representative',
                 'Телефон': 'cell_number',
                 'E-mail': 'email',
                 'Номер заявки': 'claim_id',
+                'Номер команды': 'claim_id',
                 'Время подачи': 'claim_time',
                 'Статус': 'status'
             }
