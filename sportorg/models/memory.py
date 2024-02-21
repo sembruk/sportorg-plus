@@ -1242,7 +1242,7 @@ class Person(Model):
             'card_number': self.card_number,
             'bib': self.bib,
             'birth_date': str(self.birth_date) if self.birth_date else None,
-            'year': self.get_year() if self.get_year() else 0,  # back compatibility with 1.0
+            'year': self.get_year() if self.get_year() else 0,  # back compatibility with v1.0
             'age': self.age,
             'group_id': str(self.group.id) if self.group else None,
             'team_id': str(self.team.id) if self.team else None,
@@ -1279,7 +1279,7 @@ class Person(Model):
             self.start_time = OTime(msec=int(data['start_time']))
         if data['birth_date']:
             self.birth_date = dateutil.parser.parse(data['birth_date']).date()
-        elif 'year' in data and data['year']:  # back compatibility with v 1.0.0
+        elif 'year' in data and data['year']:  # back compatibility with v1.0
             self.set_year(int(data['year']))
 
 

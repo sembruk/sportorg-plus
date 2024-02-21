@@ -4,6 +4,7 @@ import dateutil.parser
 from sportorg.language import _
 from sportorg.models import memory
 from sportorg.models.memory import Qualification, Sex
+from sportorg.modules.configs.configs import Config
 
 def detect_encoding(file_path):
     for encoding in ['utf-8', 'cp1251']:
@@ -80,7 +81,10 @@ class OrgeoCSVReader:
         if 'code' in person_dict and person_dict['code'].isdigit():
             person_dict['code'] = int(person_dict['code'])
         if 'date_of_birth' in person_dict:
-            person_dict['date_of_birth'] = dateutil.parser.parse(person_dict['date_of_birth'], dayfirst=True).date()
+            date_of_birth = dateutil.parser.parse(person_dict['date_of_birth']).date()
+            if not Config().configuration.get('use_birthday', False):
+                date_of_birth = date_of_birth.replace(day=1, month=1)
+            person_dict['date_of_birth'] = date_of_birth
         if 'claim_id' in person_dict:
             person_dict['claim_id'] = int(person_dict['claim_id'])
             if 'team_name' in person_dict:
