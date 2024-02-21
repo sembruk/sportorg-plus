@@ -43,7 +43,7 @@ class AboutDialog(QDialog):
 
         home_page_text = QLabel()
         home_page_text.setText(
-            '\n{0}: <a href="{1}">{1}</a>'.format(_('Home page'), 'https://github.com/sembruk/sportorg-plus/')
+            '\n{0}: <a href="{1}">{1}</a>'.format(_('Home page'), config.REPO_URL)
         )
         home_page_text.setOpenExternalLinks(True)
 

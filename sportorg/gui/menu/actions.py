@@ -607,7 +607,9 @@ class CheckUpdatesAction(Action, metaclass=ActionFactory):
     def execute(self):
         try:
             if not checker.check_version(config.VERSION):
-                message = _('Update available') + ' ' + checker.get_version()
+                message = _('Update available')
+                message += ' ' + checker.get_version()
+                message += '\n' + config.REPO_URL + '/releases/latest'
             else:
                 message = _('You are using the latest version')
 
