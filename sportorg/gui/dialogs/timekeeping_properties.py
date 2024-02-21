@@ -128,6 +128,9 @@ class TimekeepingPropertiesDialog(QDialog):
         self.assignment_mode.stateChanged.connect(self.on_assignment_mode)
         self.tk_layout.addRow(self.assignment_mode)
 
+        self.card_number_as_bib = QCheckBox(_('Card No == Bib'))
+        self.tk_layout.addRow(self.card_number_as_bib)
+
         self.timekeeping_tab.setLayout(self.tk_layout)
 
         # result processing tab
@@ -346,6 +349,7 @@ class TimekeepingPropertiesDialog(QDialog):
             self.chip_duplicate_merge.setChecked(True)
 
         self.assignment_mode.setChecked(assignment_mode)
+        self.card_number_as_bib.setChecked(cur_race.get_setting('card_number_as_bib', False))
 
         # result processing
         obj = cur_race
@@ -486,6 +490,7 @@ class TimekeepingPropertiesDialog(QDialog):
 
         obj.set_setting('system_duplicate_chip_processing', duplicate_chip_processing)
         obj.set_setting('system_assignment_mode', self.assignment_mode.isChecked())
+        obj.set_setting('card_number_as_bib', self.card_number_as_bib.isChecked())
 
         # result processing
         rp_mode = 'time'

@@ -218,6 +218,8 @@ class PersonEditDialog(QDialog):
 
     def check_bib(self):
         bib = self.item_bib.value()
+        if race().get_setting('card_number_as_bib', False):
+            self.item_card.setValue(bib)
         self.label_bib_info.setText('')
         if bib:
             person = find(race().persons, bib=bib)
@@ -309,6 +311,7 @@ class PersonEditDialog(QDialog):
 
         if self.current_object.card_number:
             self.item_card.setValue(self.current_object.card_number)
+            self.item_card.setEnabled(not race().get_setting('card_number_as_bib', False))
 
         self.item_out_of_competition.setChecked(self.current_object.is_out_of_competition)
         self.item_paid.setChecked(self.current_object.is_paid)
