@@ -47,7 +47,7 @@ def _get_group(data, race_data):
 
 
 def _get_organization(data, race_data):
-    return _get_obj(data, race_data, 'organizations', 'organization_id')
+    return _get_obj(data, race_data, 'teams', 'team_id')
 
 
 def _get_person(data, race_data):
@@ -84,6 +84,7 @@ def _get_person_obj(data, race_data, result=None):
         'start': round(data['start_time'] / 1000) if data['start_time'] else 0
     }
     is_relay = group and group['__type'] == 3 or race_data['data']['race_type'] == 3
+    is_team_race = group and group['__type'] == 6 or race_data['data']['race_type'] == 6
     if is_relay:
         # send relay fields only for relay events (requested by Ivan Churakoff)
         obj['relay_team'] = data['bib'] % 1000
@@ -93,11 +94,19 @@ def _get_person_obj(data, race_data, result=None):
 
         if is_relay:
             obj['result_ms'] = round(result['result_relay_msec'] / 10)  # 1/100 sec - proprietary format
+        elif is_team_race:
+            obj['result_ms'] = round(result['result_team_msec'] / 10)
         else:
             obj['result_ms'] = round(result['result_msec'] / 10)  # 1/100 sec - proprietary format
 
         obj['result_status'] = RESULT_STATUS[int(result['status'])] \
             if -1 < int(result['status']) < len(RESULT_STATUS) else 'OK'
+
+        if result['scores'] > 0:
+            obj['score'] = result['scores']
+
+            if result['penalty_points'] > 0:
+                obj['penalty'] = str(result['penalty_points'])
 
         if len(result['splits']):
             obj['splits'] = []
