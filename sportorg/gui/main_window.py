@@ -2,8 +2,8 @@ import ast
 import logging
 import time
 from queue import Queue
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import QModelIndex, QItemSelectionModel, QTimer
+from PySide2 import QtGui, QtWidgets
+from PySide2.QtCore import Qt, QModelIndex, QItemSelectionModel, QTimer, QRect
 from PySide2.QtWidgets import QMainWindow, QTableView, QMessageBox
 
 from sportorg import config
@@ -127,9 +127,15 @@ class MainWindow(QMainWindow):
             if hasattr(self, 'logging_tab'):
                 self.logging_tab.write(text)
 
-    def close(self):
+    def _close(self):
         self.conf_write()
         Broker().produce('close')
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Q and event.modifiers() == Qt.ControlModifier:
+            self.close()
+        else:
+            super().keyPressEvent(event)
 
     def closeEvent(self, _event):
         quit_msg = _('Save file before exit?')
@@ -140,10 +146,10 @@ class MainWindow(QMainWindow):
 
         if reply == QMessageBox.Save:
             self.save_file()
-            self.close()
+            self._close()
             _event.accept()
         elif reply == QMessageBox.No:
-            self.close()
+            self._close()
             _event.accept()
         else:
             _event.ignore()
@@ -195,7 +201,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QtGui.QIcon(config.ICON))
         self.set_title()
 
-        self.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.setLayoutDirection(Qt.LeftToRight)
         self.setDockNestingEnabled(False)
         self.setDockOptions(QtWidgets.QMainWindow.AllowTabbedDocks
                             | QtWidgets.QMainWindow.AnimatedDocks
@@ -244,7 +250,7 @@ class MainWindow(QMainWindow):
 
     def _setup_menu(self):
         self.menubar = QtWidgets.QMenuBar(self)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 880, 21))
+        self.menubar.setGeometry(QRect(0, 0, 880, 21))
         self.menubar.setNativeMenuBar(False)
         self.setMenuBar(self.menubar)
         self._create_menu(self.menubar, menu_list())
