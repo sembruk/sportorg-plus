@@ -6,7 +6,7 @@ from copy import copy
 
 from sportorg.common.otime import OTime
 
-from sportorg.models.memory import race, Group, Person, Result, ResultStatus, find
+from sportorg.models.memory import race, Group, Person, Team, Result, ResultStatus, find
 from sportorg.models.result.result_calculation import ResultCalculation
 
 
@@ -220,8 +220,11 @@ class StartNumberManager(object):
         Assign new start numbers
 
     """
-    def process(self, mode='interval', first_number=None, interval=None, mix_groups=False, skip_list=[]):
+    def process(self, mode='interval', first_number=None, interval=None, mix_groups=False, skip_list=[], for_teams=False):
         if mode == 'interval':
+            if for_teams:
+                self.set_numbers_by_order(self.race.teams, first_number, interval, skip_list)
+                return
             cur_num = first_number
             for cur_corridor in get_corridors():
                 cur_num = self.process_corridor_by_order(cur_corridor, cur_num, interval, skip_list)
@@ -274,23 +277,19 @@ class StartNumberManager(object):
             return max_assigned_num + 1
         return first_number
 
-    def set_numbers_by_order(self, persons, first_number=1, interval=1, skip_list=[]):
+    def set_numbers_by_order(self, items, first_number=1, interval=1, skip_list=[]):
         cur_number = first_number
         cur_team_number = first_number
         known_teams = {}
-        if persons and len(persons) > 0:
-            for current_person in persons:
+        if items and len(items) > 0:
+            for item in items:
                 while cur_number in skip_list:
                     cur_number += interval
-                current_person.bib = cur_number
+                if isinstance(item, Person):
+                    item.bib = cur_number
+                elif isinstance(item, Team):
+                    item.number = cur_number
                 cur_number += interval
-                if self.race.is_team_race():
-                    if current_person.team.id in known_teams:
-                        current_person.team.number = known_teams[current_person.team.id]
-                    else:
-                        current_person.team.number = cur_team_number
-                        known_teams[current_person.team.id] = cur_team_number
-                        cur_team_number += interval
         return cur_number
 
 class StartTimeManager(object):
