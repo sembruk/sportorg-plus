@@ -98,7 +98,11 @@ class PersonEditDialog(QDialog):
         self.label_team = QLabel(_('Team'))
         self.item_team = AdvComboBox()
         self.item_team.addItems(get_race_teams())
+        self.item_team.currentTextChanged.connect(self.check_team_name)
         self.layout.addRow(self.label_team, self.item_team)
+
+        self.label_team_info = QLabel('')
+        self.layout.addRow(QLabel(''), self.label_team_info)
 
         self.label_qual = QLabel(_('Qualification'))
         self.item_qual = AdvComboBox()
@@ -270,6 +274,22 @@ class PersonEditDialog(QDialog):
         else:
             self.button_ok.setEnabled(True)
 
+    def _is_new_team_name_set(self):
+        person = self.current_object
+        return ((person.team
+            and person.team.full_name != self.item_team.currentText())
+            or (person.team is None and len() > 0))
+
+    def check_team_name(self):
+        self.label_team_info.setText('')
+        if self._is_new_team_name_set():
+            new_name = self.item_team.currentText().strip()
+            team = find(race().teams, full_name=new_name)
+            if team is None:
+                self.label_team_info.setText(_('New team "{}" will be created').format(new_name))
+            else:
+                self.label_team_info.setText(_('Change team to No{} "{}"').format(team.number, team.name))
+
     def get_groups_by_sex(self, sex):
         groups = []
         for g in race().groups:
@@ -353,14 +373,16 @@ class PersonEditDialog(QDialog):
             person.group = find(race().groups, name=self.item_group.currentText())
             if person.team and person.team.group != person.group:
                 person.team.group = person.group
-        if (person.team and person.team.full_name != self.item_team.currentText()) or \
-                (person.team is None and len(self.item_team.currentText()) > 0):
-            team = find(race().teams, full_name=self.item_team.currentText())
+        if self._is_new_team_name_set():
+            new_name = self.item_team.currentText().strip()
+            team = find(race().teams, full_name=new_name)
             if team is None:
                 team = Team()
-                team.name = self.item_team.currentText()
+                team.name = new_name
                 team.group = person.group
-                race().teams.append(team)
+                race().team_max_number += 1
+                team.number = race().team_max_number
+                race().teams.insert(0, team)
                 Teamwork().send(team.to_dict())
             person.team = team
         if person.qual.get_title() != self.item_qual.currentText():

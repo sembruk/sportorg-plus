@@ -1393,6 +1393,7 @@ class Race(Model):
         self.teams = []  # type: List[Team]
         self.settings = {}  # type: Dict[str, Any]
         self.controls = {}  # type: Dict[code, ControlPoint]
+        self.team_max_number = 0
 
     def __repr__(self):
         return repr(self.data)
@@ -1558,6 +1559,7 @@ class Race(Model):
 
         for i in indexes:
             del self.teams[i]
+        self.update_team_max_number()
         return teams
 
     def find_person_result(self, person):
@@ -1629,6 +1631,7 @@ class Race(Model):
 
     def add_new_team(self, append_to_race=False):
         new_team = Team()
+        new_team.number = self.team_max_number + 1
         if append_to_race:
             self.teams.insert(0, new_team)
         return new_team
@@ -1664,6 +1667,13 @@ class Race(Model):
         for i in self.persons:
             if i.team:
                 i.team.count_person += 1
+
+    def update_team_max_number(self):
+        self.team_max_number = 0
+        for team in self.teams:
+            if team.number > self.team_max_number:
+                self.team_max_number = team.number
+        print("Team max number:", self.team_max_number)
 
     def get_persons_by_group(self, group):
         return find(self.persons, group=group, return_all=True)

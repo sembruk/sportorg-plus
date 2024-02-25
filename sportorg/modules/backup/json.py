@@ -31,6 +31,7 @@ def load(file):
     RaceSplits(obj).generate()
     ScoreCalculation(obj).calculate_scores()
     update_subgroups()
+    obj.update_team_max_number()
 
 
 def get_races_from_file(file):

@@ -224,6 +224,7 @@ class StartNumberManager(object):
         if mode == 'interval':
             if for_teams:
                 self.set_numbers_by_order(self.race.teams, first_number, interval, skip_list)
+                self.race.update_team_max_number()
                 return
             cur_num = first_number
             for cur_corridor in get_corridors():
