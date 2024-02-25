@@ -6,6 +6,7 @@ from sportorg.models import memory
 from sportorg.models.memory import Qualification, Sex
 from sportorg.modules.configs.configs import Config
 
+
 def detect_encoding(file_path):
     for encoding in ['utf-8', 'cp1251']:
         try:
@@ -210,4 +211,8 @@ def import_csv(source):
                 person.group.name if person.group else '',
                 person.team.name if person.team else ''
             ))
+
+    if len(persons_dupl_names) or len(persons_dupl_cards):
+        return _('Duplicate names or card numbers detected.\nSee Log tab')
+    return ''
 

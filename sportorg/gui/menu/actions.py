@@ -145,7 +145,9 @@ class CSVOrgeoImportAction(Action, metaclass=ActionFactory):
         file_name = get_open_file_name(_('Open Orgeo CSV file'), _("Orgeo CSV (*.csv)"))
         if file_name:
             try:
-                orgeo.import_csv(file_name)
+                ret = orgeo.import_csv(file_name)
+                if ret:
+                    QMessageBox.information(self.app, _('Warning'), ret)
             except Exception as e:
                 logging.error(str(e))
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
@@ -212,7 +214,9 @@ class IOFEntryListImportAction(Action, metaclass=ActionFactory):
         file_name = get_open_file_name(_('Open IOF xml'), _('IOF xml (*.xml)'))
         if file_name:
             try:
-                iof_xml.import_from_iof(file_name)
+                ret = iof_xml.import_from_iof(file_name)
+                if ret:
+                    QMessageBox.information(self.app, _('Warning'), ret)
             except Exception as e:
                 logging.exception(str(e))
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)

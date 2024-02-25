@@ -65,22 +65,24 @@ def export_result_list(file, *, creator: str, all_splits: bool = False) -> None:
 #    start_list.write(open(file, 'wb'), xml_declaration=True, encoding='UTF-8')
 
 
-def import_from_iof(file) -> None:
+def import_from_iof(file):
     results = parse(file)
     if not len(results):
-        return
+        return ''
 
+    ret = []
     for result in results:
         if result.name == 'EntryList':
-            import_from_entry_list(result.data)
+            ret.append(import_from_entry_list(result.data))
         elif result.name == 'CourseData':
             import_from_course_data(result.data)
         elif result.name == 'ResultList':
             import_from_result_list(result.data)
         elif result.name == 'StartList':
-            import_from_entry_list(result.data)
+            ret.append(import_from_entry_list(result.data))
         elif result.name == 'Event':
             import_from_event_data(result.data)
+    return '\n'.join(ret)
 
 
 def import_from_course_data(courses) -> None:
@@ -178,7 +180,7 @@ def create_person(person_entry):
     return person
 
 
-def import_from_entry_list(entries) -> None:
+def import_from_entry_list(entries):
     obj = race()
     for person_entry in entries:
         create_person(person_entry)
@@ -213,6 +215,9 @@ def import_from_entry_list(entries) -> None:
                 )
             )
 
+    if len(persons_dupl_names) or len(persons_dupl_cards):
+        return _('Duplicate names or card numbers detected.\nSee Log tab')
+    return ''
 
 def import_from_result_list(results) -> None:
     obj = race()
