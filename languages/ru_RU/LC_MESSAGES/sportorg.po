@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SportOrg\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-23 17:13+0300\n"
-"PO-Revision-Date: 2024-02-23 17:38+0300\n"
+"POT-Creation-Date: 2024-02-25 14:23+0300\n"
+"PO-Revision-Date: 2024-02-25 14:24+0300\n"
 "Last-Translator: SportOrg\n"
 "Language-Team: SportOrg\n"
 "Language: ru_RU\n"
@@ -134,7 +134,7 @@ msgstr "Дистанции"
 msgid "Race Results"
 msgstr "Результаты"
 
-#: gui/dialogs/cp_delete.py:63
+#: gui/dialogs/cp_delete.py:63 models/memory.py:112
 msgid "Ok"
 msgstr "Оk"
 
@@ -1701,7 +1701,7 @@ msgstr "В/К"
 msgid "Rented stub"
 msgstr "Свой чип"
 
-#: gui/tabs/memory_model.py:302 models/memory.py:835
+#: gui/tabs/memory_model.py:302 models/memory.py:859
 msgid "o/c"
 msgstr "в/к"
 
@@ -1770,19 +1770,111 @@ msgstr "Чип"
 msgid "SPORTident readout"
 msgstr "Чтение SPORTident"
 
-#: models/memory.py:71
+#: models/memory.py:101
 msgid "Mf"
 msgstr "МЖ"
 
-#: models/memory.py:72
+#: models/memory.py:102
 msgid "M"
 msgstr "М"
 
-#: models/memory.py:73
+#: models/memory.py:103
 msgid "F"
 msgstr "Ж"
 
-#: models/memory.py:707 models/memory.py:729 models/memory.py:759
+#: models/memory.py:104
+msgid "Individual race"
+msgstr "Индивидуальная гонка"
+
+#: models/memory.py:105
+msgid "Mass start"
+msgstr "Масс-старт"
+
+#: models/memory.py:106
+msgid "Pursuit"
+msgstr "Гонка преследования"
+
+#: models/memory.py:107
+msgid "Relay"
+msgstr "Эстафета"
+
+#: models/memory.py:108
+msgid "One man relay"
+msgstr "Эстафета одного участника"
+
+#: models/memory.py:109
+msgid "Sprint relay"
+msgstr "Смешанная эстафета"
+
+#: models/memory.py:110
+msgid "Team race"
+msgstr "Командная гонка"
+
+#: models/memory.py:111
+msgid "None"
+msgstr "-"
+
+#: models/memory.py:113
+msgid "Finished"
+msgstr "Финишировал"
+
+#: models/memory.py:114
+msgid "Disqualified"
+msgstr "ДИСКВ."
+
+#: models/memory.py:115
+msgid "Missing punch"
+msgstr "Непр. отметка"
+
+#: models/memory.py:116
+msgid "Did not finish"
+msgstr "СОШЕЛ"
+
+#: models/memory.py:117
+msgid "Active"
+msgstr "Активный"
+
+#: models/memory.py:118
+msgid "Inactive"
+msgstr "Неактивный"
+
+#: models/memory.py:119
+msgid "Overtime"
+msgstr "ПРЕВЫШЕНО КВ"
+
+#: models/memory.py:120
+msgid "Sporting withdrawal"
+msgstr "Проведена жеребьевка"
+
+#: models/memory.py:121
+msgid "Not competing"
+msgstr "Вне конкурса"
+
+#: models/memory.py:122
+msgid "Moved"
+msgstr "Перемещен"
+
+#: models/memory.py:123
+msgid "Moved up"
+msgstr "Перемещен наверх"
+
+#: models/memory.py:124
+msgid "Did not start"
+msgstr "НЕ СТАРТ."
+
+#: models/memory.py:125
+msgid "Did not enter"
+msgstr "Не заявлен"
+
+#: models/memory.py:126
+msgid "Cancelled"
+msgstr "Заявка отменена"
+
+#: models/memory.py:127
+msgid "Restored"
+msgstr "Восстановлен"
+
+#: models/memory.py:731 models/memory.py:753 models/memory.py:783
 msgid "points"
 msgstr "очк."
 
@@ -1891,20 +1983,8 @@ msgstr "Сохранить WDB файл"
 #~ msgid "DNS"
 #~ msgstr "НЕ СТАРТ."
 
-#~ msgid "Did not start"
-#~ msgstr "НЕ СТАРТ."
-
 #~ msgid "DNF"
 #~ msgstr "СОШЕЛ"
-
-#~ msgid "Did not finish"
-#~ msgstr "СОШЕЛ"
-
-#~ msgid "Overtime"
-#~ msgstr "ПРЕВЫШЕНО КВ"
-
-#~ msgid "Disqualified"
-#~ msgstr "ДИСКВ."
 
 #~ msgid "Auto connect to SPORTident station"
 #~ msgstr "Автоматическое подключение станции SPORTident"
@@ -1984,68 +2064,11 @@ msgstr "Сохранить WDB файл"
 #~ msgid "Out of competition"
 #~ msgstr "Вне конкурса"
 
-#~ msgid "Individual race"
-#~ msgstr "Индивидуальная гонка"
-
-#~ msgid "Mass start"
-#~ msgstr "Масс-старт"
-
-#~ msgid "Pursuit"
-#~ msgstr "Гонка преследования"
-
-#~ msgid "Relay"
-#~ msgstr "Эстафета"
-
-#~ msgid "One man relay"
-#~ msgstr "Эстафета одного участника"
-
-#~ msgid "Sprint relay"
-#~ msgstr "Смешанная эстафета"
-
-#~ msgid "Team race"
-#~ msgstr "Командная гонка"
-
-#~ msgid "None"
-#~ msgstr "-"
-
-#~ msgid "Finished"
-#~ msgstr "Финишировал"
-
-#~ msgid "Missing punch"
-#~ msgstr "Непр. отметка"
-
-#~ msgid "Active"
-#~ msgstr "Активный"
-
-#~ msgid "Inactive"
-#~ msgstr "Неактивный"
-
-#~ msgid "Sporting withdrawal"
-#~ msgstr "Проведена жеребьевка"
-
-#~ msgid "Not competing"
-#~ msgstr "Вне конкурса"
-
-#~ msgid "Moved"
-#~ msgstr "Перемещен"
-
-#~ msgid "Moved up"
-#~ msgstr "Перемещен наверх"
-
-#~ msgid "Did not enter"
-#~ msgstr "Не заявлен"
-
-#~ msgid "Cancelled"
-#~ msgstr "Заявка отменена"
-
 #~ msgid "Selected list report"
 #~ msgstr "Выписка по выбранным участникам"
 
 #~ msgid "Result count"
 #~ msgstr "Количество результатов"
-
-#~ msgid "Restored"
-#~ msgstr "Восстановлен"
 
 #~ msgid "Load from file"
 #~ msgstr "Загрузить из файла"

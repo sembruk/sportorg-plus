@@ -66,13 +66,6 @@ class Sex(_TitleType):
     M = 1
     F = 2
 
-# For Poedit
-sexTranslations = [
-    _('Mf'),
-    _('M'),
-    _('F'),
-]
-
 
 class RaceType(_TitleType):
     INDIVIDUAL_RACE = 0
@@ -102,6 +95,37 @@ class ResultStatus(_TitleType):
     DID_NOT_ENTER = 14
     CANCELLED = 15
     RESTORED = 16
+
+# For Poedit
+translations = [
+    _('Mf'),
+    _('M'),
+    _('F'),
+    _('Individual race'),
+    _('Mass start'),
+    _('Pursuit'),
+    _('Relay'),
+    _('One man relay'),
+    _('Sprint relay'),
+    _('Team race'),
+    _('None'),
+    _('Ok'),
+    _('Finished'),
+    _('Disqualified'),
+    _('Missing punch'),
+    _('Did not finish'),
+    _('Active'),
+    _('Inactive'),
+    _('Overtime'),
+    _('Sporting withdrawal'),
+    _('Not competing'),
+    _('Moved'),
+    _('Moved up'),
+    _('Did not start'),
+    _('Did not enter'),
+    _('Cancelled'),
+    _('Restored'),
+]
 
 
 class CourseControl(Model):
