@@ -87,11 +87,6 @@ class SaveAsAction(Action, metaclass=ActionFactory):
         self.app.save_file_as()
 
 
-class OpenRecentAction(Action, metaclass=ActionFactory):
-    def execute(self):
-        pass
-
-
 class CopyAction(Action, metaclass=ActionFactory):
     def execute(self):
         if self.app.current_tab not in range(5):

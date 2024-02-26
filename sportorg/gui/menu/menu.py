@@ -26,6 +26,12 @@ def menu_list():
                     'action': 'OpenAction'
                 },
                 {
+                    'title': _('Open Recent'),
+                    'shortcut': 'Ctrl+Shift+O',
+                    'id': 'open_recent',
+                    'actions': []
+                },
+                {
                     'title': _('Save As'),
                     'shortcut': 'Ctrl+Shift+S',
                     'icon': config.icon_dir('save.svg'),

@@ -75,7 +75,7 @@ class TimekeepingPropertiesDialog(QDialog):
 
         self.missed_finish_group_box = QGroupBox(_('Missed finish'))
         self.missed_finish_layout = QFormLayout()
-        self.missed_finish_zero = QRadioButton(_('00:00:00'))
+        self.missed_finish_zero = QRadioButton('00:00:00')
         self.missed_finish_layout.addRow(self.missed_finish_zero)
         self.missed_finish_dsq = QRadioButton(_('DSQ'))
         self.missed_finish_layout.addRow(self.missed_finish_dsq)

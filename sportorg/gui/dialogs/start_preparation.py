@@ -132,7 +132,7 @@ class StartPreparationDialog(QDialog):
         self.numbers_vert_layout.addWidget(self.numbers_teams_check_box)
         self.numbers_skip_hor_layout = QtWidgets.QHBoxLayout()
         self.numbers_skip_line_edit = QtWidgets.QLineEdit(self.numbers_group_box)
-        self.numbers_skip_line_edit.setPlaceholderText(_("123,456,789"))
+        self.numbers_skip_line_edit.setPlaceholderText("123,456,789")
         self.numbers_skip_hor_layout.addWidget(QtWidgets.QLabel(_("Skip")))
         self.numbers_skip_hor_layout.addWidget(self.numbers_skip_line_edit)
         self.numbers_vert_layout.addLayout(self.numbers_skip_hor_layout)

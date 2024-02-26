@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.menu_factory = Factory(self)
         self.recent_files = []
-        self.menu_property = {}
+        self.action_by_id = {}
         self.menu_list_for_disabled = []
         self.toolbar_property = {}
         try:
@@ -138,8 +138,8 @@ class MainWindow(QMainWindow):
             super().keyPressEvent(event)
 
     def closeEvent(self, _event):
-        quit_msg = _('Save file before exit?')
-        reply = messageBoxQuestion(self, _('Question'), quit_msg,
+        reply = messageBoxQuestion(self, _('Question'), 
+                                   _('Save file before exit?'),
                                    QMessageBox.Save
                                    | QMessageBox.No
                                    | QMessageBox.Cancel)
@@ -231,10 +231,9 @@ class MainWindow(QMainWindow):
                         action,
                         action_item['tabs']
                     ))
-                if 'property' in action_item:
-                    self.menu_property[action_item['property']] = action
-                if ('debug' in action_item and action_item['debug']) or 'debug' not in action_item:
-                    parent.addAction(action)
+                if 'id' in action_item:
+                    self.action_by_id[action_item['id']] = action
+                parent.addAction(action)
             else:
                 menu = QtWidgets.QMenu(parent)
                 menu.setTitle(action_item['title'])
@@ -245,6 +244,8 @@ class MainWindow(QMainWindow):
                         menu,
                         action_item['tabs']
                     ))
+                if 'id' in action_item:
+                    self.action_by_id[action_item['id']] = menu
                 self._create_menu(menu, action_item['actions'])
                 parent.addAction(menu.menuAction())
 
@@ -254,6 +255,20 @@ class MainWindow(QMainWindow):
         self.menubar.setNativeMenuBar(False)
         self.setMenuBar(self.menubar)
         self._create_menu(self.menubar, menu_list())
+        self._update_recent_files_menu()
+
+    def _update_recent_files_menu(self):
+        if 'open_recent' in self.action_by_id:
+            menu = self.action_by_id['open_recent']
+            menu.clear()
+            if len(self.recent_files) == 0:
+                action = menu.addAction(_('Empty'))
+                action.setEnabled(False)
+            else:
+                for rf in self.recent_files[:10]:
+                    action = menu.addAction(rf)
+                    action.triggered.connect(lambda checked=False, x=rf: self.open_file(x))
+                    menu.addAction(action)
 
     def _setup_toolbar(self):
         self.toolbar = self.addToolBar(_('Toolbar'))
@@ -409,10 +424,12 @@ class MainWindow(QMainWindow):
     def add_recent_file(self, file):
         self.delete_from_recent_files(file)
         self.recent_files.insert(0, file)
+        self._update_recent_files_menu()
 
     def delete_from_recent_files(self, file):
         if file in self.recent_files:
             self.recent_files.remove(file)
+            self._update_recent_files_menu()
 
     def get_table_by_name(self, name):
         return self.findChild(QtWidgets.QTableView, name)
@@ -575,7 +592,7 @@ class MainWindow(QMainWindow):
                 logging.exception(str(e))
                 self.delete_from_recent_files(file_name)
                 if isinstance(e, FileNotFoundError):
-                    QMessageBox.warning(self, _('Error'), str(e))
+                    QMessageBox.warning(self, _('File not found'), str(e))
                 else:
                     QMessageBox.warning(self, _('Error'), _('Cannot read file, format unknown') + ': ' + file_name)
 
