@@ -74,7 +74,7 @@ def _get_person_obj(data, race_data, result=None):
         'ref_id': str(data['id']),
         'bib': data['bib'],
         'group_name': group_name,
-        'name': '{} {}'.format(data['surname'], data['name']),
+        'name': '{} {}'.format(data['name'], data['surname']),
         'organization': organization,
         # 'country_code': 'RUS',
         'card_number': data['card_number'],
