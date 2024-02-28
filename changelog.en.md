@@ -1,5 +1,16 @@
 # SportOrgPlus Changelog
 
+## v1.4.0
+
+* Course with variable number of CPs (e.g. `*[]`, `*(31-45) 100 *(46-99)[]`) 
+* Import entry list from IOF XML v3 (Tested with Orgeo)
+* `Open Recent` menu option
+* Updated Orgeo Live for rogaining and team race
+* Set numbers for persons and teams separately
+* Added setting for using card number as bib
+* Save columns order between sessions
+* Fix build for Windows
+
 ## v1.3.0 - 2024-02-07
 
 * Export results to CSV file using jinja2 template
@@ -25,7 +36,7 @@
 ## v1.2.0 - 2022-05-13
 
 * Subgroups
-* Updated report tempates
+* Updated report templates
 * UTF-8 for JSON file
 * Fix Orgeo CSV import
 * Fix team result update after manual result edit

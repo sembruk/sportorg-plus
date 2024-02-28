@@ -171,6 +171,12 @@ class MainWindow(QMainWindow):
     def conf_write(self):
         Configuration().set_option(ConfigFile.GEOMETRY, 'main', self.saveGeometry().toHex().data().decode())
         Configuration().set_option(ConfigFile.PATH, 'recent_files', self.recent_files)
+
+        tabs = self.get_tables()
+        for table in tabs:
+            table_name = table.objectName()
+            Configuration().set_option(ConfigFile.TAB_COLUMN_ORDER, table_name, table.get_column_order().toHex().data().decode())
+
         Configuration().save()
 
     def post_show(self):
@@ -301,6 +307,17 @@ class MainWindow(QMainWindow):
         self.tabwidget.addTab(self.logging_tab, _('Logs'))
         self.tabwidget.currentChanged.connect(self._menu_disable)
 
+        if Configuration().parser.has_section(ConfigFile.TAB_COLUMN_ORDER):
+            try:
+                tabs = self.get_tables()
+                for table in tabs:
+                    table_name = table.objectName()
+                    column_order = bytearray.fromhex(Configuration().parser.get(ConfigFile.TAB_COLUMN_ORDER, table_name, fallback='00'))
+                    if column_order:
+                        table.set_column_order(column_order)
+            except Exception as e:
+                logging.error(str(e))
+
     def _menu_disable(self, tab_index):
         for item in self.menu_list_for_disabled:
             if tab_index not in item[1]:
@@ -430,6 +447,9 @@ class MainWindow(QMainWindow):
         if file in self.recent_files:
             self.recent_files.remove(file)
             self._update_recent_files_menu()
+
+    def get_tables(self):
+        return self.findChildren(QtWidgets.QTableView)
 
     def get_table_by_name(self, name):
         return self.findChild(QtWidgets.QTableView, name)

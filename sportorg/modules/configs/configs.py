@@ -16,6 +16,7 @@ class ConfigFile(object):
     SOUND = 'sound'
     PRINTER = 'printer'
     RANKING = 'ranking'
+    TAB_COLUMN_ORDER = 'tab_column_order'
 
 
 class Parser:

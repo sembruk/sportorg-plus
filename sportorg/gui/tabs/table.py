@@ -39,3 +39,9 @@ class TableView(QtWidgets.QTableView):
         super(TableView, self).setModel(QAbstractItemModel)
         self.resizeColumnsToContents()
 
+    def get_column_order(self):
+        return self.horizontalHeader().saveState()
+
+    def set_column_order(self, column_order):
+        self.horizontalHeader().restoreState(column_order)
+
