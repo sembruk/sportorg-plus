@@ -17,6 +17,7 @@ build_exe_options = {
     'excludes': excludes,
     'packages': ['idna', 'requests', 'encodings', 'asyncio'],
     'include_files': include_files,
+    'include_msvcr': True,
     'silent': 1
 }
 
