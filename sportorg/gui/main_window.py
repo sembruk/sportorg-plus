@@ -1,3 +1,4 @@
+import os
 import ast
 import logging
 import time
@@ -560,7 +561,7 @@ class MainWindow(QMainWindow):
             logging.error(str(e))
 
     # Actions
-    def create_file(self, *args, update_data=True):
+    def create_file(self, *args, update_data=True, is_new=True):
         file_name = get_save_file_name(
             _('Create SportOrg file'),
             _('SportOrg file (*.json)'),
@@ -568,6 +569,16 @@ class MainWindow(QMainWindow):
         )
         if file_name:
             try:
+                # protect from overwriting with empty file
+                if is_new and os.path.exists(file_name):
+                    if os.path.getsize(file_name) > 1000:
+                        QMessageBox.warning(
+                            self,
+                            _('Error'),
+                            _('Canceled overwriting existing file\n\"{}\"\nwith new empty file').format(file_name),
+                        )
+                        return
+
                 if update_data:
                     new_event([Race()])
                     set_current_race_index(0)
@@ -585,7 +596,7 @@ class MainWindow(QMainWindow):
             self.refresh()
 
     def save_file_as(self):
-        self.create_file(update_data=False)
+        self.create_file(update_data=False, is_new=False)
 
     def save_file(self):
         if self.file:
