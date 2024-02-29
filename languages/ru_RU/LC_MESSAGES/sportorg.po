@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SportOrg\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-26 21:34+0300\n"
-"PO-Revision-Date: 2024-02-26 21:35+0300\n"
+"POT-Creation-Date: 2024-02-29 14:18+0300\n"
+"PO-Revision-Date: 2024-02-29 14:20+0300\n"
 "Last-Translator: SportOrg\n"
 "Language-Team: SportOrg\n"
 "Language: ru_RU\n"
@@ -126,11 +126,11 @@ msgid "Number CP"
 msgstr "Номер КП"
 
 #: gui/dialogs/cp_delete.py:37 gui/dialogs/cp_delete.py:90
-#: gui/main_window.py:298 gui/menu/menu.py:189
+#: gui/main_window.py:304 gui/menu/menu.py:189
 msgid "Courses"
 msgstr "Дистанции"
 
-#: gui/dialogs/cp_delete.py:42 gui/main_window.py:296 gui/menu/menu.py:179
+#: gui/dialogs/cp_delete.py:42 gui/main_window.py:302 gui/menu/menu.py:179
 msgid "Race Results"
 msgstr "Результаты"
 
@@ -368,7 +368,11 @@ msgstr "Помощь"
 msgid "Back"
 msgstr "Назад"
 
-#: gui/dialogs/help.py:39
+#: gui/dialogs/help.py:38
+msgid "Forward"
+msgstr "Вперёд"
+
+#: gui/dialogs/help.py:41
 msgid "Close"
 msgstr "Закрыть"
 
@@ -1294,8 +1298,8 @@ msgstr "Расчет штрафа из сплитов"
 msgid "Time settings"
 msgstr "Настройки времени"
 
-#: gui/main_window.py:141 gui/main_window.py:507 gui/main_window.py:666
-#: gui/menu/actions.py:358 gui/menu/actions.py:367
+#: gui/main_window.py:141 gui/main_window.py:527 gui/main_window.py:686
+#: gui/menu/actions.py:353 gui/menu/actions.py:362
 msgid "Question"
 msgstr "Вопрос"
 
@@ -1303,93 +1307,93 @@ msgstr "Вопрос"
 msgid "Save file before exit?"
 msgstr "Сохранить изменения в файле?"
 
-#: gui/main_window.py:265
+#: gui/main_window.py:271
 msgid "Empty"
 msgstr "Пусто"
 
-#: gui/main_window.py:274
+#: gui/main_window.py:280
 msgid "Toolbar"
 msgstr "Панель инструментов"
 
-#: gui/main_window.py:295
+#: gui/main_window.py:301
 msgid "Competitors"
 msgstr "Участники"
 
-#: gui/main_window.py:297 gui/menu/menu.py:184 modules/orgeo/orgeo.py:188
+#: gui/main_window.py:303 gui/menu/menu.py:184 modules/orgeo/orgeo.py:188
 #: modules/winorient/winorient.py:56
 msgid "Groups"
 msgstr "Группы"
 
-#: gui/main_window.py:299 gui/menu/menu.py:194 modules/orgeo/orgeo.py:189
+#: gui/main_window.py:305 gui/menu/menu.py:194 modules/orgeo/orgeo.py:189
 #: modules/winorient/winorient.py:58
 msgid "Teams"
 msgstr "Команды"
 
-#: gui/main_window.py:301
+#: gui/main_window.py:307
 msgid "Logs"
 msgstr "Логи"
 
-#: gui/main_window.py:350
+#: gui/main_window.py:367
 msgid "Tab doesn't exist"
 msgstr "Раздел не существует"
 
-#: gui/main_window.py:507
+#: gui/main_window.py:527
 msgid "Are you sure you want to reassign the chip number"
 msgstr "Вы уверены, что хотите переприсвоить номер чипа"
 
-#: gui/main_window.py:545
+#: gui/main_window.py:565
 msgid "Create SportOrg file"
 msgstr "Создать файл SportOrg"
 
-#: gui/main_window.py:546 gui/menu/actions.py:81
+#: gui/main_window.py:566 gui/menu/actions.py:81
 msgid "SportOrg file (*.json)"
 msgstr "Файл SportOrg (*.json)"
 
-#: gui/main_window.py:564 gui/main_window.py:597 gui/main_window.py:685
-#: gui/main_window.py:694 gui/main_window.py:703 gui/menu/actions.py:139
-#: gui/menu/actions.py:153 gui/menu/actions.py:166 gui/menu/actions.py:178
-#: gui/menu/actions.py:197 gui/menu/actions.py:209 gui/menu/actions.py:222
-#: gui/menu/actions.py:623
+#: gui/main_window.py:584 gui/main_window.py:617 gui/main_window.py:705
+#: gui/main_window.py:714 gui/main_window.py:723 gui/menu/actions.py:134
+#: gui/menu/actions.py:148 gui/menu/actions.py:161 gui/menu/actions.py:173
+#: gui/menu/actions.py:192 gui/menu/actions.py:204 gui/menu/actions.py:217
+#: gui/menu/actions.py:618
 msgid "Error"
 msgstr "Ошибка"
 
-#: gui/main_window.py:564
+#: gui/main_window.py:584
 msgid "Cannot create file"
 msgstr "Файл не создан"
 
-#: gui/main_window.py:595
+#: gui/main_window.py:615
 msgid "File not found"
 msgstr "Файл не найден"
 
-#: gui/main_window.py:597
+#: gui/main_window.py:617
 msgid "Cannot read file, format unknown"
 msgstr "Не удается открыть файл, некорректный формат"
 
-#: gui/main_window.py:601 gui/menu/actions.py:471 gui/menu/actions.py:586
+#: gui/main_window.py:621 gui/menu/actions.py:466 gui/menu/actions.py:581
 msgid "No result selected"
 msgstr "Результат не выбран"
 
-#: gui/main_window.py:621
+#: gui/main_window.py:641
 msgid "No results to print"
 msgstr "Нет результатов для печати"
 
-#: gui/main_window.py:626
+#: gui/main_window.py:646
 msgid "No printer selected"
 msgstr "Принтер не выбран"
 
-#: gui/main_window.py:666
+#: gui/main_window.py:686
 msgid "Please confirm"
 msgstr "Пожалуйста, подтвердите действие"
 
-#: gui/main_window.py:686
+#: gui/main_window.py:706
 msgid "Cannot remove group"
 msgstr "Невозможно удалить группу"
 
-#: gui/main_window.py:695
+#: gui/main_window.py:715
 msgid "Cannot remove course"
 msgstr "Невозможно удалить дистанцию"
 
-#: gui/main_window.py:704
+#: gui/main_window.py:724
 msgid "Cannot remove team"
 msgstr "Невозможно удалить команду"
 
@@ -1397,106 +1401,106 @@ msgstr "Невозможно удалить команду"
 msgid "Open SportOrg file"
 msgstr "Открыть файл SportOrg"
 
-#: gui/menu/actions.py:133
+#: gui/menu/actions.py:128
 msgid "Open CSV Winorient file"
 msgstr "Открыть файл CSV Winorient"
 
-#: gui/menu/actions.py:133
+#: gui/menu/actions.py:128
 msgid "CSV Winorient (*.csv)"
 msgstr "Файл CSV Winorient (*.csv)"
 
-#: gui/menu/actions.py:139 gui/menu/actions.py:153 gui/menu/actions.py:166
-#: gui/menu/actions.py:178 gui/menu/actions.py:222
+#: gui/menu/actions.py:134 gui/menu/actions.py:148 gui/menu/actions.py:161
+#: gui/menu/actions.py:173 gui/menu/actions.py:217
 msgid "Import error"
 msgstr "Ошибка импорта"
 
-#: gui/menu/actions.py:145
+#: gui/menu/actions.py:140
 msgid "Open Orgeo CSV file"
 msgstr "Открыть Orgeo CSV файл"
 
-#: gui/menu/actions.py:145
+#: gui/menu/actions.py:140
 msgid "Orgeo CSV (*.csv)"
 msgstr "Orgeo CSV (*.csv)"
 
-#: gui/menu/actions.py:150 gui/menu/actions.py:219
+#: gui/menu/actions.py:145 gui/menu/actions.py:214
 msgid "Warning"
 msgstr "Предупреждение"
 
-#: gui/menu/actions.py:159
+#: gui/menu/actions.py:154
 msgid "Open WDB Winorient file"
 msgstr "Открыть файл WDB Winorient"
 
-#: gui/menu/actions.py:159
+#: gui/menu/actions.py:154
 msgid "WDB Winorient (*.wdb)"
 msgstr "Файл WDB Winorient (*.wdb)"
 
-#: gui/menu/actions.py:172
+#: gui/menu/actions.py:167
 msgid "Open Ocad txt v8 file"
 msgstr "Открыть файл дистанций OCAD8"
 
-#: gui/menu/actions.py:172
+#: gui/menu/actions.py:167
 msgid "Ocad classes v8 (*.txt)"
 msgstr "Файл дистанций OCAD8 (*.txt)"
 
-#: gui/menu/actions.py:184
+#: gui/menu/actions.py:179
 msgid "Save As WDB file"
 msgstr "Сохранить в файл Winorient (WDB)"
 
-#: gui/menu/actions.py:184 modules/winorient/wdb_number_setter.py:30
+#: gui/menu/actions.py:179 modules/winorient/wdb_number_setter.py:30
 #: modules/winorient/wdb_number_setter.py:31
 #: modules/winorient/wdb_number_setter.py:36
 msgid "WDB file (*.wdb)"
 msgstr "Файл Winorient (*.wdb)"
 
-#: gui/menu/actions.py:197 gui/menu/actions.py:209
+#: gui/menu/actions.py:192 gui/menu/actions.py:204
 msgid "Export error"
 msgstr "Ошибка экспорта"
 
-#: gui/menu/actions.py:202
+#: gui/menu/actions.py:197
 msgid "Save As IOF xml"
 msgstr "Сохранение IOF xml"
 
-#: gui/menu/actions.py:202 gui/menu/actions.py:214
+#: gui/menu/actions.py:197 gui/menu/actions.py:209
 msgid "IOF xml (*.xml)"
 msgstr "Файл IOF xml (*.xml)"
 
-#: gui/menu/actions.py:214
+#: gui/menu/actions.py:209
 msgid "Open IOF xml"
 msgstr "Открыть IOF xml"
 
-#: gui/menu/actions.py:357 gui/menu/menu.py:238
+#: gui/menu/actions.py:352 gui/menu/menu.py:238
 msgid "Use bib as card number"
 msgstr "Заменить номера чипов нагрудными номерами"
 
-#: gui/menu/actions.py:366 gui/menu/menu.py:242
+#: gui/menu/actions.py:361 gui/menu/menu.py:242
 msgid "Use card number as bib"
 msgstr "Заменить нагрудные номера номерами чипов"
 
-#: gui/menu/actions.py:390 gui/menu/menu.py:259 gui/toolbar.py:12
+#: gui/menu/actions.py:385 gui/menu/menu.py:259 gui/toolbar.py:12
 msgid "Manual finish"
 msgstr "Ручной финиш"
 
-#: gui/menu/actions.py:490
+#: gui/menu/actions.py:485
 msgid "No results to change status"
 msgstr "Нет результата для изменения статуса"
 
-#: gui/menu/actions.py:614
+#: gui/menu/actions.py:609
 msgid "Update available"
 msgstr "Доступно обновление"
 
-#: gui/menu/actions.py:618
+#: gui/menu/actions.py:613
 msgid "You are using the latest version"
 msgstr "Вы используете последнюю версию"
 
-#: gui/menu/actions.py:620
+#: gui/menu/actions.py:615
 msgid "Info"
 msgstr "Информация"
 
-#: gui/menu/actions.py:644
+#: gui/menu/actions.py:639
 msgid "Open SportOrg json"
 msgstr "Открыть файл SportOrg"
 
-#: gui/menu/actions.py:644
+#: gui/menu/actions.py:639
 msgid "SportOrg (*.json)"
 msgstr "Файл SportOrg (*.json)"
 

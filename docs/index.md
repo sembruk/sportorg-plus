@@ -19,14 +19,14 @@
 - Отчеты и протоколы
     - [Протокол старта](user-guide/start_protocol_list.md)
     - [Шахматка](user-guide/start_protocol_times.md)
-    - [Командные выписки](user-guide/start_protocol_team.md)
+    - [Командные выписки](user-guide/start_protocol_teams.md)
     - [Номера](user-guide/start_protocol_bibs.md)
     - [Справка комиссии по допуску](user-guide/start_protocol_statistics.md)
 - Предстартовая работа в день соревнований
     - Присвоение чипов
     - Дозаявка
     - [Смещение времени старта](ui/dialogs/dialog_time_offset.md)
-    - [Настройка электронной отметки](user-guide/sportident.md)
+    - [Настройка электронной отметки](user-guide/timekeeping.md)
     - [Настройка печати распечаток](user-guide/printout_punches.md)
     - [Настройка online](user-guide/online_orgeo.md)
     - [Настройка командной работы](user-guide/teamwork.md)
