@@ -2,6 +2,7 @@ import os
 import ast
 import logging
 import time
+import pylocker
 from queue import Queue
 from PySide2 import QtGui, QtWidgets
 from PySide2.QtCore import Qt, QModelIndex, QItemSelectionModel, QTimer, QRect
@@ -71,6 +72,11 @@ class MainWindow(QMainWindow):
         self.last_update = time.time()
         self.relay_number_assign = False
 
+        self.file_locker = pylocker.FACTORY(
+            key='sportorgplus_locker_key', password='str(uuid.uuid1())', autoconnect=False
+        )
+        self.file_lock_id = None
+
     def _set_style(self):
         try:
             with open(config.style_dir('default.qss')) as s:
@@ -130,6 +136,7 @@ class MainWindow(QMainWindow):
 
     def _close(self):
         self.conf_write()
+        self.unlock_file()
         Broker().produce('close')
 
     def keyPressEvent(self, event):
@@ -579,6 +586,9 @@ class MainWindow(QMainWindow):
                         )
                         return
 
+                if not self.lock_file(file_name):
+                    return
+
                 if update_data:
                     new_event([Race()])
                     set_current_race_index(0)
@@ -613,6 +623,9 @@ class MainWindow(QMainWindow):
     def open_file(self, file_name=None):
         if file_name:
             try:
+                if not self.lock_file(file_name):
+                    return
+
                 File(file_name, logging.root, File.JSON).open()
                 self.file = file_name
                 self.set_title()
@@ -736,3 +749,31 @@ class MainWindow(QMainWindow):
             self.refresh()
         if len(res):
             Teamwork().delete([r.to_dict() for r in res])
+
+    def lock_file(self, file_name: str):
+        if self.file == file_name:
+            # already locked by current process ('Save as' or 'Open' for the same file)
+            return True
+
+        # try to acquire the lock a single file path
+        acquired, lock_id = self.file_locker.acquire_lock(file_name, timeout=0.5)
+        if acquired:
+            # new lock created, release previous lock if exists
+            self.unlock_file()
+            self.file_lock_id = lock_id
+            logging.info(_('File lock created') + ': ' + file_name)
+        else:
+            # already locked = opened in another process, avoid parallel opening
+            QMessageBox.warning(
+                self,
+                _('Error'),
+                _('Cannot open file, it is already opened') + ':\n' + file_name,
+            )
+            return False
+        return True
+
+    def unlock_file(self):
+        if self.file_lock_id is not None:
+            self.file_locker.release(self.file_lock_id)
+            logging.info(_('File lock released'))
+
