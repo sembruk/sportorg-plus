@@ -1,6 +1,6 @@
 # SportOrgPlus Changelog
 
-## v1.4.0
+## v1.4.0 - 2024-03-04
 
 * Course with variable number of CPs (e.g. `*[]`, `*(31-45) 100 *(46-99)[]`) 
 * Import entry list from IOF XML v3 (Tested with Orgeo)
@@ -9,7 +9,11 @@
 * Set numbers for persons and teams separately
 * Added setting for using card number as bib
 * Save columns order between sessions
+* Protect existing file from overwriting with empty file
+* Prevent editing JSON file from 2 or more instances of the software
 * Fix build for Windows
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.3.0...v1.4.0)
 
 ## v1.3.0 - 2024-02-07
 
