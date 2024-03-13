@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: SportOrg\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-29 18:32+0300\n"
-"PO-Revision-Date: 2024-02-29 18:34+0300\n"
+"PO-Revision-Date: 2024-03-13 19:45+0300\n"
 "Last-Translator: SportOrg\n"
 "Language-Team: SportOrg\n"
 "Language: ru_RU\n"
@@ -2015,6 +2015,15 @@ msgstr "Открыть WDB файл"
 #: modules/winorient/wdb_number_setter.py:36
 msgid "Save WDB file"
 msgstr "Сохранить WDB файл"
+
+msgid "contain"
+msgstr "содержит"
+
+msgid "equal to"
+msgstr "равно"
+
+msgid "Clear"
+msgstr "Очистить"
 
 #~ msgid "Sorting by"
 #~ msgstr "Сортировка по"

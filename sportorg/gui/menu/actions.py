@@ -12,7 +12,7 @@ from sportorg.common.otime import OTime
 from sportorg.gui.dialogs.about import AboutDialog
 from sportorg.gui.dialogs.help import HelpDialog
 from sportorg.gui.dialogs.cp_delete import CPDeleteDialog
-from sportorg.gui.dialogs.entry_filter import DialogFilter
+from sportorg.gui.dialogs.filter_dialog import FilterDialog
 from sportorg.gui.dialogs.entry_mass_edit import MassEditDialog
 from sportorg.gui.dialogs.event_properties import EventPropertiesDialog
 from sportorg.gui.dialogs.file_dialog import get_open_file_name, get_save_file_name
@@ -251,7 +251,7 @@ class FilterAction(Action, metaclass=ActionFactory):
         if self.app.current_tab not in range(2):
             return
         table = self.app.get_current_table()
-        DialogFilter(table).exec_()
+        FilterDialog(table).exec_()
         self.app.refresh()
 
 
