@@ -278,7 +278,7 @@ class PersonEditDialog(QDialog):
         person = self.current_object
         return ((person.team
             and person.team.full_name != self.item_team.currentText())
-            or (person.team is None and len() > 0))
+            or (person.team is None and len(self.item_team.currentText()) > 0))
 
     def check_team_name(self):
         self.label_team_info.setText('')
