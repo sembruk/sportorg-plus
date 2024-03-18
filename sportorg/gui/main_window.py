@@ -646,13 +646,21 @@ class MainWindow(QMainWindow):
             return
         try:
             indexes = self.get_selected_rows()
+            if len(indexes) > 5:
+                confirm = messageBoxQuestion(
+                    self,
+                    _('Question'),
+                    _('Too many results selected for printing.\nAre you sure you want to continue?'),
+                    QMessageBox.Yes | QMessageBox.No)
+                if confirm == QMessageBox.No:
+                    return
+
             obj = race()
             for index in indexes:
                 if index < 0:
                     continue
-                if index >= len(obj.results):
-                    pass
-                self.split_printout(obj.results[index])
+                if index <= len(obj.results):
+                    self.split_printout(obj.results[index])
         except Exception as e:
             logging.exception(str(e))
 
