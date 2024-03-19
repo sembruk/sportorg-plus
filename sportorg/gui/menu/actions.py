@@ -542,7 +542,7 @@ class TeamworkSendAction(Action, metaclass=ActionFactory):
         try:
             obj = race()
             data_list = [obj.persons, obj.results, obj.groups, obj.courses, obj.teams]
-            if not self.app.current_tab < len(data_list):
+            if self.app.current_tab >= len(data_list):
                 return
             items = data_list[self.app.current_tab]
             indexes = self.app.get_selected_rows()
@@ -555,7 +555,7 @@ class TeamworkSendAction(Action, metaclass=ActionFactory):
                 items_dict.append(items[index].to_dict())
             Teamwork().send(items_dict)
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
 
 class PrinterSettingsAction(Action, metaclass=ActionFactory):
