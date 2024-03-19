@@ -174,6 +174,12 @@ class SportiduinoClient(object):
 
     def stop(self):
         self._stop_event.set()
+        if self._sportiduino_thread is not None:
+            self._sportiduino_thread.quit()
+            self._sportiduino_thread.wait()
+        if self._result_thread is not None:
+            self._result_thread.quit()
+            self._result_thread.wait()
 
     def toggle(self):
         if self.is_alive():

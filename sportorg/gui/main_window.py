@@ -106,12 +106,12 @@ class MainWindow(QMainWindow):
 
     def interval(self):
         if SIReaderClient().is_alive() != self.sportident_status:
-            pass
+            self.sportident_status = SIReaderClient().is_alive()
+            self.toolbar_property['sportident'].setIcon(
+                QtGui.QIcon(
+                    config.icon_dir(self.sportident_icon[self.sportident_status])))
         # FIXME
         """
-            self.toolbar_property['sportident'].setIcon(
-                QtGui.QIcon(config.icon_dir(self.sportident_icon[SIReaderClient().is_alive()])))
-            self.sportident_status = SIReaderClient().is_alive()
         if Teamwork().is_alive() != self.teamwork_status:
             self.toolbar_property['teamwork'].setIcon(
                 QtGui.QIcon(config.icon_dir(self.teamwork_icon[Teamwork().is_alive()])))
@@ -138,6 +138,9 @@ class MainWindow(QMainWindow):
         self.conf_write()
         self.unlock_file()
         Broker().produce('close')
+        SportiduinoClient().stop()
+        SIReaderClient().stop()
+        SFRReaderClient().stop()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Q and event.modifiers() == Qt.ControlModifier:
