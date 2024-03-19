@@ -1,5 +1,14 @@
 # SportOrgPlus Changelog
 
+## v1.4.1 - 2024-03-19
+
+* Update filter dialog (F2) from upstream
+* Fix bug in person edit dialog
+* If printing splits for more than 5 rows show question
+* Switch SI icon after connecting SI station
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.4.0...v1.4.1)
+
 ## v1.4.0 - 2024-03-04
 
 * Course with variable number of CPs (e.g. `*[]`, `*(31-45) 100 *(46-99)[]`) 
