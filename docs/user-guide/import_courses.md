@@ -1,6 +1,8 @@
 # Импорт данных
 
-## Импортирование данных о дистанциях (OCAD Courses v8)
+---
+
+## Импорт данных о дистанциях (OCAD Courses v8)
 
 ![Screenshot](img/11.png)
 ![Screenshot](img/12.png)

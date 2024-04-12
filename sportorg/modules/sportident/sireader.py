@@ -38,13 +38,13 @@ class SIReaderThread(QThread):
 
     def run(self):
         try:
-            si = SIReaderReadout(port=self.port, logger=logging.root)
+            si = SIReaderReadout(port=self.port)
             if si.get_type() == SIReader.M_SRR:
                 si.disconnect()  # release port
-                si = SIReaderSRR(port=self.port, logger=logging.root)
+                si = SIReaderSRR(port=self.port)
             elif si.get_type() == SIReader.M_CONTROL or si.get_type() == SIReader.M_BC_CONTROL:
                 si.disconnect()  # release port
-                si = SIReaderControl(port=self.port, logger=logging.root)
+                si = SIReaderControl(port=self.port)
 
             si.poll_sicard() # try to poll immediately to catch an exception
         except Exception as e:
@@ -222,7 +222,12 @@ class SIReaderClient(object):
 
     def stop(self):
         self._stop_event.set()
-        self._logger.info(_('Closing port'))
+        if self._si_reader_thread is not None:
+            self._si_reader_thread.quit()
+            self._si_reader_thread.wait()
+        if self._result_thread is not None:
+            self._result_thread.quit()
+            self._result_thread.wait()
 
     def toggle(self):
         if self.is_alive():

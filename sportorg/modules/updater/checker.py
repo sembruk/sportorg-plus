@@ -3,13 +3,14 @@ https://developer.github.com/v3/
 """
 
 import requests
+from sportorg import config
 
 
 VERSION = ''
 
 
 def get_last_tag_name():
-    r = requests.get('https://api.github.com/repos/sembruk/sportorg-plus/releases/latest', timeout=5)
+    r = requests.get('https://api.github.com/repos/' + config.REPO_BASE + '/releases/latest', timeout=5)
     body = r.json()
     return body['tag_name']
 
@@ -24,4 +25,4 @@ def get_version():
 def check_version(version):
     if not get_version():
         return True
-    return str(version) == get_version()
+    return str(version) >= get_version()

@@ -1,43 +1,91 @@
+import datetime
 import logging
-from datetime import datetime
+from datetime import time
 
 import dateutil.parser
 
-from sportorg import config
+from sportorg.common.otime import OTime
 from sportorg.language import _
-
-from sportorg.libs.iof.iof import ResultList
+#from sportorg.libs.iof.generator import (
+#    generate_competitor_list,
+#    generate_entry_list,
+#    generate_result_list,
+#    generate_start_list,
+#)
 from sportorg.libs.iof.parser import parse
+from sportorg.models.memory import (
+    Course,
+    CourseControl,
+    Group,
+    Team,
+    Person,
+    Sex,
+    Qualification,
+    RaceType,
+    ResultSportident,
+    ResultStatus,
+    Split,
+    create,
+    find,
+    race,
+)
+from sportorg.utils.time import hhmmss_to_time, time_iof_to_otime, yyyymmdd_to_date
 
-from sportorg.models.memory import race, Group, find, Team, Person, Qualification, create, Course, CourseControl
 
-
-def export_result_list(file):
+def export_result_list(file, *, creator: str, all_splits: bool = False) -> None:
     obj = race()
-    result_list = ResultList()
-    result_list.iof.creator = config.NAME
-    result_list.iof.create_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-    result_list.event.name.value = obj.data.name
-    if obj.data.start_time:
-        result_list.event.start_time.date.value = obj.data.start_time.strftime("%Y-%m-%d")
-        result_list.event.start_time.time.value = obj.data.start_time.strftime("%H:%M:%S")
-    # TODO
-    result_list.write(open(file, 'wb'), xml_declaration=True, encoding='UTF-8')
+
+    #TODO
+    #result_list = generate_result_list(obj, creator=creator, all_splits=all_splits)
+
+    #result_list.write(open(file, 'wb'), xml_declaration=True, encoding='UTF-8')
+
+
+#def export_entry_list(file, *, creator: str) -> None:
+#    obj = race()
+#
+#    entry_list = generate_entry_list(obj, creator=creator)
+#
+#    entry_list.write(open(file, 'wb'), xml_declaration=True, encoding='UTF-8')
+#
+#
+#def export_start_list(file, *, creator: str) -> None:
+#    obj = race()
+#
+#    start_list = generate_start_list(obj, creator=creator)
+#
+#    start_list.write(open(file, 'wb'), xml_declaration=True, encoding='UTF-8')
+#
+#
+#def export_competitor_list(file, *, creator: str) -> None:
+#    obj = race()
+#
+#    start_list = generate_competitor_list(obj, creator=creator)
+#
+#    start_list.write(open(file, 'wb'), xml_declaration=True, encoding='UTF-8')
 
 
 def import_from_iof(file):
     results = parse(file)
     if not len(results):
-        return
+        return ''
 
+    ret = []
     for result in results:
         if result.name == 'EntryList':
-            import_from_entry_list(result.data)
+            ret.append(import_from_entry_list(result.data))
         elif result.name == 'CourseData':
             import_from_course_data(result.data)
+        elif result.name == 'ResultList':
+            import_from_result_list(result.data)
+        elif result.name == 'StartList':
+            ret.append(import_from_entry_list(result.data))
+        elif result.name == 'Event':
+            import_from_event_data(result.data)
+    return '\n'.join(ret)
 
 
-def import_from_course_data(courses):
+def import_from_course_data(courses) -> None:
     obj = race()
     for course in courses:
         if find(obj.courses, name=course['name']) is None:
@@ -45,88 +93,239 @@ def import_from_course_data(courses):
                 Course,
                 name=course['name'],
                 length=course['length'],
-                climb=course['climb']
+                climb=course['climb'],
             )
             controls = []
             i = 1
             for control in course['controls']:
                 if control['type'] == 'Control':
-                    controls.append(create(
-                        CourseControl,
-                        code=control['control'],
-                        order=i,
-                        length=control['leg_length']
-                    ))
+                    controls.append(
+                        create(
+                            CourseControl,
+                            code=control['control'],
+                            order=i,
+                            length=control['leg_length'],
+                        )
+                    )
                     i += 1
             c.controls = controls
             obj.courses.append(c)
 
 
+def create_person(person_entry):
+    obj = race()
+
+    person = Person()
+
+    group_name = person_entry['group']['id']
+    group = find(obj.groups, name=group_name)
+    if group is None:
+        group = Group()
+        group.name = group_name
+        group.long_name = person_entry['group']['name']
+        obj.groups.append(group)
+    person.group = group
+
+    person.surname = person_entry['person']['family']
+    person.name = person_entry['person']['given']
+    person.sex = Sex(2 if person_entry['person']['sex'] == 'F' else 1)
+
+    if 'id' in person_entry['person']:
+        team_id = int(str(person_entry['person']['id']).split('-')[0])
+        if person_entry['organization']:
+            team = find(obj.teams, number=team_id)
+            if team is None:
+                team = Team()
+                team.name = person_entry['organization']['name']
+                team.number = team_id
+                if obj.is_team_race():
+                    team.group = person.group
+                if 'role_person' in person_entry['organization']:
+                    team.contact = person_entry['organization']['role_person']
+                obj.teams.append(team)
+            person.team = team
+
+    if 'birth_date' in person_entry['person']:
+        person.birth_date = (
+            dateutil.parser.parse(person_entry['person']['birth_date']).date()
+            if person_entry['person']['birth_date']
+            else 0
+        )
+    if 'comment' in person_entry:
+        person.comment = person_entry['comment'] + ' '
+    if 'race_numbers' in person_entry and len(person_entry['race_numbers']):
+        person.comment += 'C:' + ''.join(person_entry['race_numbers'])
+    if 'control_card' in person_entry and person_entry['control_card']:
+        person.card_number = int(person_entry['control_card'])
+    else:
+        person.is_rented_card = True
+    if 'bib' in person_entry['person'] and person_entry['person']['bib']:
+        person.bib = int(person_entry['person']['bib'])
+    elif (
+        'bib' in person_entry['person']['extensions']
+        and person_entry['person']['extensions']['bib']
+    ):
+        person.bib = int(person_entry['person']['extensions']['bib'])
+    if (
+        'qual' in person_entry['person']['extensions']
+        and person_entry['person']['extensions']['qual']
+    ):
+        person.qual = Qualification.get_qual_by_name(
+            person_entry['person']['extensions']['qual']
+        )
+    if 'start' in person_entry['person'] and person_entry['person']['start']:
+        person.start_time = time_iof_to_otime(person_entry['person']['start'])
+
+    obj.persons.append(person)
+    return person
+
+
 def import_from_entry_list(entries):
     obj = race()
     for person_entry in entries:
-        name = person_entry['group']['name']
-        if 'short_name' in person_entry['group']:
-            name = person_entry['group']['short_name']
-        group = find(obj.groups, name=name)
-        if group is None:
-            group = Group()
-            group.long_name = person_entry['group']['name']
-            if 'short_name' in person_entry['group']:
-                group.name = person_entry['group']['short_name']
-            else:
-                group.name = group.long_name
-            obj.groups.append(group)
-
-        org = find(obj.teams, name=person_entry['team']['name'])
-        if org is None:
-            org = Team()
-            org.name = person_entry['team']['name']
-            if 'role_person' in person_entry['team']:
-                org.contact = person_entry['team']['role_person']
-            obj.teams.append(org)
-
-    for person_entry in entries:
-        person = Person()
-        person.surname = person_entry['person']['family']
-        person.name = person_entry['person']['given']
-        name = person_entry['group']['name']
-        if 'short_name' in person_entry['group']:
-            name = person_entry['group']['short_name']
-        person.group = find(obj.groups, name=name)
-        person.team = find(obj.teams, name=person_entry['team']['name'])
-        if 'birth_date' in person_entry['person']:
-            person.birth_date = dateutil.parser.parse(person_entry['person']['birth_date']).date()
-        if len(person_entry['race_numbers']):
-            person.comment = 'C:' + ''.join(person_entry['race_numbers'])
-        if person_entry['control_card']:
-            person.card_number = int(person_entry['control_card'])
-        if 'bib' in person_entry['person']['extensions'] and person_entry['person']['extensions']['bib']:
-            person.bib = int(person_entry['person']['extensions']['bib'])
-        if 'qual' in person_entry['person']['extensions'] and person_entry['person']['extensions']['qual']:
-            person.qual = Qualification.get_qual_by_name(person_entry['person']['extensions']['qual'])
-        obj.persons.append(person)
+        create_person(person_entry)
 
     persons_dupl_cards = obj.get_duplicate_card_numbers()
     persons_dupl_names = obj.get_duplicate_names()
 
     if len(persons_dupl_cards):
-        logging.info('{}'.format(_('Duplicate card numbers (card numbers are reset)')))
-        for person in persons_dupl_cards:
-            logging.info('{} {} {} {}'.format(
-                person.full_name,
-                person.group.name if person.group else '',
-                person.team.name if person.team else '',
-                person.card_number
-            ))
+        logging.info(
+            '{}'.format(_('Duplicate card numbers (card numbers are reset)'))
+        )
+        for person in sorted(persons_dupl_cards, key=lambda x: x.card_number):
+            logging.info(
+                '{} {} {} {}'.format(
+                    person.full_name,
+                    person.group.name if person.group else '',
+                    person.team.name if person.team else '',
+                    person.card_number,
+                )
+            )
             person.card_number = 0
     if len(persons_dupl_names):
         logging.info('{}'.format(_('Duplicate names')))
-        for person in persons_dupl_names:
+        for person in sorted(persons_dupl_names, key=lambda x: x.full_name):
             person.card_number = 0
-            logging.info('{} {} {} {}'.format(
-                person.full_name,
-                person.get_year(),
-                person.group.name if person.group else '',
-                person.team.name if person.team else ''
-            ))
+            logging.info(
+                '{} {} {} {}'.format(
+                    person.full_name,
+                    person.get_year(),
+                    person.group.name if person.group else '',
+                    person.team.name if person.team else '',
+                )
+            )
+
+    if len(persons_dupl_names) or len(persons_dupl_cards):
+        return _('Duplicate names or card numbers detected.\nSee Log tab')
+    return ''
+
+def import_from_result_list(results) -> None:
+    obj = race()
+
+    for person_obj in results:
+        result_obj = person_obj['result']
+
+        person = create_person(person_obj)
+
+        bib = 0
+        if 'bib' in result_obj and str(result_obj['bib']).strip():
+            bib = int(result_obj['bib'])
+        start = OTime()
+        if 'start_time' in result_obj:
+            start = time_iof_to_otime(result_obj['start_time'])
+        finish = OTime()
+        if 'finish_time' in result_obj:
+            finish = time_iof_to_otime(result_obj['finish_time'])
+        card = 0
+        if 'control_card' in result_obj and str(result_obj['control_card']).strip():
+            card = int(result_obj['control_card'])
+
+        status = ResultStatus.OK
+
+        if 'status' in result_obj:
+            status_text = result_obj['status']
+            if status_text == 'DidNotStart':
+                status = ResultStatus.DID_NOT_START
+            elif status_text == 'DidNotFinish':
+                status = ResultStatus.DID_NOT_FINISH
+            elif status_text == 'OverTime':
+                status = ResultStatus.OVERTIME
+            elif status_text == 'MissingPunch':
+                status = ResultStatus.MISSING_PUNCH
+            elif status_text == 'Disqualified':
+                status = ResultStatus.DISQUALIFIED
+
+        new_result = ResultSportident()
+        new_result.status = status
+
+        if bib > 0:
+            new_result.bib = bib
+        new_result.start_time = start
+        new_result.finish_time = finish
+        if card > 0:
+            new_result.card_number = card
+        if person.card_number == 0:
+            person.card_number = new_result.card_number
+
+        person.bib = int(bib)
+        person.start_time = start
+        new_result.person = person
+
+        if 'splits' in result_obj:
+            for cur_split in result_obj['splits']:
+                new_split = Split()
+                new_split.code = cur_split['control_code']
+                split_time = cur_split['time']
+                time_ms = int(float(str(split_time).replace(',', '.')) * 1000)
+                new_time = start + OTime(msec=time_ms)
+                new_split.time = new_time
+                new_result.splits.append(new_split)
+
+        obj.results.append(new_result)
+
+
+def import_from_event_data(data) -> None:
+    """Get info about event from Event and Event-Race[0] elements"""
+
+    obj = race()
+
+    if 'name' in data:
+        new_name = data['name']
+        if (
+            new_name
+            and len(new_name) > 0
+            and new_name != 'Event'
+            and new_name.find('Example') < 0
+        ):
+            if not obj.data.title:
+                obj.data.title = new_name
+            if not obj.data.description:
+                obj.data.description = new_name
+
+    if 'is_team_race' in data:
+        obj.data.race_type = RaceType.TEAM_RACE
+
+    if 'start_date' in data:
+        date_val = yyyymmdd_to_date(data['start_date'], '-')
+        obj.data.start_datetime = datetime.datetime.combine(date_val, time())
+
+    if 'end_date' in data:
+        date_val = yyyymmdd_to_date(data['end_date'], '-')
+        obj.data.end_datetime = datetime.datetime.combine(date_val, time(23, 59))
+
+    if 'url' in data and not obj.data.url:
+        obj.data.url = data['url']
+
+    if 'races' in data and len(data['races']) > 0:
+        race_data = data['races'][0]
+        if 'name' in race_data and race_data['name']:
+            if obj.data.description:
+                obj.data.description += '\n'
+            obj.data.description += race_data['name']
+        if 'start_date' in race_data and 'start_time' in race_data:
+            date_val = yyyymmdd_to_date(race_data['start_date'], '-')
+            otime_val = hhmmss_to_time(str(race_data['start_time']).split('+')[0])
+            time_val = time(
+                hour=otime_val.hour, minute=otime_val.minute, second=otime_val.sec
+            )
+            obj.data.start_datetime = datetime.datetime.combine(date_val, time_val)

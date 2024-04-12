@@ -1,0 +1,38 @@
+{%set qual_dict = {0:"б/р", 1:"Iю", 2:"IIю", 3:"IIIю", 4:"I", 5:"II", 6:"III", 7:"КМС", 8:"МС", 9:"МСМК", 10:"ЗМС"} -%}
+
+{% macro time(t) %}
+{{- '%02d' % (t / 3600000 | int) }}:{{ '%02d' % (t / 60000 % 60 | int) }}:{{ '%02d' % (t /1000 % 60 | int) -}}
+{% endmacro -%}
+
+Группа;Имя;Фамилия;Год рождения;Квалификация;Команда;Номер команды;Номер участника;Чип;Результат;Место;Баллы;Старт;Время;КП;Сплит;Время от старта
+{% for group in race.groups -%}
+    {% for result in race.results | sort(attribute="place") | sort(attribute="status") -%}
+        {% for person in race.persons | selectattr("id", "equalto", result.person_id) | selectattr("group_id", "equalto", group.id) -%}
+            {% for team in race.teams | selectattr("id", "equalto", person.team_id) -%}
+                {{- group.name}};
+                {{- person.name}};
+                {{- person.surname}};
+                {{- person.year}};
+                {{- qual_dict[person.qual]}};
+                {{- team.name}};
+                {{- team.number}};
+                {{- person.bib}};
+                {{- person.card_number}};
+                {{- result.result}};
+                {{- result.place}};
+                {{- result.scores}};
+                {{- result.start_msec|tohhmmss}};
+                {{- result.result_msec|tohhmmss}};
+                {%- if result.splits -%}
+                    {%- for split in result.splits | selectattr("is_correct") -%}
+                        {{- split.code}};
+                        {{- split.leg_time|tohhmmss}};
+                        {{- split.relative_time|tohhmmss}};
+                    {%- endfor -%}
+                {%- endif %}
+{{ pass -}}
+            {% endfor -%}
+        {% endfor -%}
+    {% endfor -%}
+{% endfor -%}
+

@@ -127,9 +127,12 @@ class StartPreparationDialog(QDialog):
         self.numbers_vert_layout.setContentsMargins(2, 2, 2, 2)
         self.numbers_check_box = QtWidgets.QCheckBox(self.numbers_group_box)
         self.numbers_vert_layout.addWidget(self.numbers_check_box)
+        self.numbers_teams_check_box = QtWidgets.QCheckBox(self.numbers_group_box)
+        self.numbers_teams_check_box.stateChanged.connect(self.numbers_teams_activate)
+        self.numbers_vert_layout.addWidget(self.numbers_teams_check_box)
         self.numbers_skip_hor_layout = QtWidgets.QHBoxLayout()
         self.numbers_skip_line_edit = QtWidgets.QLineEdit(self.numbers_group_box)
-        self.numbers_skip_line_edit.setPlaceholderText(_("123,456,789"))
+        self.numbers_skip_line_edit.setPlaceholderText("123,456,789")
         self.numbers_skip_hor_layout.addWidget(QtWidgets.QLabel(_("Skip")))
         self.numbers_skip_hor_layout.addWidget(self.numbers_skip_line_edit)
         self.numbers_vert_layout.addLayout(self.numbers_skip_hor_layout)
@@ -167,7 +170,6 @@ class StartPreparationDialog(QDialog):
         self.numbers_first_spin_box.raise_()
         self.numbers_interval_label.raise_()
         self.numbers_interval_spin_box.raise_()
-        self.numbers_interval_radio_button.raise_()
 
         self.progress_bar = QtWidgets.QProgressBar(self)
         #self.progress_bar.setGeometry(QtCore.QRect(10, 280, 621, 23))
@@ -213,38 +215,35 @@ class StartPreparationDialog(QDialog):
         self.numbers_interval_label.setText(_("interval"))
         self.numbers_minute_radio_button.setText(_("Number = corridor + minute"))
         self.numbers_order_radio_button.setText(_("Number = corridor + order"))
+        self.numbers_teams_check_box.setText(_("For teams but not for persons"))
 
     def reserve_activate(self):
         status = self.reserve_check_box.isChecked()
-        self.reserve_group_count_spin_box.setEnabled(status)
-        self.reserve_group_percent_spin_box.setEnabled(status)
-        self.reserve_prefix.setEnabled(status)
+        for child in self.reserve_group_box.findChildren(QtWidgets.QWidget):
+            if child != self.reserve_check_box:
+                child.setEnabled(status)
 
     def number_activate(self):
         status = self.numbers_check_box.isChecked()
-        self.numbers_skip_line_edit.setEnabled(status)
-        self.numbers_first_spin_box.setEnabled(status)
-        self.numbers_interval_radio_button.setEnabled(status)
-        self.numbers_minute_radio_button.setEnabled(status)
-        self.numbers_order_radio_button.setEnabled(status)
-        self.numbers_interval_spin_box.setEnabled(status)
+        for child in self.numbers_group_box.findChildren(QtWidgets.QWidget):
+            if child != self.numbers_check_box:
+                child.setEnabled(status)
+
+    def numbers_teams_activate(self):
+        status = self.numbers_teams_check_box.isChecked()
+        self.numbers_skip_line_edit.setEnabled(not status)
 
     def start_activate(self):
         status = self.start_check_box.isChecked()
-        self.start_first_label.setEnabled(status)
-        self.start_first_time_edit.setEnabled(status)
-        self.start_group_settings_radio_button.setEnabled(status)
-        self.start_interval_radio_button.setEnabled(status)
-        self.start_interval_time_edit.setEnabled(status)
-        self.start_one_minute_qty_label.setEnabled(status)
-        self.start_one_minute_qty.setEnabled(status)
+        for child in self.start_group_box.findChildren(QtWidgets.QWidget):
+            if child != self.start_check_box:
+                child.setEnabled(status)
 
     def draw_activate(self):
         status = self.draw_check_box.isChecked()
-        self.draw_groups_check_box.setEnabled(status)
-        self.draw_regions_check_box.setEnabled(status)
-        self.draw_teams_check_box.setEnabled(status)
-        self.draw_mix_groups_check_box.setEnabled(status)
+        for child in self.draw_group_box.findChildren(QtWidgets.QWidget):
+            if child != self.draw_check_box:
+                child.setEnabled(status)
 
     def get_skip_numbers(self):
         return [int(x.strip()) for x in self.numbers_skip_line_edit.text().split(',') if x.strip().isdigit()]
@@ -299,7 +298,8 @@ class StartPreparationDialog(QDialog):
                     first_number = self.numbers_first_spin_box.value()
                     interval = self.numbers_interval_spin_box.value()
                     numbers_skip = self.get_skip_numbers()
-                    StartNumberManager(obj).process('interval', first_number, interval, mix_groups=mix_groups, skip_list=numbers_skip)
+                    for_teams = self.numbers_teams_check_box.isChecked()
+                    StartNumberManager(obj).process('interval', first_number, interval, mix_groups=mix_groups, skip_list=numbers_skip, for_teams=for_teams)
 
             self.progress_bar.setValue(100)
 

@@ -92,7 +92,7 @@ class ResultChecker:
         if not course:
             return
 
-        controls = course.controls
+        controls = course.get_unrolled_controls()
 
         if race().get_setting('marked_route_dont_dsq', False):
             # free order, don't penalty for extra cp
@@ -182,15 +182,12 @@ class ResultChecker:
             origin: 40,* ,* ,90; athlete: 40,40,90,90; result:2
             origin: 40,* ,* ,90; athlete: 40,41,90,90; result:0 TODO:1 - only one incorrect case
         """
-        res = 0
         correct_count = 0
         for i in splits:
             if not i.has_penalty:
                 correct_count += 1
 
-        res += len(controls) - correct_count
-
-        return res
+        return len(controls) - correct_count
 
     @staticmethod
     def get_control_score(code):
