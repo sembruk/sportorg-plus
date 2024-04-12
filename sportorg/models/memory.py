@@ -1095,10 +1095,22 @@ class ResultSportident(Result):
             s.has_penalty = True
             s.course_index = -1
 
+        # ZG2024: reset credit_time for bonuses
+        self.credit_time = OTime()
+        unique_bonuses = set()
+
         course_index = 0
         prev_unique_cp_list = []
         for split in self.splits:
             try:
+                cur_code = split.code
+                # ZG2024 bonus calculation
+                if int(cur_code) == 38:
+                    if cur_code not in unique_bonuses:
+                        unique_bonuses.add(cur_code)
+                        self.credit_time += OTime(minute=20)
+                    continue
+
                 template = controls[course_index].get_course_cp_template()
 
                 if self.check_split(split, template, prev_unique_cp_list):
