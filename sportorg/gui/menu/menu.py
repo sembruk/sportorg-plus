@@ -263,7 +263,9 @@ def menu_list():
                 },
                 {
                     'title': _('Add SPORTident result'),
-                    'action': 'AddSPORTidentResultAction'
+                    'action': 'AddSPORTidentResultAction',
+                    'shortcut': 'Ctrl+I',
+
                 },
             ]
         },
