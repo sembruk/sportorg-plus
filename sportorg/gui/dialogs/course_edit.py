@@ -1,4 +1,5 @@
 import logging
+from PySide2.QtCore import Qt
 
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QFormLayout, QLabel, QLineEdit, QDialog, QSpinBox, QTextEdit, QDialogButtonBox
@@ -15,6 +16,8 @@ from sportorg.modules.teamwork import Teamwork
 
 
 class CourseEditDialog(QDialog):
+    control_was_pressed = False;
+
     def __init__(self, course, is_new=False):
         super().__init__(GlobalAccess().get_main_window())
         self.current_object = course
@@ -62,26 +65,38 @@ class CourseEditDialog(QDialog):
         self.item_controls.setTabChangesFocus(True)
         self.layout.addRow(self.label_controls, self.item_controls)
 
-        def cancel_changes():
-            self.close()
-
-        def apply_changes():
-            try:
-                self.apply_changes_impl()
-            except Exception as e:
-                logging.error(str(e))
-            self.close()
-
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.button_ok = button_box.button(QDialogButtonBox.Ok)
         self.button_ok.setText(_('OK'))
-        self.button_ok.clicked.connect(apply_changes)
+        self.button_ok.clicked.connect(self.apply_changes)
         self.button_cancel = button_box.button(QDialogButtonBox.Cancel)
         self.button_cancel.setText(_('Cancel'))
-        self.button_cancel.clicked.connect(cancel_changes)
+        self.button_cancel.clicked.connect(self.cancel_changes)
         self.layout.addRow(button_box)
 
         self.show()
+
+    def apply_changes(self):
+        try:
+            self.apply_changes_impl()
+        except Exception as e:
+            logging.error(str(e))
+        self.close()
+
+    def cancel_changes(self):
+        self.close()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.cancel_changes()
+        if event.key() == Qt.Key_Control:
+            self.control_was_pressed = True
+        if event.key() in [Qt.Key_Return, Qt.Key_Enter] and self.control_was_pressed:
+            self.apply_changes()
+
+    def keyReleaseEvent(self, event):
+        if event.key() == Qt.Key_Control:
+            self.control_was_pressed = False
 
     def check_name(self):
         name = self.item_name.text()
