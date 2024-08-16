@@ -1094,6 +1094,10 @@ msgstr "Начало соревнований"
 msgid "Available Ports"
 msgstr "Доступные порты"
 
+#: gui/dialogs/timekeeping_properties.py:47 modules/sportident/sireader.py:258
+msgid "Available Ports In Progress"
+msgstr "Сканирование портов..."
+
 #: gui/dialogs/timekeeping_properties.py:54
 msgid "From protocol"
 msgstr "Из протокола"
