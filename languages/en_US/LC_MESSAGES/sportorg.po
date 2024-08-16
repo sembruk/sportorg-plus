@@ -73,3 +73,7 @@ msgstr "Penalty legs"
 
 msgid "Mf"
 msgstr "MF"
+
+#: gui/dialogs/timekeeping_properties.py:47 modules/sportident/sireader.py:273
+msgid "Available Ports In Progress"
+msgstr "Scanning ports..."
