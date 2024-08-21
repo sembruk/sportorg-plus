@@ -1,19 +1,18 @@
 import datetime
 import logging
-from queue import Queue, Empty
-from threading import main_thread, Event
-
 import os
 import platform
 import re
 import time
+from queue import Queue, Empty
+from threading import main_thread, Event
 
 import serial
-from PySide2.QtCore import QThread, Signal
+from PySide2.QtCore import QThread, Signal, Qt
+from sportident import SIReader, SIReaderReadout, SIReaderSRR, SIReaderControl, SIReaderException, SIReaderCardChanged
 
 from sportorg.common.singleton import singleton
 from sportorg.language import _
-from sportident import SIReader, SIReaderReadout, SIReaderSRR, SIReaderControl, SIReaderException, SIReaderCardChanged
 from sportorg.models import memory
 from sportorg.modules.sportident import backup
 from sportorg.utils.time import time_to_otime
@@ -277,3 +276,11 @@ class SIReaderClient(object):
             second=start_time[2],
             microsecond=0
         )
+
+
+class ScanPortsThread(QThread):
+    result_signal = Signal(list)
+
+    def run(self):
+        result = SIReaderClient().get_ports()
+        self.result_signal.emit(result)

@@ -11,18 +11,22 @@ from sportorg.gui.utils.custom_controls import AdvComboBox
 from sportorg.language import _
 from sportorg.models.memory import race
 from sportorg.models.result.result_calculation import ResultCalculation
-from sportorg.modules.sportident.sireader import SIReaderClient
+from sportorg.modules.sportident.sireader import ScanPortsThread
 from sportorg.utils.time import time_to_otime
 
 
 class TimekeepingPropertiesDialog(QDialog):
     def __init__(self):
         super().__init__(GlobalAccess().get_main_window())
+        self.thread = ScanPortsThread()
         self.time_format = 'hh:mm:ss'
 
     def exec_(self):
         self.init_ui()
         return super().exec_()
+
+    def closeEvent(self, event):
+        self.thread.exit()
 
     def init_ui(self):
         self.setMinimumWidth(600)
@@ -46,7 +50,7 @@ class TimekeepingPropertiesDialog(QDialog):
 
         self.label_si_port = QLabel(_('Available Ports'))
         self.item_si_port = AdvComboBox()
-        self.item_si_port.addItems(SIReaderClient().get_ports())
+        self.scan_ports()
         self.tk_layout.addRow(self.label_si_port, self.item_si_port)
 
         self.start_group_box = QGroupBox(_('Start time'))
@@ -264,6 +268,15 @@ class TimekeepingPropertiesDialog(QDialog):
         self.set_values_from_model()
 
         self.show()
+
+    def scan_ports(self):
+        self.item_si_port.addItem(_('Available Ports In Progress'))
+        self.thread.result_signal.connect(self.on_result_ready)
+        self.thread.start()
+
+    def on_result_ready(self, result):
+        self.item_si_port.removeItem(0)
+        self.item_si_port.addItems(result)
 
     def on_assignment_mode(self):
         mode = self.assignment_mode.isChecked()
