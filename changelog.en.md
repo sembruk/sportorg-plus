@@ -1,5 +1,11 @@
 # SportOrgPlus Changelog
 
+## v1.4.2 - 2024-08-21
+
+* Add support for closing split edit and result edit dialogs with Ctrl+Enter and Escape
+* Now, when opening the timekeeping settings and the Bluetooth turned on the program does not freeze
+* Added CTRL+I combination for quick creation of SPORTident result
+
 ## v1.4.1 - 2024-03-19
 
 * Update filter dialog (F2) from upstream
