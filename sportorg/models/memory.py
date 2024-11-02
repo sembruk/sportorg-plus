@@ -1277,6 +1277,10 @@ class Person(Model):
             return self.birth_date.year
         return 0
 
+    @property
+    def year_of_birth(self):
+        return self.get_year()
+
     def set_year(self, year):
         """Change only year of birth_date"""
         if year == 0:

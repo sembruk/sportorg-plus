@@ -6,6 +6,32 @@ from sportorg.models.result.result_checker import ResultChecker, ResultCheckerEx
 from sportorg.models.memory import Person, Result, ResultSportident, find, race, ResultStatus
 from sportorg.language import _
 
+import sqlite3
+
+def get_person_info_by_card_number_from_db(card_number):
+    # Connect to the SQLite database
+    conn = sqlite3.connect('participants.db')
+    cursor = conn.cursor()
+
+    # Prepare the SQL query to retrieve participant details by number
+    query = '''
+    SELECT name, surname, year_of_birth, team_name, group_name
+    FROM participants
+    WHERE number = ?
+    '''
+    
+    # Execute the query
+    cursor.execute(query, (card_number,))
+    
+    # Fetch the result
+    result = cursor.fetchone()  # Use fetchall() if you expect multiple results
+
+    # Close the connection
+    conn.close()
+    
+    # Return the result or None if no participant found
+    return unpacked(result) if result else None
+
 
 class FinishSource(Enum):
     station = 0
@@ -85,6 +111,27 @@ class ResultSportidentGeneration:
         for person in race().persons:
             if person.card_number and person.card_number == self._result.card_number:
                 self._person = person
+                return True
+            name,surname,year_of_birth,team_name,group_name = get_person_info_by_card_number_from_db(self._result.card_number)
+            if name and surname and year_of_birth and team_name and group_name:
+                person = find(race().persons, name=name, surname=surname, year_of_birth=year_of_birth)
+                if person:
+                    self._person = person
+                    return True
+
+                self._person = Person()
+                self._person.bib = self._result.card_number
+                self._person.name = name
+                self._person.surname = surname
+                self._person.set_year(year_of_birth)
+                team = race().add_new_team(team_name)
+                team.name = team_name
+                self._person.team = team
+                self._person.group = find(race().groups, name=group_name)
+                logging.info('New person: {}'.format(self._person))
+
+                #self._result.person = self._person
+                race().persons.append(self._person)
                 return True
 
         return False
