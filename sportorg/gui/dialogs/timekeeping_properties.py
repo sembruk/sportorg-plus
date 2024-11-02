@@ -11,18 +11,22 @@ from sportorg.gui.utils.custom_controls import AdvComboBox
 from sportorg.language import _
 from sportorg.models.memory import race
 from sportorg.models.result.result_calculation import ResultCalculation
-from sportorg.modules.sportident.sireader import SIReaderClient
+from sportorg.modules.sportident.sireader import ScanPortsThread
 from sportorg.utils.time import time_to_otime
 
 
 class TimekeepingPropertiesDialog(QDialog):
     def __init__(self):
         super().__init__(GlobalAccess().get_main_window())
+        self.thread = ScanPortsThread()
         self.time_format = 'hh:mm:ss'
 
     def exec_(self):
         self.init_ui()
         return super().exec_()
+
+    def closeEvent(self, event):
+        self.thread.exit()
 
     def init_ui(self):
         self.setMinimumWidth(600)
@@ -46,7 +50,7 @@ class TimekeepingPropertiesDialog(QDialog):
 
         self.label_si_port = QLabel(_('Available Ports'))
         self.item_si_port = AdvComboBox()
-        self.item_si_port.addItems(SIReaderClient().get_ports())
+        self.scan_ports()
         self.tk_layout.addRow(self.label_si_port, self.item_si_port)
 
         self.start_group_box = QGroupBox(_('Start time'))
@@ -75,7 +79,7 @@ class TimekeepingPropertiesDialog(QDialog):
 
         self.missed_finish_group_box = QGroupBox(_('Missed finish'))
         self.missed_finish_layout = QFormLayout()
-        self.missed_finish_zero = QRadioButton(_('00:00:00'))
+        self.missed_finish_zero = QRadioButton('00:00:00')
         self.missed_finish_layout.addRow(self.missed_finish_zero)
         self.missed_finish_dsq = QRadioButton(_('DSQ'))
         self.missed_finish_layout.addRow(self.missed_finish_dsq)
@@ -127,6 +131,9 @@ class TimekeepingPropertiesDialog(QDialog):
         self.assignment_mode = QCheckBox(_('Assignment mode'))
         self.assignment_mode.stateChanged.connect(self.on_assignment_mode)
         self.tk_layout.addRow(self.assignment_mode)
+
+        self.card_number_as_bib = QCheckBox(_('Card No == Bib'))
+        self.tk_layout.addRow(self.card_number_as_bib)
 
         self.timekeeping_tab.setLayout(self.tk_layout)
 
@@ -262,6 +269,15 @@ class TimekeepingPropertiesDialog(QDialog):
 
         self.show()
 
+    def scan_ports(self):
+        self.item_si_port.addItem(_('Available Ports In Progress'))
+        self.thread.result_signal.connect(self.on_result_ready)
+        self.thread.start()
+
+    def on_result_ready(self, result):
+        self.item_si_port.removeItem(0)
+        self.item_si_port.addItems(result)
+
     def on_assignment_mode(self):
         mode = self.assignment_mode.isChecked()
         self.start_group_box.setDisabled(mode)
@@ -346,6 +362,7 @@ class TimekeepingPropertiesDialog(QDialog):
             self.chip_duplicate_merge.setChecked(True)
 
         self.assignment_mode.setChecked(assignment_mode)
+        self.card_number_as_bib.setChecked(cur_race.get_setting('card_number_as_bib', False))
 
         # result processing
         obj = cur_race
@@ -486,6 +503,7 @@ class TimekeepingPropertiesDialog(QDialog):
 
         obj.set_setting('system_duplicate_chip_processing', duplicate_chip_processing)
         obj.set_setting('system_assignment_mode', self.assignment_mode.isChecked())
+        obj.set_setting('card_number_as_bib', self.card_number_as_bib.isChecked())
 
         # result processing
         rp_mode = 'time'

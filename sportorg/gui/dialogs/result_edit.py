@@ -24,6 +24,8 @@ from sportorg.utils.time import time_to_qtime, time_to_otime, hhmmss_to_time
 
 
 class ResultEditDialog(QDialog):
+    control_was_pressed = False;
+
     def __init__(self, result, is_new=False):
         super().__init__(GlobalAccess().get_main_window())
         self.current_object = result
@@ -133,23 +135,13 @@ class ResultEditDialog(QDialog):
                 self.item_finish.setDisabled(True)
             self.layout.addRow(self.splits.widget)
 
-        def cancel_changes():
-            self.close()
-
-        def apply_changes():
-            try:
-                self.apply_changes_impl()
-            except Exception as e:
-                logging.error(str(e))
-            self.close()
-
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.button_ok = button_box.button(QDialogButtonBox.Ok)
         self.button_ok.setText(_('OK'))
-        self.button_ok.clicked.connect(apply_changes)
+        self.button_ok.clicked.connect(self.apply_changes)
         self.button_cancel = button_box.button(QDialogButtonBox.Cancel)
         self.button_cancel.setText(_('Cancel'))
-        self.button_cancel.clicked.connect(cancel_changes)
+        self.button_cancel.clicked.connect(self.cancel_changes)
 
         if self.current_object.person:
             button_person = button_box.addButton(_('Entry properties'), QDialogButtonBox.ActionRole)
@@ -159,6 +151,28 @@ class ResultEditDialog(QDialog):
 
         self.show()
         self.item_bib.setFocus()
+
+    def cancel_changes(self):
+        self.close()
+
+    def apply_changes(self):
+        try:
+            self.apply_changes_impl()
+        except Exception as e:
+            logging.error(str(e))
+        self.close()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.cancel_changes()
+        if event.key() == Qt.Key_Control:
+            self.control_was_pressed = True
+        if event.key() in [Qt.Key_Return, Qt.Key_Enter] and self.control_was_pressed:
+            self.apply_changes()
+
+    def keyReleaseEvent(self, event):
+        if event.key() == Qt.Key_Control:
+            self.control_was_pressed = False
 
     def show_person_info(self):
         bib = self.item_bib.value()

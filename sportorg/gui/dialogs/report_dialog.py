@@ -186,14 +186,19 @@ class ReportDialog(QDialog):
             if _settings['save_to_last_file']:
                 file_name = _settings['last_file']
             else:
-                file_name = get_save_file_name(
-                    _('Save As HTML file'),
-                    _("HTML file (*.html)"),
-                    '{}_{}'.format(
-                        obj.data.get_start_datetime().strftime("%Y%m%d"),
-                        report_suffix
+                default_name = '{}_{}'.format(obj.data.get_start_datetime().strftime("%Y%m%d"), report_suffix)
+                if template_path.endswith('.html'):
+                    file_name = get_save_file_name(
+                        _('Save As HTML file'),
+                        _("HTML file (*.html)"),
+                        default_name
                     )
-                )
+                elif template_path.endswith('.csv'):
+                    file_name = get_save_file_name(
+                        _('Save As CSV file'),
+                        _("CSV file (*.csv)"),
+                        default_name
+                    )
             if len(file_name):
                 _settings['last_file'] = file_name
                 with codecs.open(file_name, 'w', 'utf-8') as file:
@@ -201,5 +206,5 @@ class ReportDialog(QDialog):
                     file.close()
 
                 # Open file in your browser
-                if _settings['open_in_browser']:
+                if template_path.endswith('.html') and _settings['open_in_browser']:
                     webbrowser.open('file://' + file_name, new=2)

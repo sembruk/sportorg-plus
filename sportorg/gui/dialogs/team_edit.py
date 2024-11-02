@@ -135,5 +135,6 @@ class TeamEditDialog(QDialog):
         team.contact = self.item_contact.text()
 
         team.update_subgroups()
+        race().update_team_max_number()
 
         Teamwork().send(team.to_dict())

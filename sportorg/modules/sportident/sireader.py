@@ -1,19 +1,18 @@
 import datetime
 import logging
-from queue import Queue, Empty
-from threading import main_thread, Event
-
 import os
 import platform
 import re
 import time
+from queue import Queue, Empty
+from threading import main_thread, Event
 
 import serial
-from PySide2.QtCore import QThread, Signal
+from PySide2.QtCore import QThread, Signal, Qt
+from sportident import SIReader, SIReaderReadout, SIReaderSRR, SIReaderControl, SIReaderException, SIReaderCardChanged
 
 from sportorg.common.singleton import singleton
 from sportorg.language import _
-from sportident import SIReader, SIReaderReadout, SIReaderSRR, SIReaderControl, SIReaderException, SIReaderCardChanged
 from sportorg.models import memory
 from sportorg.modules.sportident import backup
 from sportorg.utils.time import time_to_otime
@@ -38,13 +37,13 @@ class SIReaderThread(QThread):
 
     def run(self):
         try:
-            si = SIReaderReadout(port=self.port, logger=logging.root)
+            si = SIReaderReadout(port=self.port)
             if si.get_type() == SIReader.M_SRR:
                 si.disconnect()  # release port
-                si = SIReaderSRR(port=self.port, logger=logging.root)
+                si = SIReaderSRR(port=self.port)
             elif si.get_type() == SIReader.M_CONTROL or si.get_type() == SIReader.M_BC_CONTROL:
                 si.disconnect()  # release port
-                si = SIReaderControl(port=self.port, logger=logging.root)
+                si = SIReaderControl(port=self.port)
 
             si.poll_sicard() # try to poll immediately to catch an exception
         except Exception as e:
@@ -222,7 +221,12 @@ class SIReaderClient(object):
 
     def stop(self):
         self._stop_event.set()
-        self._logger.info(_('Closing port'))
+        if self._si_reader_thread is not None:
+            self._si_reader_thread.quit()
+            self._si_reader_thread.wait()
+        if self._result_thread is not None:
+            self._result_thread.quit()
+            self._result_thread.wait()
 
     def toggle(self):
         if self.is_alive():
@@ -272,3 +276,11 @@ class SIReaderClient(object):
             second=start_time[2],
             microsecond=0
         )
+
+
+class ScanPortsThread(QThread):
+    result_signal = Signal(list)
+
+    def run(self):
+        result = SIReaderClient().get_ports()
+        self.result_signal.emit(result)

@@ -184,7 +184,12 @@ class SFRReaderClient(object):
 
     def stop(self):
         self._stop_event.set()
-        self._logger.info(_('Closing connection'))
+        if self._reader_thread is not None:
+            self._reader_thread.quit()
+            self._reader_thread.wait()
+        if self._result_thread is not None:
+            self._result_thread.quit()
+            self._result_thread.wait()
 
     def toggle(self):
         if self.is_alive():

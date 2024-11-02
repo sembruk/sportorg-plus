@@ -7,6 +7,7 @@ from sportorg.common.broker import Broker
 from sportorg.common.scripts import SCRIPTS
 from sportorg.common.singleton import Singleton
 from sportorg.models.memory import race
+from sportorg.language import _
 
 
 class LiveClient(metaclass=Singleton):
@@ -39,6 +40,8 @@ class LiveClient(metaclass=Singleton):
                         name='LiveThread'
                     ).start()
                     break
+        else:
+            logging.info(_('Live is not enabled'))
 
     def delete(self, data):
         if self.is_enabled():

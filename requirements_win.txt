@@ -14,5 +14,5 @@ requests >= 2
 shiboken2 >= 5.15
 sportident >= 1
 chardet >= 3
-
+pylocker >= 3.1.0
 

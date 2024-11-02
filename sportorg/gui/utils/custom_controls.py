@@ -1,6 +1,6 @@
 from PySide2 import QtCore
 from PySide2.QtCore import QSortFilterProxyModel
-from PySide2.QtWidgets import QComboBox, QCompleter, QMessageBox
+from PySide2.QtWidgets import QComboBox, QSpinBox, QCompleter, QMessageBox
 
 from sportorg.language import _
 
@@ -11,7 +11,7 @@ class AdvComboBox(QComboBox):
     Found in Internet by Sergei
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, val_list=None, max_width=0):
         super(AdvComboBox, self).__init__(parent)
 
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -37,11 +37,35 @@ class AdvComboBox(QComboBox):
         self.lineEdit().textEdited.connect(filter_function)
         self.completer.activated.connect(self.on_completer_activated)
 
+        if val_list:
+            self.addItems(val_list)
+
+        if max_width > 0:
+            self.setMaximumWidth(max_width)
+
+    def wheelEvent(self, ev):
+        if ev.type() == QtCore.QEvent.Wheel:
+            ev.ignore()
+
     # on selection of an item from the completer, select the corresponding item from combobox
     def on_completer_activated(self, text):
         if text:
             index = self.findText(str(text))
             self.setCurrentIndex(index)
+
+
+class AdvSpinBox(QSpinBox):
+    def __init__(self, minimum=0, maximum=99999999, value=0, max_width=0, parent=None):
+        super(AdvSpinBox, self).__init__(parent)
+        self.setMinimum(minimum)
+        self.setMaximum(maximum)
+        self.setValue(max(value, minimum))
+        if max_width > 0:
+            self.setMaximumWidth(max_width)
+
+    def wheelEvent(self, ev):
+        if ev.type() == QtCore.QEvent.Wheel:
+            ev.ignore()
 
 
 def messageBoxQuestion(parent=None, title='', text='', buttons=(QMessageBox.Yes | QMessageBox.No)):

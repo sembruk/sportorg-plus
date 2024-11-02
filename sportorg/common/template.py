@@ -18,7 +18,9 @@ def get_templates(path='', exclude_path=''):
                 f = f.replace(exclude_path, '')
                 f = f.replace('\\', '/')
         else:
-            if full_path.endswith('.html') or full_path.endswith('.docx'):
+            if (full_path.endswith('.html')
+                    or full_path.endswith('.docx')
+                    or full_path.endswith('.csv')):
                 full_path = full_path.replace(exclude_path, '')
                 full_path = full_path.replace('\\', '/')
                 files.append(full_path)
@@ -29,7 +31,7 @@ def get_templates(path='', exclude_path=''):
 def get_text_from_file(path, **kwargs):
     kwargs['name'] = config.NAME
     kwargs['version'] = str(config.VERSION)
+    searchpath = config.template_dir()
     if os.path.isfile(path):
-        return template.get_text_from_path(path, **kwargs)
-    else:
-        return template.get_text_from_template(config.template_dir(), path, **kwargs)
+        searchpath = '/'
+    return template.get_text_from_template(searchpath, path, **kwargs)

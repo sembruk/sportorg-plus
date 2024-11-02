@@ -8,17 +8,17 @@
 <script>
     var race = {% endraw %}{{race|tojson}}{% raw %};
     var rent_cards = {% endraw %}{{rent_cards|tojson}}{% raw %};
-    var selected = {% endraw %}{{selected|tojson}}{% raw %};
+    //var selected = {% endraw %}{{selected|tojson}}{% raw %};
     racePreparation(race);
 
     function getStartListByOrg(org, sort) {
         var results = [];
         for (var _i = 0, _a = race.persons; _i < _a.length; _i++) {
             var person = _a[_i];
-            if (!org || person.organization && person.organization.id === org.id) {
-                if (!selected.persons.length || selected.persons.some(function (elem) {
-                            return elem.id === person.id;
-                        })) {
+            if (!org || person.team && person.team.id === org.id) {
+                //if (!selected.persons.length || selected.persons.some(function (elem) {
+                //            return elem.id === person.id;
+                //        })) {
                     person.is_rented_card = person.is_rented_card || rent_cards.indexOf(person.card_number) !== -1;
                     results.push({
                         name: person.surname + ' ' + person.name + (person.is_out_of_competition ? ' *' : ''),
@@ -34,7 +34,7 @@
                         price_show: person.group && person.group.price + (person.is_paid ? ' *' : ''),
                         person: person
                     });
-                }
+                //}
             }
         }
         var sortFunc = function (a, b) {
@@ -156,7 +156,7 @@
             resultBlock.appendChild(getInfoBlock(rows));
         } else {
             var i = 0;
-            for (var _i = 0, _a = race.organizations; _i < _a.length; _i++) {
+            for (var _i = 0, _a = race.teams; _i < _a.length; _i++) {
                 var org = _a[_i];
                 var rows = getStartListByOrg(org, store.sort);
                 if (!rows.length) {
@@ -172,7 +172,7 @@
                     resultBlock.appendChild(new TableTextGenerator(rows, Fields.fields).getTable());
                 }
                 resultBlock.appendChild(getInfoBlock(rows));
-                if (i < race.organizations.length - 1) {
+                if (i < race.teams.length - 1) {
                     var newPage = document.createElement('div');
                     newPage.className = 'new-page';
                     resultBlock.appendChild(newPage);

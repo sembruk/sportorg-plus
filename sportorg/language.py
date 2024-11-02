@@ -52,3 +52,5 @@ def get_languages():
 
 
 _ = locale()
+tr = locale()
+

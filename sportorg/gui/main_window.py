@@ -1,9 +1,11 @@
+import os
 import ast
 import logging
 import time
+import pylocker
 from queue import Queue
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import QModelIndex, QItemSelectionModel, QTimer
+from PySide2 import QtGui, QtWidgets
+from PySide2.QtCore import Qt, QModelIndex, QItemSelectionModel, QTimer, QRect
 from PySide2.QtWidgets import QMainWindow, QTableView, QMessageBox
 
 from sportorg import config
@@ -55,7 +57,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.menu_factory = Factory(self)
         self.recent_files = []
-        self.menu_property = {}
+        self.action_by_id = {}
         self.menu_list_for_disabled = []
         self.toolbar_property = {}
         try:
@@ -69,6 +71,11 @@ class MainWindow(QMainWindow):
         logging.root.addHandler(handler)
         self.last_update = time.time()
         self.relay_number_assign = False
+
+        self.file_locker = pylocker.FACTORY(
+            key='sportorgplus_locker_key', password='str(uuid.uuid1())', autoconnect=False
+        )
+        self.file_lock_id = None
 
     def _set_style(self):
         try:
@@ -99,12 +106,12 @@ class MainWindow(QMainWindow):
 
     def interval(self):
         if SIReaderClient().is_alive() != self.sportident_status:
-            pass
+            self.sportident_status = SIReaderClient().is_alive()
+            self.toolbar_property['sportident'].setIcon(
+                QtGui.QIcon(
+                    config.icon_dir(self.sportident_icon[self.sportident_status])))
         # FIXME
         """
-            self.toolbar_property['sportident'].setIcon(
-                QtGui.QIcon(config.icon_dir(self.sportident_icon[SIReaderClient().is_alive()])))
-            self.sportident_status = SIReaderClient().is_alive()
         if Teamwork().is_alive() != self.teamwork_status:
             self.toolbar_property['teamwork'].setIcon(
                 QtGui.QIcon(config.icon_dir(self.teamwork_icon[Teamwork().is_alive()])))
@@ -127,23 +134,33 @@ class MainWindow(QMainWindow):
             if hasattr(self, 'logging_tab'):
                 self.logging_tab.write(text)
 
-    def close(self):
+    def _close(self):
         self.conf_write()
+        self.unlock_file()
         Broker().produce('close')
+        SportiduinoClient().stop()
+        SIReaderClient().stop()
+        SFRReaderClient().stop()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Q and event.modifiers() == Qt.ControlModifier:
+            self.close()
+        else:
+            super().keyPressEvent(event)
 
     def closeEvent(self, _event):
-        quit_msg = _('Save file before exit?')
-        reply = messageBoxQuestion(self, _('Question'), quit_msg,
+        reply = messageBoxQuestion(self, _('Question'), 
+                                   _('Save file before exit?'),
                                    QMessageBox.Save
                                    | QMessageBox.No
                                    | QMessageBox.Cancel)
 
         if reply == QMessageBox.Save:
             self.save_file()
-            self.close()
+            self._close()
             _event.accept()
         elif reply == QMessageBox.No:
-            self.close()
+            self._close()
             _event.accept()
         else:
             _event.ignore()
@@ -165,6 +182,12 @@ class MainWindow(QMainWindow):
     def conf_write(self):
         Configuration().set_option(ConfigFile.GEOMETRY, 'main', self.saveGeometry().toHex().data().decode())
         Configuration().set_option(ConfigFile.PATH, 'recent_files', self.recent_files)
+
+        tabs = self.get_tables()
+        for table in tabs:
+            table_name = table.objectName()
+            Configuration().set_option(ConfigFile.TAB_COLUMN_ORDER, table_name, table.get_column_order().toHex().data().decode())
+
         Configuration().save()
 
     def post_show(self):
@@ -195,7 +218,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QtGui.QIcon(config.ICON))
         self.set_title()
 
-        self.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.setLayoutDirection(Qt.LeftToRight)
         self.setDockNestingEnabled(False)
         self.setDockOptions(QtWidgets.QMainWindow.AllowTabbedDocks
                             | QtWidgets.QMainWindow.AnimatedDocks
@@ -225,10 +248,9 @@ class MainWindow(QMainWindow):
                         action,
                         action_item['tabs']
                     ))
-                if 'property' in action_item:
-                    self.menu_property[action_item['property']] = action
-                if ('debug' in action_item and action_item['debug']) or 'debug' not in action_item:
-                    parent.addAction(action)
+                if 'id' in action_item:
+                    self.action_by_id[action_item['id']] = action
+                parent.addAction(action)
             else:
                 menu = QtWidgets.QMenu(parent)
                 menu.setTitle(action_item['title'])
@@ -239,15 +261,31 @@ class MainWindow(QMainWindow):
                         menu,
                         action_item['tabs']
                     ))
+                if 'id' in action_item:
+                    self.action_by_id[action_item['id']] = menu
                 self._create_menu(menu, action_item['actions'])
                 parent.addAction(menu.menuAction())
 
     def _setup_menu(self):
         self.menubar = QtWidgets.QMenuBar(self)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 880, 21))
+        self.menubar.setGeometry(QRect(0, 0, 880, 21))
         self.menubar.setNativeMenuBar(False)
         self.setMenuBar(self.menubar)
         self._create_menu(self.menubar, menu_list())
+        self._update_recent_files_menu()
+
+    def _update_recent_files_menu(self):
+        if 'open_recent' in self.action_by_id:
+            menu = self.action_by_id['open_recent']
+            menu.clear()
+            if len(self.recent_files) == 0:
+                action = menu.addAction(_('Empty'))
+                action.setEnabled(False)
+            else:
+                for rf in self.recent_files[:10]:
+                    action = menu.addAction(rf)
+                    action.triggered.connect(lambda checked=False, x=rf: self.open_file(x))
+                    menu.addAction(action)
 
     def _setup_toolbar(self):
         self.toolbar = self.addToolBar(_('Toolbar'))
@@ -279,6 +317,17 @@ class MainWindow(QMainWindow):
         self.logging_tab = log.Widget()
         self.tabwidget.addTab(self.logging_tab, _('Logs'))
         self.tabwidget.currentChanged.connect(self._menu_disable)
+
+        if Configuration().parser.has_section(ConfigFile.TAB_COLUMN_ORDER):
+            try:
+                tabs = self.get_tables()
+                for table in tabs:
+                    table_name = table.objectName()
+                    column_order = bytearray.fromhex(Configuration().parser.get(ConfigFile.TAB_COLUMN_ORDER, table_name, fallback='00'))
+                    if column_order:
+                        table.set_column_order(column_order)
+            except Exception as e:
+                logging.error(str(e))
 
     def _menu_disable(self, tab_index):
         for item in self.menu_list_for_disabled:
@@ -403,10 +452,15 @@ class MainWindow(QMainWindow):
     def add_recent_file(self, file):
         self.delete_from_recent_files(file)
         self.recent_files.insert(0, file)
+        self._update_recent_files_menu()
 
     def delete_from_recent_files(self, file):
         if file in self.recent_files:
             self.recent_files.remove(file)
+            self._update_recent_files_menu()
+
+    def get_tables(self):
+        return self.findChildren(QtWidgets.QTableView)
 
     def get_table_by_name(self, name):
         return self.findChild(QtWidgets.QTableView, name)
@@ -517,7 +571,7 @@ class MainWindow(QMainWindow):
             logging.error(str(e))
 
     # Actions
-    def create_file(self, *args, update_data=True):
+    def create_file(self, *args, update_data=True, is_new=True):
         file_name = get_save_file_name(
             _('Create SportOrg file'),
             _('SportOrg file (*.json)'),
@@ -525,6 +579,19 @@ class MainWindow(QMainWindow):
         )
         if file_name:
             try:
+                # protect from overwriting with empty file
+                if is_new and os.path.exists(file_name):
+                    if os.path.getsize(file_name) > 1000:
+                        QMessageBox.warning(
+                            self,
+                            _('Error'),
+                            _('Canceled overwriting existing file\n\"{}\"\nwith new empty file').format(file_name),
+                        )
+                        return
+
+                if not self.lock_file(file_name):
+                    return
+
                 if update_data:
                     new_event([Race()])
                     set_current_race_index(0)
@@ -542,7 +609,7 @@ class MainWindow(QMainWindow):
             self.refresh()
 
     def save_file_as(self):
-        self.create_file(update_data=False)
+        self.create_file(update_data=False, is_new=False)
 
     def save_file(self):
         if self.file:
@@ -559,6 +626,9 @@ class MainWindow(QMainWindow):
     def open_file(self, file_name=None):
         if file_name:
             try:
+                if not self.lock_file(file_name):
+                    return
+
                 File(file_name, logging.root, File.JSON).open()
                 self.file = file_name
                 self.set_title()
@@ -569,7 +639,7 @@ class MainWindow(QMainWindow):
                 logging.exception(str(e))
                 self.delete_from_recent_files(file_name)
                 if isinstance(e, FileNotFoundError):
-                    QMessageBox.warning(self, _('Error'), str(e))
+                    QMessageBox.warning(self, _('File not found'), str(e))
                 else:
                     QMessageBox.warning(self, _('Error'), _('Cannot read file, format unknown') + ': ' + file_name)
 
@@ -579,13 +649,21 @@ class MainWindow(QMainWindow):
             return
         try:
             indexes = self.get_selected_rows()
+            if len(indexes) > 5:
+                confirm = messageBoxQuestion(
+                    self,
+                    _('Question'),
+                    _('Too many results selected for printing.\nAre you sure you want to continue?'),
+                    QMessageBox.Yes | QMessageBox.No)
+                if confirm == QMessageBox.No:
+                    return
+
             obj = race()
             for index in indexes:
                 if index < 0:
                     continue
-                if index >= len(obj.results):
-                    pass
-                self.split_printout(obj.results[index])
+                if index <= len(obj.results):
+                    self.split_printout(obj.results[index])
         except Exception as e:
             logging.exception(str(e))
 
@@ -682,3 +760,31 @@ class MainWindow(QMainWindow):
             self.refresh()
         if len(res):
             Teamwork().delete([r.to_dict() for r in res])
+
+    def lock_file(self, file_name: str):
+        if self.file == file_name:
+            # already locked by current process ('Save as' or 'Open' for the same file)
+            return True
+
+        # try to acquire the lock a single file path
+        acquired, lock_id = self.file_locker.acquire_lock(file_name, timeout=0.5)
+        if acquired:
+            # new lock created, release previous lock if exists
+            self.unlock_file()
+            self.file_lock_id = lock_id
+            logging.info(_('File lock created') + ': ' + file_name)
+        else:
+            # already locked = opened in another process, avoid parallel opening
+            QMessageBox.warning(
+                self,
+                _('Error'),
+                _('Cannot open file, it is already opened') + ':\n' + file_name,
+            )
+            return False
+        return True
+
+    def unlock_file(self):
+        if self.file_lock_id is not None:
+            self.file_locker.release(self.file_lock_id)
+            logging.info(_('File lock released'))
+

@@ -14,7 +14,9 @@ class Env(BaseSettings):
         env_file = '.env'
 
 NAME = 'SportOrgPlus'
-VERSION = Version(1, 2, 2, 0, 'v')
+VERSION = Version(1, 4, 2, 0, 'v')
+REPO_BASE = 'sembruk/sportorg-plus'
+REPO_URL = 'https://github.com/' + REPO_BASE
 
 
 def is_executable():

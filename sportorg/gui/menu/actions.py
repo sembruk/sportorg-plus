@@ -12,7 +12,7 @@ from sportorg.common.otime import OTime
 from sportorg.gui.dialogs.about import AboutDialog
 from sportorg.gui.dialogs.help import HelpDialog
 from sportorg.gui.dialogs.cp_delete import CPDeleteDialog
-from sportorg.gui.dialogs.entry_filter import DialogFilter
+from sportorg.gui.dialogs.filter_dialog import FilterDialog
 from sportorg.gui.dialogs.entry_mass_edit import MassEditDialog
 from sportorg.gui.dialogs.event_properties import EventPropertiesDialog
 from sportorg.gui.dialogs.file_dialog import get_open_file_name, get_save_file_name
@@ -87,11 +87,6 @@ class SaveAsAction(Action, metaclass=ActionFactory):
         self.app.save_file_as()
 
 
-class OpenRecentAction(Action, metaclass=ActionFactory):
-    def execute(self):
-        pass
-
-
 class CopyAction(Action, metaclass=ActionFactory):
     def execute(self):
         if self.app.current_tab not in range(5):
@@ -145,7 +140,9 @@ class CSVOrgeoImportAction(Action, metaclass=ActionFactory):
         file_name = get_open_file_name(_('Open Orgeo CSV file'), _("Orgeo CSV (*.csv)"))
         if file_name:
             try:
-                orgeo.import_csv(file_name)
+                ret = orgeo.import_csv(file_name)
+                if ret:
+                    QMessageBox.information(self.app, _('Warning'), ret)
             except Exception as e:
                 logging.error(str(e))
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
@@ -212,7 +209,9 @@ class IOFEntryListImportAction(Action, metaclass=ActionFactory):
         file_name = get_open_file_name(_('Open IOF xml'), _('IOF xml (*.xml)'))
         if file_name:
             try:
-                iof_xml.import_from_iof(file_name)
+                ret = iof_xml.import_from_iof(file_name)
+                if ret:
+                    QMessageBox.information(self.app, _('Warning'), ret)
             except Exception as e:
                 logging.exception(str(e))
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
@@ -252,7 +251,7 @@ class FilterAction(Action, metaclass=ActionFactory):
         if self.app.current_tab not in range(2):
             return
         table = self.app.get_current_table()
-        DialogFilter(table).exec_()
+        FilterDialog(table).exec_()
         self.app.refresh()
 
 
@@ -547,7 +546,7 @@ class TeamworkSendAction(Action, metaclass=ActionFactory):
         try:
             obj = race()
             data_list = [obj.persons, obj.results, obj.groups, obj.courses, obj.teams]
-            if not self.app.current_tab < len(data_list):
+            if self.app.current_tab >= len(data_list):
                 return
             items = data_list[self.app.current_tab]
             indexes = self.app.get_selected_rows()
@@ -560,7 +559,7 @@ class TeamworkSendAction(Action, metaclass=ActionFactory):
                 items_dict.append(items[index].to_dict())
             Teamwork().send(items_dict)
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
 
 class PrinterSettingsAction(Action, metaclass=ActionFactory):
@@ -611,7 +610,9 @@ class CheckUpdatesAction(Action, metaclass=ActionFactory):
     def execute(self):
         try:
             if not checker.check_version(config.VERSION):
-                message = _('Update available') + ' ' + checker.get_version()
+                message = _('Update available')
+                message += ' ' + checker.get_version()
+                message += '\n' + config.REPO_URL + '/releases/latest'
             else:
                 message = _('You are using the latest version')
 

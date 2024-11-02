@@ -66,13 +66,6 @@ class Sex(_TitleType):
     M = 1
     F = 2
 
-# For Poedit
-sexTranslations = [
-    _('Mf'),
-    _('M'),
-    _('F'),
-]
-
 
 class RaceType(_TitleType):
     INDIVIDUAL_RACE = 0
@@ -102,6 +95,37 @@ class ResultStatus(_TitleType):
     DID_NOT_ENTER = 14
     CANCELLED = 15
     RESTORED = 16
+
+# For Poedit
+translations = [
+    _('Mf'),
+    _('M'),
+    _('F'),
+    _('Individual race'),
+    _('Mass start'),
+    _('Pursuit'),
+    _('Relay'),
+    _('One man relay'),
+    _('Sprint relay'),
+    _('Team race'),
+    _('None'),
+    _('Ok'),
+    _('Finished'),
+    _('Disqualified'),
+    _('Missing punch'),
+    _('Did not finish'),
+    _('Active'),
+    _('Inactive'),
+    _('Overtime'),
+    _('Sporting withdrawal'),
+    _('Not competing'),
+    _('Moved'),
+    _('Moved up'),
+    _('Did not start'),
+    _('Did not enter'),
+    _('Cancelled'),
+    _('Restored'),
+]
 
 
 class CourseControl(Model):
@@ -232,6 +256,22 @@ class Course(Model):
             control = CourseControl()
             control.update_data(item)
             self.controls.append(control)
+
+    def get_unrolled_controls(self):
+        # return unrolled controls list, e.g. '*(31-45)[3]' -> '*(31-45) *(31-45) *(31-45)'
+        unrolled_controls = []
+        for control in self.controls:
+            template = control.get_course_cp_template()
+            match = re.search(r'\[(\d+)(?:-(\d+))?\]', template)
+            if match:
+                copies = int(match.group(1))
+                # TODO Second number isn't used yet
+                # second_number = int(match.group(2)) if match.group(2) else None
+                for i in range(copies):
+                    unrolled_controls.append(control)
+            else:
+                unrolled_controls.append(control)
+        return unrolled_controls
 
     def get_cp_coords(self):
         controls = []
@@ -984,132 +1024,129 @@ class ResultSportident(Result):
                 splits.append(split)
         return splits
 
+    def check_split(self, split, template, prev_unique_cp_list):
+        cur_code = split.code
+
+        list_exists = False
+        list_contains = False
+        ind_begin = template.find('(')
+        ind_end = template.find(')')
+        if ind_begin > 0 and ind_end > 0:
+            list_exists = True
+            # any control from the list e.g. '%(31,32,35-45)'
+            arr = re.split(r'\s*,\s*', template[ind_begin + 1:ind_end])
+            for cp in arr:
+                cp_range = re.split(r'\s*-\s*', cp)
+                if int(cur_code) == int(cp_range[0]):
+                    list_contains = True
+                elif len(cp_range) > 1:
+                    if int(cur_code) > int(cp_range[0]) and int(cur_code) <= int(cp_range[len(cp_range)-1]):
+                        list_contains = True
+
+        if template.find('%') > -1:
+            # non-unique control
+            if not list_exists or list_contains:
+                # any control '%' or '%(31,32,33)' or '31%'
+                split.is_correct = True
+                split.has_penalty = False
+                return True
+
+        elif template.find('*') > -1:
+            # unique control '*' or '*(31,32,33)' or '31*'
+            if not list_exists or list_contains:
+                if not cur_code in prev_unique_cp_list:
+                    split.is_correct = True
+                    split.has_penalty = False
+                    prev_unique_cp_list.append(cur_code)
+                    return True
+
+        else:
+            # simple pre-ordered control '31 989' or '31(31,32,33) 989'
+            if list_exists:
+                # control with optional codes '31(31,32,33) 989'
+                if list_contains:
+                    split.is_correct = True
+
+                    correct_code = template.split('(')[0].strip()
+                    if cur_code == correct_code:
+                        split.has_penalty = False
+
+                    return True
+            else:
+                # just cp '31 989'
+                if str(cur_code) == template:
+                    split.is_correct = True
+                    split.has_penalty = False
+                    return True
+        return False
+
+
     def check(self, course=None):
         if not course:
             return super().check()
-        controls = course.controls
-        course_index = 0
+        controls = course.get_unrolled_controls()
         count_controls = len(controls)
         if count_controls == 0:
             return True
 
-        # list of indexes, coincide with course, used for mixed course order
-        recognized_indexes = []
-
         # invalidate all splits before check
-        for i in self.splits:
-            i.is_correct = False
-            i.has_penalty = True
-            i.course_index = -1
+        for s in self.splits:
+            s.is_correct = False
+            s.has_penalty = True
+            s.course_index = -1
 
         # BNO: reset credit_time for bonuses
         self.credit_time = OTime()
         unique_bonuses = set()
         check_only_bonus = False
 
-        prev_code = None
-        for i in range(len(self.splits)):
+        #prev_code = None
+        #for i in range(len(self.splits)):
+        #    try:
+        #        split = self.splits[i]
+        #        cur_code = split.code
+        #        if prev_code is None:
+        #            prev_code = cur_code
+        #        ss = prev_code+'-'+cur_code
+        #        if int(prev_code) > int(cur_code):
+        #            ss = cur_code+'-'+prev_code
+        #        #if ss == '33-44':
+        #        #    self.status = ResultStatus.DISQUALIFIED
+
+        #        prev_code = cur_code
+        #        # BNO2022: check bonuses
+        #        # CP 82, 83 - 15 minutes
+        #        #if int(cur_code)//10 == 8:
+        #        #    if cur_code not in unique_bonuses:
+        #        #        unique_bonuses.add(cur_code)
+        #        #        if int(cur_code) < 84:
+        #        #            self.credit_time += OTime(minute=15)
+        #        #    continue
+        #        #elif check_only_bonus:
+        #        #    if i == len(self.splits)-1:
+        #        #        return True
+        #        #    continue
+
+        course_index = 0
+        prev_unique_cp_list = []
+        for split in self.splits:
             try:
-                split = self.splits[i]
-                cur_code = split.code
-                if prev_code is None:
-                    prev_code = cur_code
-                ss = prev_code+'-'+cur_code
-                if int(prev_code) > int(cur_code):
-                    ss = cur_code+'-'+prev_code
-                #if ss == '33-44':
-                #    self.status = ResultStatus.DISQUALIFIED
-
-                prev_code = cur_code
-                # BNO2022: check bonuses
-                # CP 82, 83 - 15 minutes
-                #if int(cur_code)//10 == 8:
-                #    if cur_code not in unique_bonuses:
-                #        unique_bonuses.add(cur_code)
-                #        if int(cur_code) < 84:
-                #            self.credit_time += OTime(minute=15)
-                #    continue
-                #elif check_only_bonus:
-                #    if i == len(self.splits)-1:
-                #        return True
-                #    continue
-
                 template = controls[course_index].get_course_cp_template()
 
-                list_exists = False
-                list_contains = False
-                ind_begin = template.find('(')
-                ind_end = template.find(')')
-                if ind_begin > 0 and ind_end > 0:
-                    list_exists = True
-                    # any control from the list e.g. '%(31,32,35-45)'
-                    arr = re.split(r'\s*,\s*', template[ind_begin + 1:ind_end])
-                    for cp in arr:
-                        cp_range = re.split(r'\s*-\s*', cp)
-                        if int(cur_code) == int(cp_range[0]):
-                            list_contains = True
-                        elif len(cp_range) > 1:
-                            if int(cur_code) > int(cp_range[0]) and int(cur_code) <= int(cp_range[len(cp_range)-1]):
-                                list_contains = True
-
-                if template.find('%') > -1:
-                    # non-unique control
-                    if not list_exists or list_contains:
-                        # any control '%' or '%(31,32,33)' or '31%'
-                        split.is_correct = True
-                        split.has_penalty = False
-                        recognized_indexes.append(i)
-                        course_index += 1
-
-                elif template.find('*') > -1:
-                    # unique control '*' or '*(31,32,33)' or '31*'
-                    if list_exists and not list_contains:
-                        # not in list
-                        continue
-                    # test previous splits
-                    is_unique = True
-                    course_index_current = -1
-                    for j in range(i):
-                        prev_split = self.splits[j]
-
-                        if prev_split.is_correct:
-                            course_index_current += 1
-
-                        if prev_split.code == cur_code and j in recognized_indexes:
-
-                            if course_index_current < 0 or controls[course_index_current].get_course_cp_template().find('*') < 0:
-                                # check only free order controls to be duplicated
-                                continue
-
-                            is_unique = False
-                            break
-                    if is_unique:
-                        split.is_correct = True
-                        split.has_penalty = False
-                        recognized_indexes.append(i)
-                        course_index += 1
-
-                else:
-                    # simple pre-ordered control '31 989' or '31(31,32,33) 989'
-                    if list_exists:
-                        # control with optional codes '31(31,32,33) 989'
-                        if list_contains:
-                            split.is_correct = True
-                            recognized_indexes.append(i)
-
-                            correct_code = controls[course_index].get_course_cp_template().split('(')[0].strip()
-                            if split.code == correct_code:
-                                split.has_penalty = False
-
-                            course_index += 1
+                if self.check_split(split, template, prev_unique_cp_list):
+                    if template.find('[]') > -1:
+                        count_controls = -1
                     else:
-                        # just cp '31 989'
-                        is_equal = str(cur_code) == controls[course_index].get_course_cp_template()
-                        if is_equal:
-                            split.is_correct = True
-                            split.has_penalty = False
-                            recognized_indexes.append(i)
+                        course_index += 1
+                elif template.find('[]') > -1 \
+                        and course_index < len(controls) - 1:
+                    # check next
+                    template = controls[course_index + 1].get_course_cp_template()
+                    if self.check_split(split, template, prev_unique_cp_list):
+                        if template.find('[]') > -1:
                             course_index += 1
+                        else:
+                            course_index += 2
 
                 if course_index == count_controls:
                     #check_only_bonus = True
@@ -1117,6 +1154,9 @@ class ResultSportident(Result):
 
             except KeyError:
                 return False
+
+        if count_controls < 0:
+            return True
 
         return False
 
@@ -1276,7 +1316,7 @@ class Person(Model):
             'card_number': self.card_number,
             'bib': self.bib,
             'birth_date': str(self.birth_date) if self.birth_date else None,
-            'year': self.get_year() if self.get_year() else 0,  # back compatibility with 1.0
+            'year': self.get_year() if self.get_year() else 0,  # back compatibility with v1.0
             'age': self.age,
             'group_id': str(self.group.id) if self.group else None,
             'team_id': str(self.team.id) if self.team else None,
@@ -1313,7 +1353,7 @@ class Person(Model):
             self.start_time = OTime(msec=int(data['start_time']))
         if data['birth_date']:
             self.birth_date = dateutil.parser.parse(data['birth_date']).date()
-        elif 'year' in data and data['year']:  # back compatibility with v 1.0.0
+        elif 'year' in data and data['year']:  # back compatibility with v1.0
             self.set_year(int(data['year']))
 
 
@@ -1403,6 +1443,7 @@ class Race(Model):
         self.teams = []  # type: List[Team]
         self.settings = {}  # type: Dict[str, Any]
         self.controls = {}  # type: Dict[code, ControlPoint]
+        self.team_max_number = 0
 
     def __repr__(self):
         return repr(self.data)
@@ -1568,6 +1609,7 @@ class Race(Model):
 
         for i in indexes:
             del self.teams[i]
+        self.update_team_max_number()
         return teams
 
     def find_person_result(self, person):
@@ -1639,6 +1681,7 @@ class Race(Model):
 
     def add_new_team(self, append_to_race=False):
         new_team = Team()
+        new_team.number = self.team_max_number + 1
         if append_to_race:
             self.teams.insert(0, new_team)
         return new_team
@@ -1674,6 +1717,13 @@ class Race(Model):
         for i in self.persons:
             if i.team:
                 i.team.count_person += 1
+
+    def update_team_max_number(self):
+        self.team_max_number = 0
+        for team in self.teams:
+            if team.number > self.team_max_number:
+                self.team_max_number = team.number
+        print("Team max number:", self.team_max_number)
 
     def get_persons_by_group(self, group):
         return find(self.persons, group=group, return_all=True)

@@ -100,8 +100,8 @@ class AbstractSportOrgMemoryModel(QAbstractTableModel):
             self.set_source_array(whole_list)
             self.filter_backup.clear()
 
-    def set_filter_for_column(self, column_num, filter_regexp):
-        self.filter.update({column_num: re.escape(filter_regexp)})
+    def set_filter_for_column(self, column_num, filter_regexp, strict_check=False):
+        self.filter.update({column_num: [filter_regexp, strict_check]})
 
     def apply_filter(self):
         # get initial list and filter it
@@ -109,13 +109,18 @@ class AbstractSportOrgMemoryModel(QAbstractTableModel):
         current_array.extend(self.filter_backup)
         self.filter_backup.clear()
         for column in self.filter.keys():
-            check_regexp = self.filter.get(column)
-            check = re.compile(check_regexp)
-            # current_array = list(filter(lambda x:  check.match(self.get_item(x, column)), current_array))
+            check_regexp = re.escape(self.filter.get(column)[0])
+            strict_check = self.filter.get(column)[1]
+
+            check = re.compile('.*' + check_regexp + '.*')
+
+            if strict_check:
+                check = re.compile('^' + check_regexp + '$')
+
             i = 0
             while i < len(current_array):
                 value = self.get_item(current_array[i], column)
-                if not check.match(value):
+                if not check.match(str(value)):
                     self.filter_backup.append(current_array.pop(i))
                     i -= 1
                 i += 1
@@ -124,6 +129,7 @@ class AbstractSportOrgMemoryModel(QAbstractTableModel):
         # note, unfiltered items are in filter_backup
         self.set_source_array(current_array)
         self.init_cache()
+
 
     def apply_search(self):
         if not self.search:
@@ -211,6 +217,10 @@ class AbstractSportOrgMemoryModel(QAbstractTableModel):
 
     def get_item(self, obj, n_col):
         return self.get_values_from_object(obj)[n_col]
+
+    def get_column_unique_values(self, n_col):
+        # returns sorted unique values from specified column
+        return sorted(set([str(row[n_col]) for row in self.cache]))
 
 
 class PersonMemoryModel(AbstractSportOrgMemoryModel):
@@ -455,7 +465,7 @@ class GroupMemoryModel(AbstractSportOrgMemoryModel):
     def get_values_from_object(self, group):
         course = group.course
 
-        control_count = len(course.controls) if course else 0
+        control_count = len(course.get_unrolled_controls()) if course else 0
 
         return [
             group.name,
@@ -511,7 +521,7 @@ class CourseMemoryModel(AbstractSportOrgMemoryModel):
         return [
             course.name,
             course.length,
-            len(course.controls),
+            len(course.get_unrolled_controls()),
             course.climb,
             ' '.join(course.get_code_list()),
         ]
