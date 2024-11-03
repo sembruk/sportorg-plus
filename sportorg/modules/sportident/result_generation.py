@@ -30,7 +30,7 @@ def get_person_info_by_card_number_from_db(card_number):
     conn.close()
     
     # Return the result or None if no participant found
-    return unpacked(result) if result else None
+    return result if result else (None, None, None, None, None)
 
 
 class FinishSource(Enum):
@@ -153,7 +153,10 @@ class ResultSportidentGeneration:
             bib_dialog = BibDialog('{}'.format(self._result.card_number))
             bib_dialog.exec_()
             self._person = bib_dialog.get_person()
-            if not self._person:
+            if self._person:
+                self._person.card_number = self._result.card_number
+                self._person.bib = self._result.card_number
+            else:
                 self.assign_chip_reading = 'off'
                 self.card_read_repeated = False
         except Exception as e:
