@@ -12,4 +12,6 @@ requests >= 2
 shiboken2 >= 5.15
 sportident >= 1
 pylocker >= 3.1.0
+gpxpy
+utm
 

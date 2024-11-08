@@ -79,6 +79,10 @@ def menu_list():
                             'action': 'OcadTXTv8ImportAction'
                         },
                         {
+                            'title': _('CP coordinates'),
+                            'action': 'CpCoordinatesImportAction'
+                        },
+                        {
                             'title': _('IOF xml'),
                             'action': 'IOFEntryListImportAction'
                         },
