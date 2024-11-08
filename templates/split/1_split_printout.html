@@ -152,8 +152,8 @@
             <th>КП</th>
             <th>Время</th>
             <th>Сплит</th>
-            <th>/км</th>
-            <th>Место</th>
+            <th>Темп</th>
+            <!--<th>Место</th>-->
           </tr>
         {% for leg in result.splits %}
             {% if leg.is_correct %}
@@ -163,11 +163,13 @@
                     <td>{{leg.relative_time|tohhmmss}}</td>
                     <td>{{leg.leg_time|tohhmmss('%M:%S')}}</td>
                     <td>{{leg.speed}}</td>
+                    <!--
                     {% if leg.leg_place %}
                         <td>{{leg.leg_place}}</td>
                      {% else %}
                         <td></td>
                     {% endif %}    
+                    -->
                     <td></td>
                 </tr>
             {% else %}
@@ -183,10 +185,11 @@
         {% endfor %}
         </table>
         <br> Финиш:  {{result.finish_msec|tohhmmss}}
-        <br> Время:  {{(result.result_msec - result.penalty_time + result.credit_time)|tohhmmss}} {{result.speed}}/км
-        <br> Штраф: +{{result.penalty_time|tohhmmss}}
-        <br> Бонус: -{{result.credit_time|tohhmmss}}
+        <br> Время:  {{(result.result_msec - result.penalty_time + result.credit_time)|tohhmmss}} ({{result.speed}})
+        <br> Штраф: {% if result.penalty_time > 0 %}+{{result.penalty_time|tohhmmss}}{% endif %}
+        <!--<br> Бонус: -{{result.credit_time|tohhmmss}}-->
         <br> Результат: {{result.result}} ({{result.length}})
+        <!--
         {% if result.place > 0 %}
             <br> Место: {{result.place}} из {{group.count_finished}} (всего {{group.count_person}})
             {% if "can_win_count" in result and result.can_win_count is not none %}
@@ -198,11 +201,11 @@
                 {% endif %}
             {% endif %}
         {% endif %}
-        {% if result.status != 1 %}
+        -->
+        {% if result.status == 4 %}
             {% for control in course.controls %}
                 {{control.code}}
             {% endfor %}<br>
-			  <h3>ПЛОХАЯ ОТМЕТКА</h3>
         {% endif %}
         <br>
         <!--<table>
@@ -217,6 +220,7 @@
                 {% endif %}
             {% endfor %}
         </table>-->
+        <br>Результаты:
         <br> {{ race.data.url }}
     </code>
 </body>
