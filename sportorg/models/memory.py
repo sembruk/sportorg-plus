@@ -193,6 +193,25 @@ class ControlPoint(Model):
         self.y = 0.0
         self.altitude = 0.0
 
+    def to_dict(self):
+        return {
+            'object': self.__class__.__name__,
+            'code': self.code,
+            'description': self.description,
+            'score': self.score,
+            'x': self.x,
+            'y': self.y,
+            'altitude': self.altitude
+        }
+
+    def update_data(self, data):
+        self.code = str(data['code'])
+        self.description = str(data['description'])
+        self.score = float(data['score'])
+        self.x = float(data['x'])
+        self.y = float(data['y'])
+        self.altitude = float(data['altitude'])
+
 
 class Course(Model):
     def __init__(self):
@@ -1418,6 +1437,8 @@ class Race(Model):
             'id': str(self.id),
             'data': self.data.to_dict(),
             'settings': self.settings,
+            'controls': [item.to_dict() for item in self.controls.values()],
+            'relay_teams': [item.to_dict() for item in self.relay_teams],
             'teams': [item.to_dict() for item in self.teams],
             'courses': [item.to_dict() for item in self.courses],
             'groups': [item.to_dict() for item in self.groups],
@@ -1433,6 +1454,12 @@ class Race(Model):
                 self.data.update_data(dict_obj['data'])
             if 'settings' in dict_obj:
                 self.settings = dict_obj['settings']
+            if 'controls' in dict_obj:
+                self.controls = {}
+                for item_obj in dict_obj['controls']:
+                    control = ControlPoint()
+                    control.update_data(item_obj)
+                    self.controls[control.code] = control
             key_list = ['courses', 'groups', 'teams', 'persons', 'results']
             for key in key_list:
                 if key in dict_obj:

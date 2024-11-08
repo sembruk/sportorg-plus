@@ -183,6 +183,7 @@ class CpCoordinatesImportAction(Action, metaclass=ActionFactory):
             except Exception as e:
                 logging.error(str(e))
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
+            self.app.init_model()
 
 
 class WDBWinorientExportAction(Action, metaclass=ActionFactory):

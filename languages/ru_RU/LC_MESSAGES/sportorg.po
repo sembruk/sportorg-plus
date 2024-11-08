@@ -2039,6 +2039,9 @@ msgstr ""
 msgid "Live is not enabled"
 msgstr "Онлайн выключен"
 
+msgid "/km"
+msgstr "/км"
+
 #~ msgid "Sorting by"
 #~ msgstr "Сортировка по"
 
