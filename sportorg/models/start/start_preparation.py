@@ -510,8 +510,8 @@ def copy_bib_to_card_number():
 def copy_card_number_to_bib():
     obj = race()
     for person in obj.persons:
-        if person.card_number:
-            person.bib = person.card_number
+        #if person.card_number:
+        person.bib = person.card_number
 
 def split_teams():
     known_teams = set()
