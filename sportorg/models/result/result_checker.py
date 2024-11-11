@@ -252,6 +252,8 @@ class ResultChecker:
             known_groups = []
             group_dict = {}
             for result in results_list:
+                if result.person is None:
+                    continue
                 bib = result.person.bib
                 for other_result in results_list:
                     if result == other_result:
