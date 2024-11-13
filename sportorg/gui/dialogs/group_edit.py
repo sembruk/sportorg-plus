@@ -125,6 +125,7 @@ class GroupEditDialog(QDialog):
         vbox_layout = QVBoxLayout()
         vbox_layout.addWidget(self.add_subgroup_button)
         vbox_layout.addWidget(self.delete_subgroup_button)
+        vbox_layout.addStretch()
         hbox_layout = QHBoxLayout()
         hbox_layout.addWidget(self.subgroups_table)
         hbox_layout.addLayout(vbox_layout)

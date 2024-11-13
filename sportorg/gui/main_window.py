@@ -30,6 +30,7 @@ from sportorg.common.broker import Broker
 from sportorg.gui.dialogs.file_dialog import get_save_file_name
 from sportorg.gui.menu import menu_list, Factory
 from sportorg.gui.tabs import persons, groups, teams, results, courses, log
+from sportorg.gui.tabs.table import TableView
 from sportorg.gui.tabs.memory_model import PersonMemoryModel, ResultMemoryModel, GroupMemoryModel, \
     CourseMemoryModel, TeamMemoryModel
 from sportorg.gui.toolbar import toolbar_list
@@ -460,10 +461,10 @@ class MainWindow(QMainWindow):
             self._update_recent_files_menu()
 
     def get_tables(self):
-        return self.findChildren(QtWidgets.QTableView)
+        return self.findChildren(TableView)
 
     def get_table_by_name(self, name):
-        return self.findChild(QtWidgets.QTableView, name)
+        return self.findChild(TableView, name)
 
     def get_person_table(self):
         return self.get_table_by_name('PersonTable')
@@ -736,7 +737,7 @@ class MainWindow(QMainWindow):
                 res = race().delete_groups(indexes)
             except NotEmptyException as e:
                 logging.warning(str(e))
-                QMessageBox.question(self.get_group_table(),
+                QMessageBox.warning(self.get_group_table(),
                                      _('Error'),
                                      _('Cannot remove group'))
             self.refresh()
@@ -745,7 +746,7 @@ class MainWindow(QMainWindow):
                 res = race().delete_courses(indexes)
             except NotEmptyException as e:
                 logging.warning(str(e))
-                QMessageBox.question(self.get_course_table(),
+                QMessageBox.warning(self.get_course_table(),
                                      _('Error'),
                                      _('Cannot remove course'))
             self.refresh()
@@ -754,7 +755,7 @@ class MainWindow(QMainWindow):
                 res = race().delete_teams(indexes)
             except NotEmptyException as e:
                 logging.warning(str(e))
-                QMessageBox.question(self.get_team_table(),
+                QMessageBox.warning(self.get_team_table(),
                                      _('Error'),
                                      _('Cannot remove team'))
             self.refresh()

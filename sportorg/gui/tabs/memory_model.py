@@ -258,6 +258,7 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         new_person.bib = 0
         new_person.card_number = 0
         self.race.persons.insert(position, new_person)
+        self.race.update_team_person_counters()
 
     def get_values_from_object(self, obj):
         ret = []
@@ -539,7 +540,7 @@ class TeamMemoryModel(AbstractSportOrgMemoryModel):
         super().__init__()
 
     def get_headers(self):
-        return [_('Name'), _('Number'), _('Group'), _('Code'), _('Country'), _('Region'), _('Contact')]
+        return [_('Name'), _('Number'), _('Group'), _('Count'), _('Code'), _('Country'), _('Region'), _('Contact')]
 
     def init_cache(self):
         self.cache.clear()
@@ -557,12 +558,14 @@ class TeamMemoryModel(AbstractSportOrgMemoryModel):
         new_team.name = new_team.name + '_'
         new_team.number = 0
         self.race.teams.insert(position, new_team)
+        self.race.update_team_person_counters()
 
     def get_values_from_object(self, team):
         return [
             team.name,
             team.number,
             team.group.name if team.group else '',
+            team.count_person,
             team.code,
             team.country,
             team.region,

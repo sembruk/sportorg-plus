@@ -1539,6 +1539,7 @@ class Race(Model):
                     result.person = None
                     result.bib = person.bib
             del self.persons[i]
+        self.update_team_person_counters()
         return persons
 
     def delete_results(self, indexes):
@@ -1663,9 +1664,19 @@ class Race(Model):
     def add_new_team(self, append_to_race=False):
         new_team = Team()
         new_team.number = self.team_max_number + 1
+        self.team_max_number = new_team.number
         if append_to_race:
             self.teams.insert(0, new_team)
         return new_team
+
+    def update_team_person_counters(self):
+        # recalculate team counters
+        for i in self.teams:
+            i.count_person = 0
+
+        for i in self.persons:
+            if i.team:
+                i.team.count_person += 1
 
     def update_counters(self):
         # recalculate group counters
@@ -1691,13 +1702,7 @@ class Race(Model):
                 i.course.count_person += i.count_person
                 i.course.count_group += 1
 
-        # recalculate team counters
-        for i in self.teams:
-            i.count_person = 0
-
-        for i in self.persons:
-            if i.team:
-                i.team.count_person += 1
+        self.update_team_person_counters()
 
     def update_team_max_number(self):
         self.team_max_number = 0

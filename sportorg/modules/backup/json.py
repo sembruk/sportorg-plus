@@ -32,6 +32,7 @@ def load(file):
     ScoreCalculation(obj).calculate_scores()
     update_subgroups()
     obj.update_team_max_number()
+    obj.update_team_person_counters()
 
 
 def get_races_from_file(file):
