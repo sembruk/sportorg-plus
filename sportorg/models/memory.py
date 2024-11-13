@@ -6,6 +6,7 @@ from abc import abstractmethod
 from datetime import date
 from enum import IntEnum, Enum
 from typing import Dict, List, Any
+from copy import copy, deepcopy
 
 import dateutil.parser
 
@@ -220,7 +221,8 @@ class Course(Model):
         self.bib = 0
         self.length = 0
         self.climb = 0
-        self.controls = []  # type: List[CourseControl]
+        self._controls = []  # type: List[CourseControl]
+        self.controls = []  # unrolled copy of _controls
 
         self.count_person = 0
         self.count_group = 0
@@ -247,16 +249,16 @@ class Course(Model):
 
     def get_code_list(self):
         ret = []
-        for i in self.controls:
+        for i in self._controls:
             ret.append(str(i.code))
         return ret
 
     def to_dict(self):
-        controls = [control.to_dict() for control in self.controls]
+        _controls = [control.to_dict() for control in self._controls]
         return {
             'object': self.__class__.__name__,
             'id': str(self.id),
-            'controls': controls,
+            'controls': _controls,
             'bib': self.bib,
             'name': self.name,
             'length': self.length,
@@ -270,24 +272,27 @@ class Course(Model):
         self.length = int(data['length'])
         self.climb = int(data['climb'])
         self.corridor = int(data['corridor'])
-        self.controls = []
+        self._controls = []
         for item in data['controls']:
             control = CourseControl()
             control.update_data(item)
-            self.controls.append(control)
+            self._controls.append(control)
+        self.controls = self.get_unrolled_controls()
 
     def get_unrolled_controls(self):
         # return unrolled controls list, e.g. '*(31-45)[3]' -> '*(31-45) *(31-45) *(31-45)'
         unrolled_controls = []
-        for control in self.controls:
+        for control in self._controls:
             template = control.get_course_cp_template()
             match = re.search(r'\[(\d+)(?:-(\d+))?\]', template)
             if match:
+                new_control = deepcopy(control)
+                new_control.code = control.code.split('[')[0]
                 copies = int(match.group(1))
                 # TODO Second number isn't used yet
                 # second_number = int(match.group(2)) if match.group(2) else None
                 for i in range(copies):
-                    unrolled_controls.append(control)
+                    unrolled_controls.append(new_control)
             else:
                 unrolled_controls.append(control)
         return unrolled_controls
@@ -1086,8 +1091,7 @@ class ResultSportident(Result):
     def check(self, course=None):
         if not course:
             return super().check()
-        controls = course.get_unrolled_controls()
-        count_controls = len(controls)
+        count_controls = len(course.controls)
         if count_controls == 0:
             return True
 
@@ -1101,7 +1105,7 @@ class ResultSportident(Result):
         prev_unique_cp_list = []
         for split in self.splits:
             try:
-                template = controls[course_index].get_course_cp_template()
+                template = course.controls[course_index].get_course_cp_template()
 
                 if self.check_split(split, template, prev_unique_cp_list):
                     if template.find('[]') > -1:
@@ -1109,9 +1113,9 @@ class ResultSportident(Result):
                     else:
                         course_index += 1
                 elif template.find('[]') > -1 \
-                        and course_index < len(controls) - 1:
+                        and course_index < len(course.controls) - 1:
                     # check next
-                    template = controls[course_index + 1].get_course_cp_template()
+                    template = course.controls[course_index + 1].get_course_cp_template()
                     if self.check_split(split, template, prev_unique_cp_list):
                         if template.find('[]') > -1:
                             course_index += 1

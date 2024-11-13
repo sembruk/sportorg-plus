@@ -89,18 +89,16 @@ class ResultChecker:
         if not course:
             return
 
-        controls = course.get_unrolled_controls()
-
         if race().get_setting('marked_route_dont_dsq', False):
             # free order, don't penalty for extra cp
-            penalty = ResultChecker.penalty_calculation_free_order(result.splits, controls)
+            penalty = ResultChecker.penalty_calculation_free_order(result.splits, course.controls)
         else:
             # marked route with penalty
-            penalty = ResultChecker.penalty_calculation(result.splits, controls, check_existence=True)
+            penalty = ResultChecker.penalty_calculation(result.splits, course.controls, check_existence=True)
 
         if race().get_setting('marked_route_max_penalty_by_cp', False):
             # limit the penalty by quantity of controls
-            penalty = min(len(controls), penalty)
+            penalty = min(len(course.controls), penalty)
 
         if mode == 'laps':
             result.penalty_laps = penalty

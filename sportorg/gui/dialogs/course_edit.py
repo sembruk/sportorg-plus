@@ -114,10 +114,10 @@ class CourseEditDialog(QDialog):
             self.item_length.setValue(self.current_object.length)
         if self.current_object.climb:
             self.item_climb.setValue(self.current_object.climb)
-        if self.current_object.controls:
-            self.item_control_qty.setValue(len(self.current_object.controls))
-        for i in self.current_object.controls:
-            self.item_controls.append('{} {}'.format(i.code, i.length if i.length else ''))
+        if self.current_object._controls:
+            self.item_control_qty.setValue(len(self.current_object._controls))
+        for c in self.current_object._controls:
+            self.item_controls.append('{} {}'.format(c.code, c.length if c.length else ''))
 
     def apply_changes_impl(self):
         course = self.current_object
@@ -135,7 +135,7 @@ class CourseEditDialog(QDialog):
 
         text = self.item_controls.toPlainText()
 
-        course.controls.clear()
+        course._controls.clear()
         for i in text.split('\n'):
             control = CourseControl()
             if i is None or len(i) == 0:
@@ -147,7 +147,8 @@ class CourseEditDialog(QDialog):
                 except Exception as e:
                     logging.error(str(e))
                     control.length = 0
-            course.controls.append(control)
+            course._controls.append(control)
+        course.controls = course.get_unrolled_controls()
 
         obj = race()
         obj.add_cp_coords(course.get_cp_coords())

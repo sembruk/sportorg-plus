@@ -465,7 +465,7 @@ class GroupMemoryModel(AbstractSportOrgMemoryModel):
     def get_values_from_object(self, group):
         course = group.course
 
-        control_count = len(course.get_unrolled_controls()) if course else 0
+        control_count = len(course.controls) if course else 0
 
         return [
             group.name,
@@ -515,13 +515,14 @@ class CourseMemoryModel(AbstractSportOrgMemoryModel):
         new_course.id = uuid.uuid4()
         new_course.name = new_course.name + '_'
         new_course.controls = deepcopy(course.controls)
+        new_course._controls = deepcopy(course._controls)
         self.race.courses.insert(position, new_course)
 
     def get_values_from_object(self, course):
         return [
             course.name,
             course.length,
-            len(course.get_unrolled_controls()),
+            len(course.controls),
             course.climb,
             ' '.join(course.get_code_list()),
         ]
