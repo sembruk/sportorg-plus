@@ -4,6 +4,7 @@ import logging
 import time
 import pylocker
 from queue import Queue
+from datetime import datetime
 from PySide2 import QtGui, QtWidgets
 from PySide2.QtCore import Qt, QModelIndex, QItemSelectionModel, QTimer, QRect
 from PySide2.QtWidgets import QMainWindow, QTableView, QMessageBox
@@ -40,6 +41,7 @@ from sportorg.modules.sportident.sireader import SIReaderClient
 from sportorg.modules.sportiduino.sportiduino import SportiduinoClient
 from sportorg.modules.teamwork import Teamwork
 from sportorg.modules.telegram.telegram import TelegramClient
+from sportorg.modules.updater import checker
 
 
 class ConsolePanelHandler(logging.Handler):
@@ -209,6 +211,17 @@ class MainWindow(QMainWindow):
 
         LiveClient().init()
         self._menu_disable(self.current_tab)
+
+        if Configuration().configuration.get('check_updates'):
+            last_update_check_date_str = Configuration().parser.get(
+                'last_update_check', 'date', fallback='1970-01-01 00:00:00')
+            last_version_check_date = datetime.fromisoformat(last_update_check_date_str)
+            if (datetime.now() - last_version_check_date).days >= 7:
+                message = checker.update_available(config.VERSION)
+                if message is not None:
+                    QMessageBox.information(self, _('Info'), message)
+                Configuration().set_option('last_update_check', 'date', datetime.now().isoformat())
+
 
     def _setup_ui(self):
         geom = bytearray.fromhex(Configuration().parser.get(ConfigFile.GEOMETRY, 'main',  fallback='00'))

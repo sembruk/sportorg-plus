@@ -48,8 +48,8 @@ class MainTab(Tab):
         self.layout.addRow(self.item_use_birthday)
 
         self.item_check_updates = QCheckBox(_('Check updates'))
-        self.item_check_updates.setChecked(Config().configuration.get('check_updates'))
-        # self.layout.addRow(self.item_check_updates)
+        self.item_check_updates.setChecked(Config().configuration.get('check_updates', True))
+        self.layout.addRow(self.item_check_updates)
 
         self.widget.setLayout(self.layout)
 

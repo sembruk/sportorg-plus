@@ -617,11 +617,9 @@ class HelpAction(Action, metaclass=ActionFactory):
 class CheckUpdatesAction(Action, metaclass=ActionFactory):
     def execute(self):
         try:
-            if not checker.check_version(config.VERSION):
-                message = _('Update available')
-                message += ' ' + checker.get_version()
-                message += '\n' + config.REPO_URL + '/releases/latest'
-            else:
+            message = checker.update_available(config.VERSION)
+
+            if message is None:
                 message = _('You are using the latest version')
 
             QMessageBox.information(self.app, _('Info'), message)
