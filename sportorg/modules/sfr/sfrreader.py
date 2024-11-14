@@ -12,7 +12,7 @@ from sportorg.language import _
 from sportorg.libs.sfr import sfrreader
 from sportorg.libs.sfr.sfrreader import SFRReaderException, SFRReaderCardChanged
 from sportorg.models import memory
-from sportorg.modules.sportident import backup
+from sportorg.modules.sportident.backup import CardDataBackuper
 from sportorg.utils.time import time_to_otime
 
 
@@ -81,7 +81,7 @@ class ResultThread(QThread):
                 if cmd.command == 'card_data':
                     result = self._get_result(self._check_data(cmd.data))
                     self.data_sender.emit(result)
-                    backup.backup_data(cmd.data)
+                    CardDataBackuper().backup_card_data(cmd.data)
             except Empty:
                 if not main_thread().is_alive() or self._stop_event.is_set():
                     break

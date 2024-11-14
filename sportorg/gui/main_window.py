@@ -38,6 +38,7 @@ from sportorg.gui.toolbar import toolbar_list
 from sportorg.gui.utils.custom_controls import messageBoxQuestion
 from sportorg.language import _
 from sportorg.modules.sportident.sireader import SIReaderClient
+from sportorg.modules.sportident.backup import CardDataBackuper
 from sportorg.modules.sportiduino.sportiduino import SportiduinoClient
 from sportorg.modules.teamwork import Teamwork
 from sportorg.modules.telegram.telegram import TelegramClient
@@ -144,6 +145,7 @@ class MainWindow(QMainWindow):
         SportiduinoClient().stop()
         SIReaderClient().stop()
         SFRReaderClient().stop()
+        CardDataBackuper().stop()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Q and event.modifiers() == Qt.ControlModifier:
@@ -632,6 +634,7 @@ class MainWindow(QMainWindow):
                 File(self.file, logging.root, File.JSON).save()
                 self.apply_filters()
                 self.last_update = time.time()
+                CardDataBackuper().save_event()
             except Exception as e:
                 logging.error(str(e))
         else:

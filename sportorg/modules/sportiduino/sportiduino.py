@@ -11,7 +11,7 @@ from PySide2.QtCore import QThread, Signal
 from sportorg.common.singleton import singleton
 from sportorg.libs.sportiduino import sportiduino
 from sportorg.models import memory
-from sportorg.modules.sportident import backup
+from sportorg.modules.sportident.backup import CardDataBackuper
 from sportorg.utils.time import time_to_otime
 
 
@@ -76,7 +76,7 @@ class ResultThread(QThread):
                 if cmd.command == 'card_data':
                     result = self._get_result(cmd.data)
                     self.data_sender.emit(result)
-                    backup.backup_data(cmd.data)
+                    CardDataBackuper().backup_card_data(cmd.data)
             except Empty:
                 if not main_thread().is_alive() or self._stop_event.is_set():
                     break
