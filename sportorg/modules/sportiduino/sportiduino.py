@@ -11,8 +11,9 @@ from PySide2.QtCore import QThread, Signal
 from sportorg.common.singleton import singleton
 from sportorg.libs.sportiduino import sportiduino
 from sportorg.models import memory
-from sportorg.modules.sportident.backup import CardDataBackuper
+from sportorg.modules.sportident.backup import CardDataBackuper, parse_backup_from_last_save
 from sportorg.utils.time import time_to_otime
+from sportorg.gui.utils.custom_controls import messageBoxQuestion
 
 
 class SportiduinoCommand:
@@ -73,10 +74,11 @@ class ResultThread(QThread):
         while True:
             try:
                 cmd = self._queue.get(timeout=5)
-                if cmd.command == 'card_data':
+                if cmd.command == 'card_data' or cmd.command == 'backup_card_data':
                     result = self._get_result(cmd.data)
                     self.data_sender.emit(result)
-                    CardDataBackuper().backup_card_data(cmd.data)
+                    if cmd.command == 'card_data':
+                        CardDataBackuper().backup_card_data(cmd.data)
             except Empty:
                 if not main_thread().is_alive() or self._stop_event.is_set():
                     break
@@ -125,6 +127,7 @@ class SportiduinoClient(object):
         self.port = None
         self._logger = logging.root
         self._call_back = None
+        self._check_backup = True
 
     def set_call(self, value):
         if self._call_back is None:
@@ -154,11 +157,25 @@ class SportiduinoClient(object):
             )
             if self._call_back:
                 self._result_thread.data_sender.connect(self._call_back)
+            if self._check_backup:
+                self._check_card_data_backup()
+                self._check_backup = False
             self._result_thread.start()
         # elif not self._result_thread.is_alive():
         elif self._result_thread.isFinished():
             self._result_thread = None
             self._start_result_thread()
+
+    def _check_card_data_backup(self):
+        self._logger.debug('Check card data backup')
+        entries = parse_backup_from_last_save()
+        self._logger.debug(f'Found {len(entries)} entries')
+        if entries:
+            confirm = messageBoxQuestion(self, _('Question'), _('Found unsaved card data. Do you want to restore it?'), QMessageBox.Yes | QMessageBox.No)
+            if confirm == QMessageBox.No:
+                return
+            for entry in entries:
+                self._queue.put(SportiduinoCommand('card_data', entry))
 
     def is_alive(self):
         if self._sportiduino_thread and self._result_thread:
