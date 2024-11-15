@@ -7,13 +7,15 @@ import time
 import serial
 
 from PySide2.QtCore import QThread, Signal
+#from PySide2.QtWidgets import QMessageBox
 
 from sportorg.common.singleton import singleton
 from sportorg.libs.sportiduino import sportiduino
 from sportorg.models import memory
 from sportorg.modules.sportident.backup import CardDataBackuper, parse_backup_from_last_save
 from sportorg.utils.time import time_to_otime
-from sportorg.gui.utils.custom_controls import messageBoxQuestion
+#from sportorg.gui.utils.custom_controls import messageBoxQuestion
+#from sportorg.language import _
 
 
 class SportiduinoCommand:
@@ -79,6 +81,8 @@ class ResultThread(QThread):
                     self.data_sender.emit(result)
                     if cmd.command == 'card_data':
                         CardDataBackuper().backup_card_data(cmd.data)
+                    elif cmd.command == 'backup_card_data':
+                        self._logger.info(f'Card No. {cmd.data["card_number"]} has been restored from backup')
             except Empty:
                 if not main_thread().is_alive() or self._stop_event.is_set():
                     break
@@ -171,11 +175,11 @@ class SportiduinoClient(object):
         entries = parse_backup_from_last_save()
         self._logger.debug(f'Found {len(entries)} entries')
         if entries:
-            confirm = messageBoxQuestion(self, _('Question'), _('Found unsaved card data. Do you want to restore it?'), QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.No:
-                return
+            #confirm = messageBoxQuestion(self, _('Question'), _('Found unsaved card data. Do you want to restore it?'), QMessageBox.Yes | QMessageBox.No)
+            #if confirm == QMessageBox.No:
+            #    return
             for entry in entries:
-                self._queue.put(SportiduinoCommand('card_data', entry))
+                self._queue.put(SportiduinoCommand('backup_card_data', entry))
 
     def is_alive(self):
         if self._sportiduino_thread and self._result_thread:

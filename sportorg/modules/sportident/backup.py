@@ -8,7 +8,7 @@ from multiprocessing import Process, Queue, Event
 from sportorg import config
 from sportorg.common.fake_std import FakeStd
 from sportorg.common.singleton import singleton
-from sportorg.utils.time import time_to_hhmmss, hhmmss_to_time
+from sportorg.utils.time import time_to_hhmmss, hhmmss_to_time, time_to_datetime
 
 
 class BackupProcess(Process):
@@ -27,6 +27,8 @@ class BackupProcess(Process):
             try:
                 data = self.queue.get(timeout=1)  # wait for data from queue (1 sec timeout)
                 self._write_to_log(data)
+            except TimeoutError:
+                pass
             except Exception as e:
                 logging.error(f'Backup process error: {e}')
         sys.stdout = original_stdout
@@ -56,7 +58,7 @@ class CardDataBackuper(object):
         lines = [
             f"begin {datetime.now().strftime('%H:%M:%S')}",
             f"card: {card_data['card_number']}",
-            f"start: {time_to_hhmmss(card_data['start']) if 'start' in card_data else ''}"
+            f"start: {time_to_hhmmss(card_data['start']) if 'start' in card_data else ''}",
             f"finish: {time_to_hhmmss(card_data['finish']) if 'finish' in card_data else ''}",
             "split_begin"
         ]
@@ -81,21 +83,47 @@ class CardDataBackuper(object):
             self.backup_process.join()
 
 
-def find_last_save_position(file_path):
+def find_last_save_position(file_path, chunk_size=1024):
     """Find the last occurrence of 'SAVE' in the file and return its position."""
     with open(file_path, 'rb') as f:
         f.seek(0, os.SEEK_END)
-        position = f.tell()
+        file_size = f.tell()
 
-        # Start reading the file in reverse to find "SAVE"
-        while position >= 0:
+        buffer = b''
+        position = file_size
+
+        # Read the file in reverse chunks
+        while position > 0:
+            # Determine how far to jump back
+            read_size = min(chunk_size, position)
+            position -= read_size
+
+            # Move back and read the chunk
             f.seek(position)
-            line = f.readline().decode('utf-8')
+            chunk = f.read(read_size)
+            buffer = chunk + buffer
+
+            # Split the buffer into lines and process in reverse order
+            lines = buffer.split(b'\n')
+            if position > 0:
+                buffer = lines.pop(0)  # Retain incomplete line for next iteration
+
+            # Process lines from the end
+            for line in reversed(lines):
+                decoded_line = line.decode('utf-8').strip()
+                if "SAVE" in decoded_line:
+                    # Calculate the position of "SAVE"
+                    save_position = position + sum(len(l) + 1 for l in lines[:lines.index(line) + 1])
+                    return save_position
+
+        # Check the first part of the file if no "SAVE" found
+        if buffer:
+            line = buffer.decode('utf-8').strip()
             if "SAVE" in line:
-                return position
-            position -= len(line)
+                return 0
 
     return None  # Return None if "SAVE" is not found
+
 
 def parse_backup_from_last_save():
     """Parses the backup log from the last 'SAVE' entry to the end."""
@@ -105,6 +133,7 @@ def parse_backup_from_last_save():
 
     # Find the last occurrence of "SAVE"
     save_position = find_last_save_position(log_file_path)
+    logging.debug(f"Last save position: {save_position}")
 
     entries = []
     entry = {}
@@ -132,11 +161,11 @@ def parse_backup_from_last_save():
             elif line.startswith("start:"):
                 # Extract start time
                 time = line.split(": ")[1]
-                entry["start"] = hhmmss_to_time(time) if time else None
+                entry["start"] = time_to_datetime(hhmmss_to_time(time)) if time else None
             elif line.startswith("finish:"):
                 # Extract finish time
                 time = line.split(": ")[1]
-                entry["finish"] = hhmmss_to_time(time) if time else None
+                entry["finish"] = time_to_datetime(hhmmss_to_time(time)) if time else None
 
             elif line == "split_begin":
                 # Begin parsing punches
@@ -156,7 +185,7 @@ def parse_backup_from_last_save():
             elif parsing_punches:
                 # Parse each punch
                 punch_code, punch_time = line.split()
-                punches.append((int(punch_code), hhmmss_to_time(punch_time)))
+                punches.append((int(punch_code), time_to_datetime(hhmmss_to_time(punch_time))))
 
     return entries
 
