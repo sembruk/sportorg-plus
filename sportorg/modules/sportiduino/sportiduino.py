@@ -12,10 +12,8 @@ from PySide2.QtCore import QThread, Signal
 from sportorg.common.singleton import singleton
 from sportorg.libs.sportiduino import sportiduino
 from sportorg.models import memory
-from sportorg.modules.sportident.backup import CardDataBackuper, parse_backup_from_last_save
+from sportorg.modules.sportident.backup import CardDataBackuper
 from sportorg.utils.time import time_to_otime
-#from sportorg.gui.utils.custom_controls import messageBoxQuestion
-#from sportorg.language import _
 
 
 class SportiduinoCommand:
@@ -75,13 +73,15 @@ class ResultThread(QThread):
         time.sleep(3)
         while True:
             try:
-                cmd = self._queue.get(timeout=5)
+                cmd = self._queue.get(timeout=2)
                 if cmd.command == 'card_data' or cmd.command == 'backup_card_data':
                     result = self._get_result(cmd.data)
                     self.data_sender.emit(result)
                     if cmd.command == 'card_data':
                         CardDataBackuper().backup_card_data(cmd.data)
                     elif cmd.command == 'backup_card_data':
+                        # Run backup process for writing SAVE in backup file
+                        CardDataBackuper().ensure_backup_process_started()
                         self._logger.info(f'Card No. {cmd.data["card_number"]} has been restored from backup')
             except Empty:
                 if not main_thread().is_alive() or self._stop_event.is_set():
@@ -171,9 +171,13 @@ class SportiduinoClient(object):
             self._queue.put(SportiduinoCommand('backup_card_data', entry))
 
     def is_alive(self):
-        if self._sportiduino_thread and self._result_thread:
-            return not self._sportiduino_thread.isFinished() and not self._result_thread.isFinished()
-
+        if self._sportiduino_thread and not self._sportiduino_thread.isFinished():
+            return self.is_result_thread_alive()
+        return False
+    
+    def is_result_thread_alive(self):
+        if self._result_thread:
+            return not self._result_thread.isFinished()
         return False
 
     def start(self):

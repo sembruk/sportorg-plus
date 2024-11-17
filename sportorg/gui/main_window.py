@@ -38,7 +38,7 @@ from sportorg.gui.toolbar import toolbar_list
 from sportorg.gui.utils.custom_controls import messageBoxQuestion
 from sportorg.language import _
 from sportorg.modules.sportident.sireader import SIReaderClient
-from sportorg.modules.sportident.backup import CardDataBackuper
+from sportorg.modules.sportident.backup import CardDataBackuper, parse_backup_from_last_save
 from sportorg.modules.sportiduino.sportiduino import SportiduinoClient
 from sportorg.modules.teamwork import Teamwork
 from sportorg.modules.telegram.telegram import TelegramClient
@@ -115,7 +115,9 @@ class MainWindow(QMainWindow):
         logging.debug(f'Found {len(entries)} entries')
         if entries:
             confirm = messageBoxQuestion(self, _('Question'),
-                _('Found unsaved card data. Do you want to restore it?'),
+                _('Found unsaved data for cards: {}.\nDo you want to restore it?').format(
+                    ', '.join([str(e['card_number']) for e in entries])
+                ),
                 QMessageBox.Yes | QMessageBox.No)
             if confirm == QMessageBox.Yes:
                 return entries
@@ -123,7 +125,7 @@ class MainWindow(QMainWindow):
 
     def interval(self):
         if self.check_backup:
-            if SportiduinoClient().is_alive():
+            if SportiduinoClient().is_result_thread_alive():
                 entries = self._check_card_data_backup()
                 self.check_backup = False
                 if entries is not None:

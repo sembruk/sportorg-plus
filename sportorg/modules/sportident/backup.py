@@ -38,7 +38,7 @@ class BackupProcess(Process):
     def _write_to_log(self, data):
         log_file_path = config.log_dir(f'cards_{datetime.now().strftime("%Y-%m-%d")}.log')
         with open(log_file_path, 'a') as f:
-            f.write(data)
+            f.write(data + '\n')
 
 
 @singleton
@@ -48,7 +48,7 @@ class CardDataBackuper(object):
         self.stop_event = Event()
         self.backup_process = None
 
-    def _ensure_backup_process_started(self):
+    def ensure_backup_process_started(self):
         if self.backup_process is None:
             self.backup_process = BackupProcess(self.queue, self.stop_event)
             self.stop_event.clear()
@@ -70,7 +70,7 @@ class CardDataBackuper(object):
             "end\n"
         ])
         text = '\n'.join(lines)
-        self._ensure_backup_process_started()
+        self.ensure_backup_process_started()
         self.queue.put(text)
 
     def save_event(self):
