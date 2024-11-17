@@ -80,6 +80,7 @@ class MainWindow(QMainWindow):
             key='sportorgplus_locker_key', password='str(uuid.uuid1())', autoconnect=False
         )
         self.file_lock_id = None
+        self.check_backup = True
 
     def _set_style(self):
         try:
@@ -108,7 +109,26 @@ class MainWindow(QMainWindow):
         False: 'sportident.png',
     }
 
+    def _check_card_data_backup(self):
+        logging.debug('Check card data backup')
+        entries = parse_backup_from_last_save()
+        logging.debug(f'Found {len(entries)} entries')
+        if entries:
+            confirm = messageBoxQuestion(self, _('Question'),
+                _('Found unsaved card data. Do you want to restore it?'),
+                QMessageBox.Yes | QMessageBox.No)
+            if confirm == QMessageBox.Yes:
+                return entries
+        return None
+
     def interval(self):
+        if self.check_backup:
+            if SportiduinoClient().is_alive():
+                entries = self._check_card_data_backup()
+                self.check_backup = False
+                if entries is not None:
+                    SportiduinoClient().inject_backup_card_data(entries)
+
         if SIReaderClient().is_alive() != self.sportident_status:
             self.sportident_status = SIReaderClient().is_alive()
             self.toolbar_property['sportident'].setIcon(

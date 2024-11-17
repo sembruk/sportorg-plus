@@ -131,7 +131,6 @@ class SportiduinoClient(object):
         self.port = None
         self._logger = logging.root
         self._call_back = None
-        self._check_backup = True
 
     def set_call(self, value):
         if self._call_back is None:
@@ -161,25 +160,15 @@ class SportiduinoClient(object):
             )
             if self._call_back:
                 self._result_thread.data_sender.connect(self._call_back)
-            if self._check_backup:
-                self._check_card_data_backup()
-                self._check_backup = False
             self._result_thread.start()
         # elif not self._result_thread.is_alive():
         elif self._result_thread.isFinished():
             self._result_thread = None
             self._start_result_thread()
 
-    def _check_card_data_backup(self):
-        self._logger.debug('Check card data backup')
-        entries = parse_backup_from_last_save()
-        self._logger.debug(f'Found {len(entries)} entries')
-        if entries:
-            #confirm = messageBoxQuestion(self, _('Question'), _('Found unsaved card data. Do you want to restore it?'), QMessageBox.Yes | QMessageBox.No)
-            #if confirm == QMessageBox.No:
-            #    return
-            for entry in entries:
-                self._queue.put(SportiduinoCommand('backup_card_data', entry))
+    def inject_backup_card_data(self, entries):
+        for entry in entries:
+            self._queue.put(SportiduinoCommand('backup_card_data', entry))
 
     def is_alive(self):
         if self._sportiduino_thread and self._result_thread:
