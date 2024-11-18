@@ -65,6 +65,8 @@ class PersonSplits(object):
 
                 cur_split.course_index = course_index
                 cur_cp = None
+                cur_split.length_leg = 0
+                cur_split.speed = 0
                 if course_index < len(self.course.controls):
                     cur_cp = self.course.controls[course_index]
                 if cur_cp is not None and cur_cp.length > 0:
@@ -89,6 +91,8 @@ class PersonSplits(object):
 
         self.last_correct_index = course_index - 1
 
+        self.result.length = 0
+        self.result.speed = 0
         if self.course.length:
             self.result.speed = get_speed_min_per_km(self.result.get_result_otime(), self.course.length)
         elif self.length > 0:

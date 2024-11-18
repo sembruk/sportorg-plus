@@ -1577,6 +1577,7 @@ class Race(Model):
         return teams
 
     def delete_control_points(self, indexes):
+        indexes = sorted(indexes, reverse=True)
         for i in indexes:
             del self.control_points[i]
         return self.control_points

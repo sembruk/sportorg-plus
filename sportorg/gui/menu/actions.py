@@ -45,7 +45,7 @@ from sportorg.modules.backup.json import get_races_from_file
 from sportorg.modules.iof import iof_xml
 from sportorg.modules.ocad import ocad
 from sportorg.modules.ocad.ocad import OcadImportException
-from sportorg.modules.gpx import gpx
+from sportorg.modules.coordinates import coordinates
 from sportorg.modules.sfr.sfrreader import SFRReaderClient
 from sportorg.modules.sportident.sireader import SIReaderClient
 from sportorg.modules.sportiduino.sportiduino import SportiduinoClient
@@ -176,14 +176,17 @@ class OcadTXTv8ImportAction(Action, metaclass=ActionFactory):
 
 class CpCoordinatesImportAction(Action, metaclass=ActionFactory):
     def execute(self):
-        file_name = get_open_file_name(_('Open CP coordinates file'), _("Waypoints GPX (*.gpx)"))
+        file_name = get_open_file_name(_('Open CP coordinates file'), _("CP coordinates (*.gpx *.csv)"))
         if file_name:
             try:
-                gpx.import_coordinates_from_gpx(file_name)
+                if file_name.endswith('.gpx'):
+                    coordinates.import_coordinates_from_gpx(file_name)
+                else:
+                    coordinates.import_coordinates_from_csv(file_name)
             except Exception as e:
                 logging.error(str(e))
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
-            self.app.init_model()
+            self.app.refresh()
 
 
 class WDBWinorientExportAction(Action, metaclass=ActionFactory):
