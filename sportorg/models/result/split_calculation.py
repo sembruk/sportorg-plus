@@ -53,7 +53,7 @@ class PersonSplits(object):
         if start:
             prev_cp_desc = start
         self.length = 0
-        while split_index < len(self.result.splits) and course_index < len(self.course.controls):
+        while split_index < len(self.result.splits):
             cur_split = self.result.splits[split_index]
 
             cur_split.index = split_index
@@ -64,8 +64,10 @@ class PersonSplits(object):
                 leg_start_time = cur_split.time
 
                 cur_split.course_index = course_index
-                cur_cp = self.course.controls[course_index]
-                if cur_cp.length > 0:
+                cur_cp = None
+                if course_index < len(self.course.controls):
+                    cur_cp = self.course.controls[course_index]
+                if cur_cp is not None and cur_cp.length > 0:
                     cur_split.length_leg = cur_cp.length
                 else:
                     cp_desc = find(self.race.control_points, code=str(cur_split.code))

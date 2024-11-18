@@ -8,6 +8,9 @@
         td {
             padding-right: 7px;
         }
+        table.splits td {
+            padding-left: 7px;
+        }
         //body {
         //    font-weight: bold;
         //}
@@ -146,14 +149,13 @@
         <br> Команда: {{team.number}} {{team.name}}
         <br> Номер: {{person.bib}} Чип: {{person.card_number}}
         <br> Старт: {{result.start_msec|tohhmmss}}
-        <table>
+        <table class="splits">
             <tr>
                 <th>№</th>
                 <th>КП</th>
                 <th>Время</th>
                 <th>Сплит</th>
                 <th></th>
-                <th>Место</th>
             </tr>
         {% for leg in result.splits %}
             {% if leg.is_correct %}
@@ -163,12 +165,6 @@
                     <td>{{leg.relative_time|tohhmmss}}</td>
                     <td>{{leg.leg_time|tohhmmss('%M:%S')}}</td>
                     <td>{{leg.speed}}</td>
-                    {% if leg.leg_place %}
-                        <td>{{leg.leg_place}}</td>
-                     {% else %}
-                        <td></td>
-                    {% endif %}    
-                    <td></td>
                 </tr>
             {% else %}
                 <tr>
@@ -177,23 +173,24 @@
                     <td>{{leg.relative_time|tohhmmss}}</td>
                     <td></td>
                     <td></td>
-                    <td></td>
                 </tr>
             {% endif %}
         {% endfor %}
         </table>
-        <br> Финиш: {{result.finish_msec|tohhmmss}} {{result.speed}}
-        <br> Время:  {{(result.result_msec - result.penalty_time)|tohhmmss}} {{result.speed}}
+        <br> Финиш: {{result.finish_msec|tohhmmss}}
+        <br> Время: {{(result.result_msec - result.penalty_time)|tohhmmss}} {% if result.speed %} ({{result.speed}}) {% endif %}
         <br> Сумма: {{result.scores + result.penalty_points}}
         <br> Штраф: {{result.penalty_points}}
         <br> <b>Результат: {{result.result}}</b>
+        {% if result.length %}
+        <br> Длина по прямым: {{result.length}}
+        {% endif %}
         {% if result.place > 0 %}
-            <br> Место: {{result.place}} из {{group.count_finished}} (всего {{group.count_person}})
-        <br>
+        <br> Место: {{result.place}} в {{current_time|tohhmmss}}
         {% endif %}
         <br>
         {% if result.status == 8 %}
-			<h2>ПРЕВЫШЕНО КВ</h2>
+        <h2>ПРЕВЫШЕНО КВ</h2>
         {% endif %}
         <table>
             {% set ns = namespace(last_place=-1) %}
