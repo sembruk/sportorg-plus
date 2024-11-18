@@ -181,20 +181,24 @@ class ResultChecker:
         for i in splits:
             if not i.has_penalty:
                 correct_count += 1
-
-        return len(controls) - correct_count
+        penalty = len(controls) - correct_count
+        if penalty < 0:
+            penalty = 0
+        return penalty
 
     @staticmethod
     def get_control_score(code):
         obj = race()
-        control = find(obj.controls, code=str(code))
+        if obj.get_setting('result_processing_score_mode', 'fixed') == 'fixed':
+            return obj.get_setting('result_processing_fixed_score_value', 1.0)  # fixed score per control
+
+        control = None
+        if code in obj.controls:
+            control = obj.controls[code]
         if control and control.score:
             return control.score
 
-        if obj.get_setting('result_processing_score_mode', 'fixed') == 'fixed':
-            return obj.get_setting('result_processing_fixed_score_value', 1.0)  # fixed score per control
-        else:
-            return int(code) // 10  # score = code / 10
+        return int(code)//10  # score = code / 10
 
     @staticmethod
     def calculate_scores_rogaining(result):
