@@ -168,9 +168,6 @@ class CourseControl(Model):
                 char = tmp[index]
         return str(res)
 
-    def get_course_cp_template(self):
-        return str(self.code).split('|')[0]
-
     def to_dict(self):
         return {
             'object': self.__class__.__name__,
@@ -283,7 +280,7 @@ class Course(Model):
         # return unrolled controls list, e.g. '*(31-45)[3]' -> '*(31-45) *(31-45) *(31-45)'
         unrolled_controls = []
         for control in self._controls:
-            template = control.get_course_cp_template()
+            template = control.code
             match = re.search(r'\[(\d+)(?:-(\d+))?\]', template)
             if match:
                 new_control = deepcopy(control)
@@ -1090,7 +1087,7 @@ class ResultSportident(Result):
         prev_unique_cp_list = []
         for split in self.splits:
             try:
-                template = course.controls[course_index].get_course_cp_template()
+                template = course.controls[course_index].code
 
                 if self.check_split(split, template, prev_unique_cp_list):
                     if template.find('[]') > -1:
@@ -1100,7 +1097,7 @@ class ResultSportident(Result):
                 elif template.find('[]') > -1 \
                         and course_index < len(course.controls) - 1:
                     # check next
-                    template = course.controls[course_index + 1].get_course_cp_template()
+                    template = course.controls[course_index + 1].code
                     if self.check_split(split, template, prev_unique_cp_list):
                         if template.find('[]') > -1:
                             course_index += 1
@@ -1658,6 +1655,12 @@ class Race(Model):
         if append_to_race:
             self.teams.insert(0, new_team)
         return new_team
+
+    def add_new_control_point(self, append_to_race=False):
+        new_control_point = ControlPoint()
+        if append_to_race:
+            self.control_points.insert(0, new_control_point)
+        return new_control_point
 
     def update_team_person_counters(self):
         # recalculate team counters

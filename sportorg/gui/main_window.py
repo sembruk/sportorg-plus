@@ -16,6 +16,7 @@ from sportorg.gui.dialogs.course_edit import CourseEditDialog
 from sportorg.gui.dialogs.person_edit import PersonEditDialog
 from sportorg.gui.dialogs.group_edit import GroupEditDialog
 from sportorg.gui.dialogs.team_edit import TeamEditDialog
+from sportorg.gui.dialogs.control_point_edit import ControlPointEditDialog
 from sportorg.models.constant import RentCards
 from sportorg.models.memory import Race, race, NotEmptyException, new_event, set_current_race_index
 from sportorg.models.result.result_calculation import ResultCalculation
@@ -727,8 +728,12 @@ class MainWindow(QMainWindow):
                 CourseEditDialog(c, True).exec_()
                 self.refresh()
             elif tab == 4:
-                o = race().add_new_team()
-                TeamEditDialog(o, True).exec_()
+                team = race().add_new_team()
+                TeamEditDialog(team, True).exec_()
+                self.refresh()
+            elif tab == 5:
+                cp = race().add_new_control_point()
+                ControlPointEditDialog(cp, True).exec_()
                 self.refresh()
         except Exception as e:
             logging.error(str(e))
