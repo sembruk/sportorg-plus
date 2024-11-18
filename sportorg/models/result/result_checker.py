@@ -192,11 +192,9 @@ class ResultChecker:
         if obj.get_setting('result_processing_score_mode', 'fixed') == 'fixed':
             return obj.get_setting('result_processing_fixed_score_value', 1.0)  # fixed score per control
 
-        control = None
-        if code in obj.controls:
-            control = obj.controls[code]
+        control = find(obj.control_points, code=str(code))
         if control and control.score:
-            return control.score
+            return int(control.score)
 
         return int(code)//10  # score = code / 10
 

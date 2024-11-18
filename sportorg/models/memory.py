@@ -297,21 +297,6 @@ class Course(Model):
                 unrolled_controls.append(control)
         return unrolled_controls
 
-    def get_cp_coords(self):
-        controls = []
-        for cp in self.controls:
-            l = cp.code.split('|')
-            if len(l) > 1:
-                coords_str = l[1]
-                coords = coords_str.split(';')
-                if len(coords) == 3:
-                    cp = ControlPoint()
-                    cp.code = coords[0]
-                    cp.x = float(coords[1])
-                    cp.y = float(coords[2])
-                    controls.append(cp)
-        return controls
-
 class Subgroup(Model):
     def __init__(self):
         self.name = ''
@@ -1415,7 +1400,7 @@ class Race(Model):
         self.relay_teams = []  # type: List[RelayTeam]
         self.teams = []  # type: List[Team]
         self.settings = {}  # type: Dict[str, Any]
-        self.controls = {}  # type: Dict[code, ControlPoint]
+        self.control_points = [] # type: List[ControlPoint]
         self.team_max_number = 0
 
     def __repr__(self):
@@ -1441,7 +1426,7 @@ class Race(Model):
             'id': str(self.id),
             'data': self.data.to_dict(),
             'settings': self.settings,
-            'controls': [item.to_dict() for item in self.controls.values()],
+            'control_points': [item.to_dict() for item in self.control_points],
             'relay_teams': [item.to_dict() for item in self.relay_teams],
             'teams': [item.to_dict() for item in self.teams],
             'courses': [item.to_dict() for item in self.courses],
@@ -1458,12 +1443,12 @@ class Race(Model):
                 self.data.update_data(dict_obj['data'])
             if 'settings' in dict_obj:
                 self.settings = dict_obj['settings']
-            if 'controls' in dict_obj:
-                self.controls = {}
-                for item_obj in dict_obj['controls']:
+            if 'control_points' in dict_obj:
+                self.control_points = []
+                for item_obj in dict_obj['control_points']:
                     control = ControlPoint()
                     control.update_data(item_obj)
-                    self.controls[control.code] = control
+                    self.control_points.append(control)
             key_list = ['courses', 'groups', 'teams', 'persons', 'results']
             for key in key_list:
                 if key in dict_obj:
@@ -1593,6 +1578,11 @@ class Race(Model):
             del self.teams[i]
         self.update_team_max_number()
         return teams
+
+    def delete_control_points(self, indexes):
+        for i in indexes:
+            del self.control_points[i]
+        return self.control_points
 
     def find_person_result(self, person):
         for i in self.results:
@@ -1768,9 +1758,13 @@ class Race(Model):
                     ret.append(person)
         return ret
 
-    def add_cp_coords(self, controls):
-        for cp in controls:
-            self.controls[cp.code] = cp
+    def add_cp_coords(self, control_points):
+        for cp in control_points:
+            control_point = find(self.control_points, code=str(cp.code))
+            if control_point:
+                control_point = cp
+            else:
+                self.control_points.append(cp)
 
 
 class Qualification(IntEnum):

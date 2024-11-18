@@ -30,10 +30,10 @@ from sportorg.modules.sportident.result_generation import ResultSportidentGenera
 from sportorg.common.broker import Broker
 from sportorg.gui.dialogs.file_dialog import get_save_file_name
 from sportorg.gui.menu import menu_list, Factory
-from sportorg.gui.tabs import persons, groups, teams, results, courses, log
+from sportorg.gui.tabs import persons, groups, teams, results, courses, control_points, log
 from sportorg.gui.tabs.table import TableView
 from sportorg.gui.tabs.memory_model import PersonMemoryModel, ResultMemoryModel, GroupMemoryModel, \
-    CourseMemoryModel, TeamMemoryModel
+    CourseMemoryModel, TeamMemoryModel, ControlPointMemoryModel
 from sportorg.gui.toolbar import toolbar_list
 from sportorg.gui.utils.custom_controls import messageBoxQuestion
 from sportorg.language import _
@@ -330,6 +330,7 @@ class MainWindow(QMainWindow):
         self.tabwidget.addTab(groups.Widget(), _('Groups'))
         self.tabwidget.addTab(courses.Widget(), _('Courses'))
         self.tabwidget.addTab(teams.Widget(), _('Teams'))
+        self.tabwidget.addTab(control_points.Widget(), _('Controls'))
         self.logging_tab = log.Widget()
         self.tabwidget.addTab(self.logging_tab, _('Logs'))
         self.tabwidget.currentChanged.connect(self._menu_disable)
@@ -415,6 +416,8 @@ class MainWindow(QMainWindow):
             table.setModel(CourseMemoryModel())
             table = self.get_team_table()
             table.setModel(TeamMemoryModel())
+            table = self.get_control_point_table()
+            table.setModel(ControlPointMemoryModel())
             Broker().produce('init_model')
         except Exception as e:
             logging.error(str(e))
@@ -442,6 +445,11 @@ class MainWindow(QMainWindow):
             table = self.get_team_table()
             table.model().init_cache()
             table.model().layoutChanged.emit()
+
+            table = self.get_control_point_table()
+            table.model().init_cache()
+            table.model().layoutChanged.emit()
+
             self.set_title()
 
             print('Refresh in {:.3f} seconds.'.format(time.time() - t))
@@ -495,9 +503,12 @@ class MainWindow(QMainWindow):
 
     def get_team_table(self):
         return self.get_table_by_name('TeamTable')
+    
+    def get_control_point_table(self):
+        return self.get_table_by_name('ControlPointTable')
 
     def get_current_table(self):
-        map_ = ['PersonTable', 'ResultTable', 'GroupTable', 'CourseTable', 'TeamTable']
+        map_ = ['PersonTable', 'ResultTable', 'GroupTable', 'CourseTable', 'TeamTable', 'ControlPointTable']
         idx = self.current_tab
         if idx < len(map_):
             return self.get_table_by_name(map_[idx])
@@ -724,7 +735,7 @@ class MainWindow(QMainWindow):
 
     def delete_object(self):
         try:
-            if self.current_tab not in range(5):
+            if self.current_tab not in range(6):
                 return
             self._delete_object()
         except Exception as e:
@@ -775,6 +786,10 @@ class MainWindow(QMainWindow):
                                      _('Error'),
                                      _('Cannot remove team'))
             self.refresh()
+        elif tab == 5:
+            res = race().delete_control_points(indexes)
+            self.refresh()
+
         if len(res):
             Teamwork().delete([r.to_dict() for r in res])
 

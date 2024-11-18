@@ -113,7 +113,7 @@ def menu_list():
             'actions': [
                 {
                     'title': _('Add object'),
-                    'tabs': list(range(5)),
+                    'tabs': list(range(6)),
                     'shortcut': ['insert', 'i'],
                     'icon': config.icon_dir('add.svg'),
                     'action': 'AddObjectAction'
@@ -121,20 +121,20 @@ def menu_list():
                 {
                     'title': _('Delete'),
                     'shortcut': 'Del',
-                    'tabs': list(range(5)),
+                    'tabs': list(range(6)),
                     'icon': config.icon_dir('delete.svg'),
                     'action': 'DeleteAction'
                 },
                 {
                     'title': _('Copy'),
                     'shortcut': 'Ctrl+C',
-                    'tabs': list(range(5)),
+                    'tabs': list(range(6)),
                     'action': 'CopyAction'
                 },
                 {
                     'title': _('Duplicate'),
                     'shortcut': 'Ctrl+D',
-                    'tabs': list(range(5)),
+                    'tabs': list(range(6)),
                     'action': 'DuplicateAction'
                 },
                 {
@@ -167,7 +167,7 @@ def menu_list():
                 {
                     'title': _('Search'),
                     'shortcut': 'Ctrl+F',
-                    'tabs': list(range(5)),
+                    'tabs': list(range(6)),
                     'icon': config.icon_dir('search.svg'),
                     'action': 'SearchAction'
                 },
@@ -200,8 +200,13 @@ def menu_list():
                     'action': 'ToTeamsAction'
                 },
                 {
-                    'title': _('Log'),
+                    'title': _('Controls'),
                     'shortcut': 'Ctrl+6',
+                    'action': 'ToControlPointsAction'
+                },
+                {
+                    'title': _('Log'),
+                    'shortcut': 'Ctrl+7',
                     'action': 'ToLogAction'
                 }
             ]

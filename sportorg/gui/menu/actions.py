@@ -90,7 +90,7 @@ class SaveAsAction(Action, metaclass=ActionFactory):
 
 class CopyAction(Action, metaclass=ActionFactory):
     def execute(self):
-        if self.app.current_tab not in range(5):
+        if self.app.current_tab not in range(6):
             return
         table = self.app.get_current_table()
         sel_model = table.selectionModel()
@@ -104,7 +104,7 @@ class CopyAction(Action, metaclass=ActionFactory):
 
 class DuplicateAction(Action, metaclass=ActionFactory):
     def execute(self):
-        if self.app.current_tab not in range(5):
+        if self.app.current_tab not in range(6):
             return
         table = self.app.get_current_table()
         sel_model = table.selectionModel()
@@ -269,7 +269,7 @@ class FilterAction(Action, metaclass=ActionFactory):
 
 class SearchAction(Action, metaclass=ActionFactory):
     def execute(self):
-        if self.app.current_tab not in range(5):
+        if self.app.current_tab not in range(6):
             return
         table = self.app.get_current_table()
         SearchDialog(table).exec_()
@@ -300,9 +300,15 @@ class ToTeamsAction(Action, metaclass=ActionFactory):
     def execute(self):
         self.app.select_tab(4)
 
-class ToLogAction(Action, metaclass=ActionFactory):
+
+class ToControlPointsAction(Action, metaclass=ActionFactory):
     def execute(self):
         self.app.select_tab(5)
+
+
+class ToLogAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        self.app.select_tab(6)
 
 
 class StartPreparationAction(Action, metaclass=ActionFactory):

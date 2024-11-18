@@ -577,3 +577,41 @@ class TeamMemoryModel(AbstractSportOrgMemoryModel):
 
     def set_source_array(self, array):
         self.race.teams = array
+
+
+class ControlPointMemoryModel(AbstractSportOrgMemoryModel):
+    def __init__(self):
+        super().__init__()
+
+    def get_headers(self):
+        return [_('Code'), _('Score'), _('X, meters'), _('Y, meters')]
+
+    def init_cache(self):
+        self.cache.clear()
+        for i in range(len(self.race.control_points)):
+            self.cache.append(self.get_data(i))
+
+    def get_data(self, position):
+        ret = self.get_values_from_object(self.race.control_points[position])
+        return ret
+
+    def duplicate(self, position):
+        cp = self.race.control_points[position]
+        new_cp = copy(cp)
+        new_cp.code = new_cp.code + '_'
+        self.race.control_points.insert(position, new_cp)
+
+    def get_values_from_object(self, control):
+        return [
+            control.code,
+            control.score,
+            control.x,
+            control.y
+        ]
+
+    def get_source_array(self):
+        return self.race.control_points
+
+    def set_source_array(self, array):
+        self.race.control_points = array
+

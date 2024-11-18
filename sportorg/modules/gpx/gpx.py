@@ -12,10 +12,7 @@ def import_coordinates_from_gpx(gpx_file_name):
         cps = {}
         for wpt in gpx.waypoints:
             code = wpt.name
-            if code.isdigit():
-                code = int(code)
-            else:
-                code = code.lower().strip()
+            code = code.lower().strip()
             utm_coords = utm.from_latlon(wpt.latitude, wpt.longitude)
             x = int(utm_coords[0])
             y = int(utm_coords[1])
@@ -28,12 +25,17 @@ def import_coordinates_from_gpx(gpx_file_name):
             start_x = cps['start'][0]
             start_y = cps['start'][1]
 
-        for code, (x, y) in cps.items():
+        for code, (x, y) in sorted(cps.items()):
+            if code.isdigit():
+                code = int(code)
             cp = ControlPoint()
             cp.code = code
             cp.x = x - start_x
             cp.y = y - start_y
-            obj.controls[cp.code] = cp
-        logging.info(_('Imported {} control points from GPX file. Total {}').format(len(cps), len(obj.controls)))
+            cp.score = 0
+            if isinstance(cp.code, int):
+                cp.score = cp.code//10
+            obj.control_points.append(cp)
+        logging.info(_('Imported {} control points from GPX file. Total {}').format(len(cps), len(obj.control_points)))
 
 
