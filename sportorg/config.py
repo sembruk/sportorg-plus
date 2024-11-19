@@ -81,13 +81,6 @@ def sound_dir(*paths):
     return os.path.join(SOUND_DIR, *paths)
 
 
-SCRIPT_DIR = base_dir('scripts')
-
-
-def script_dir(*paths):
-    return os.path.join(SCRIPT_DIR, *paths)
-
-
 STYLE_DIR = base_dir('styles')
 
 
@@ -119,7 +112,6 @@ DIRS = [
     LOG_DIR,
     TEMPLATE_DIR,
     SOUND_DIR,
-    SCRIPT_DIR,
     STYLE_DIR,
 ]
 

@@ -13,6 +13,7 @@ from sportorg.language import _
 from sportorg.models.constant import get_countries, get_regions, get_race_groups
 from sportorg.models.memory import race, Team, find, Limit
 from sportorg.models.start.start_preparation import update_subgroups
+from sportorg.modules.live.live import live_client
 from sportorg.modules.teamwork import Teamwork
 
 class QTableWidgetItemNotEditable(QTableWidgetItem):
@@ -198,4 +199,5 @@ class TeamEditDialog(QDialog):
         race().update_team_max_number()
         race().update_team_person_counters()
 
+        live_client.send(team)
         Teamwork().send(team.to_dict())

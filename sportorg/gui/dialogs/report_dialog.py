@@ -143,6 +143,7 @@ class ReportDialog(QDialog):
             person.pop('birth_date', None)
         current_race['settings'].pop('live_token', None)
         current_race['settings'].pop('live_url', None)
+        current_race['settings'].pop('live_urls', None)
 
         template_path_items = template_path.split('/')[-1]
         template_path_items = '.'.join(template_path_items.split('.')[:-1]).split('_')

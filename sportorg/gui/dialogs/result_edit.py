@@ -19,6 +19,7 @@ from sportorg.models.memory import race, Result, find, ResultStatus, Person, Lim
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.result.result_checker import ResultChecker, ResultCheckerException
 from sportorg.models.result.split_calculation import GroupSplits
+from sportorg.modules.live.live import live_client
 from sportorg.modules.teamwork import Teamwork
 from sportorg.utils.time import time_to_qtime, time_to_otime, hhmmss_to_time
 
@@ -311,6 +312,7 @@ class ResultEditDialog(QDialog):
             except ResultCheckerException as e:
                 logging.error(str(e))
         ResultCalculation(race()).process_results()
+        live_client.send(result)
         Teamwork().send(result.to_dict())
 
 

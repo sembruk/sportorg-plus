@@ -22,7 +22,7 @@ from sportorg.models.memory import Race, race, NotEmptyException, new_event, set
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.result.split_calculation import GroupSplits
 from sportorg.modules.backup.file import File
-from sportorg.modules.live.live import LiveClient
+from sportorg.modules.live.live import live_client
 from sportorg.modules.printing.model import NoResultToPrintException, split_printout, NoPrinterSelectedException
 from sportorg.modules.configs.configs import Config as Configuration, ConfigFile
 from sportorg.modules.sfr.sfrreader import SFRReaderClient
@@ -212,7 +212,7 @@ class MainWindow(QMainWindow):
         self.service_timer.timeout.connect(self.interval)
         self.service_timer.start(1000) # msec
 
-        LiveClient().init()
+        live_client.init()
         self._menu_disable(self.current_tab)
 
         if Configuration().configuration.get('check_updates'):
@@ -547,6 +547,7 @@ class MainWindow(QMainWindow):
                     elif result.person and result.person.group:
                         GroupSplits(race(), result.person.group).generate(True)
                     Teamwork().send(result.to_dict())
+                    live_client.send(result)
                     TelegramClient().send_result(result)
                     if result.person:
                         if result.is_status_ok():
@@ -576,6 +577,7 @@ class MainWindow(QMainWindow):
                                 Teamwork().send(old_person.to_dict())
                             person.is_rented_card = True
                             Teamwork().send(person.to_dict())
+                            live_client.send(person)
                             break
             self.refresh()
         except Exception as e:
@@ -759,10 +761,12 @@ class MainWindow(QMainWindow):
         if tab == 0:
             res = race().delete_persons(indexes)
             ResultCalculation(race()).process_results()
+            live_client.delete(res)
             self.refresh()
         elif tab == 1:
             res = race().delete_results(indexes)
             ResultCalculation(race()).process_results()
+            live_client.delete(res)
             self.refresh()
         elif tab == 2:
             try:

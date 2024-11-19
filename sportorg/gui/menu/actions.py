@@ -43,6 +43,7 @@ from sportorg.models.result.result_checker import ResultChecker
 from sportorg.models.start.start_preparation import guess_corridors_for_groups, copy_bib_to_card_number, copy_card_number_to_bib, split_teams, update_subgroups
 from sportorg.modules.backup.json import get_races_from_file
 from sportorg.modules.iof import iof_xml
+from sportorg.modules.live.live import live_client
 from sportorg.modules.ocad import ocad
 from sportorg.modules.ocad.ocad import OcadImportException
 from sportorg.modules.coordinates import coordinates
@@ -203,7 +204,7 @@ class WDBWinorientExportAction(Action, metaclass=ActionFactory):
 
                 write_wdb(wdb_object, file_name)
             except Exception as e:
-                logging.exception(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Export error') + ': ' + file_name)
 
 
@@ -228,7 +229,7 @@ class IOFEntryListImportAction(Action, metaclass=ActionFactory):
                 if ret:
                     QMessageBox.information(self.app, _('Warning'), ret)
             except Exception as e:
-                logging.exception(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
             self.app.init_model()
 
@@ -402,6 +403,7 @@ class ManualFinishAction(Action, metaclass=ActionFactory):
     def execute(self):
         result = race().new_result(ResultManual)
         Teamwork().send(result.to_dict())
+        live_client.send(result)
         race().add_new_result(result)
         logging.info(_('Manual finish'))
         self.app.refresh()
@@ -512,6 +514,7 @@ class ChangeStatusAction(Action, metaclass=ActionFactory):
         else:
             result.status = ResultStatus.OK
         Teamwork().send(result.to_dict())
+        live_client.send(result)
         self.app.refresh()
 
 
@@ -611,6 +614,38 @@ class TelegramSendAction(Action, metaclass=ActionFactory):
                 TelegramClient().send_result(items[index])
         except Exception as e:
             logging.error(str(e))
+
+
+class OnlineSendAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        try:
+            items = []
+            if self.app.current_tab == 0:
+                items = race().persons
+            if self.app.current_tab == 1:
+                items = race().results
+            if self.app.current_tab == 2:
+                items = race().groups
+            if self.app.current_tab == 3:
+                items = race().courses
+            if self.app.current_tab == 4:
+                items = race().teams
+            indexes = self.app.get_selected_rows()
+            if not indexes:
+                return
+            selected_items = []
+            for index in indexes:
+                if index < 0:
+                    continue
+                if index >= len(items):
+                    pass
+                selected_items.append(items[index])
+            if self.app.current_tab == 1:
+                # Most recent results are sent last
+                selected_items = selected_items[::-1]
+            live_client.send(selected_items)
+        except Exception as e:
+            logging.exception(e)
 
 
 class AboutAction(Action, metaclass=ActionFactory):

@@ -926,12 +926,19 @@ class ResultSportident(Result):
         self.__finish_time = None
 
     def __repr__(self):
-        splits = ''
-        for split in self.splits:
-            splits += '{} — {}\n'.format(split[0], split[1])
+        splits = '\n'.join(
+            f'{split.code} — {split.time}' for split in self.splits
+        )
+
         person = self.person.full_name if self.person else ''
-        return "Card: {}\nStart: {}\nFinish: {}\nPerson: {}\nSplits:\n{}".format(
-            self.card_number, self.start_time, self.finish_time, person, splits)
+        return (
+            f'Card: {self.card_number}\n'
+            f'Start: {self.start_time}\n'
+            f'Finish: {self.finish_time}\n'
+            f'Person: {person}\n'
+            'Splits:\n'
+            f'{splits}'
+        )
 
     def __eq__(self, other):
         eq = self.card_number == other.card_number and super().__eq__(other)

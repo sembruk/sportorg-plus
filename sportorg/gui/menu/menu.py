@@ -362,7 +362,7 @@ def menu_list():
                     'actions': [
                         {
                             'title': _('Send selected'),
-                            'shortcut': 'Ctrl+K',
+                            'shortcut': 'Ctrl+Shift+K',
                             'tabs': list(range(5)),
                             'action': 'TeamworkSendAction'
                         },
@@ -384,6 +384,17 @@ def menu_list():
                             'action': 'TelegramSendAction'
                         },
                     ]
+                },
+                {
+                    'title': _('Online'),
+                    'actions': [
+                        {
+                            'title': _('Send selected'),
+                            'shortcut': 'Ctrl+K',
+                            'tabs': [0, 1, 2, 3, 4],
+                            'action': 'OnlineSendAction',
+                        },
+                    ],
                 },
             ]
         },
