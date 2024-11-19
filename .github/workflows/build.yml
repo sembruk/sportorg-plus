@@ -5,6 +5,7 @@ on:
     #branches: [ $default-branch ]
     tags:
     - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  workflow_dispatch: # Allows to run this workflow manually from the Actions tab
 
 jobs:
   build:
@@ -16,37 +17,64 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history and tags
+
       - name: Set up Python
         id: set_up_python
         uses: actions/setup-python@v5
         with:
           python-version: '3.8'
           architecture: ${{ matrix.architecture }}
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade wheel # fix playsound installing
           pip install -r requirements_win.txt
+
+      #- name: Debug Git State
+      #  run: |
+      #    git status
+      #    git log --oneline -5
+      #    git tag
+
+      - name: Get Git Version
+        id: git_version
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git describe --tags --long
+          echo "VERSION=$(git describe --tags --long)" >> $GITHUB_ENV
+
       - name: Build
         run: |
           python setup_.py build
+        env:
+          VERSION: ${{ env.VERSION }}
+
       - name: Generate installer
         run: |
           python setup_.py bdist_msi
+
       - name: Upload the artifact
         uses: actions/upload-artifact@v4
         with:
           path: dist/*.msi
           name: ${{ runner.os }}-${{ matrix.architecture }}
+
       - name: Generate Changelog
+        # Only on push
+        if: startsWith(github.event_name, 'push') && startsWith(github.ref, 'refs/tags/')
         run: |
           # Get text after ## ... <version> from changelog.ru.md and changelog.en.md
           sed -n "/^##.*${{ github.ref_name }}.*$/,/^##/{/^##/d ; p}" changelog.ru.md | sed -z "s/^\n*//g" - > ${{ github.workspace }}-CHANGELOG.txt
           printf "\n---\n" >> ${{ github.workspace }}-CHANGELOG.txt
           sed -n "/^##.*${{ github.ref_name }}.*$/,/^##/{/^##/d ; p}" changelog.en.md | sed -z "s/^\n*//g" - >> ${{ github.workspace }}-CHANGELOG.txt
+
       - name: Release
+        # Only on push
+        if: startsWith(github.event_name, 'push') && startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           body_path: ${{ github.workspace }}-CHANGELOG.txt
           files: |

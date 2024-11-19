@@ -1,4 +1,5 @@
 import sys
+import os
 from cx_Freeze import setup, Executable
 from sportorg import config
 
@@ -8,7 +9,7 @@ if sys.platform == 'win32':
 
 include_files = [config.LOCALE_DIR, config.TEMPLATE_DIR, config.IMG_DIR, config.SOUND_DIR, config.base_dir('LICENSE'),
                  config.base_dir('changelog.en.md'), config.base_dir('changelog.ru.md'),
-                 config.base_dir('configs'), config.SCRIPT_DIR, config.STYLE_DIR, config.base_dir('docs')]
+                 config.base_dir('configs'), config.STYLE_DIR, config.base_dir('docs')]
 includes = ['atexit', 'codecs']
 excludes = ['Tkinter']
 
@@ -70,9 +71,13 @@ executables = [
     )
 ]
 
+version = os.getenv('VERSION', '') 
+if not version:
+    version = str(config.VERSION)
+
 setup(
     name=config.NAME,
-    version=str(config.VERSION),
+    version=version,
     description=config.NAME,
     options=options,
     executables=executables
