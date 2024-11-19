@@ -7,9 +7,20 @@ base = None
 if sys.platform == 'win32':
     base = 'Win32GUI'
 
-include_files = [config.LOCALE_DIR, config.TEMPLATE_DIR, config.IMG_DIR, config.SOUND_DIR, config.base_dir('LICENSE'),
-                 config.base_dir('changelog.en.md'), config.base_dir('changelog.ru.md'),
-                 config.base_dir('configs'), config.STYLE_DIR, config.base_dir('docs')]
+include_files = [
+    config.LOCALE_DIR,
+    config.TEMPLATE_DIR,
+    config.IMG_DIR,
+    config.SOUND_DIR,
+    config.STYLE_DIR, 
+    config.base_dir('sportorg'),
+    config.base_dir('docs'),
+    config.base_dir('LICENSE'),
+    config.base_dir('changelog.en.md'),
+    config.base_dir('changelog.ru.md'),
+    config.base_dir('configs'), 
+]
+
 includes = ['atexit', 'codecs']
 excludes = ['Tkinter']
 
