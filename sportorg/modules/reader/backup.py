@@ -2,7 +2,8 @@ import sys
 import os
 import logging
 from datetime import datetime
-from multiprocessing import Process, Queue, Event
+from threading import Thread, Event
+from queue import Queue, Empty
 
 
 from sportorg import config
@@ -11,46 +12,44 @@ from sportorg.common.singleton import singleton
 from sportorg.utils.time import time_to_hhmmss, hhmmss_to_time, time_to_datetime
 
 
-class BackupProcess(Process):
-    def __init__(self, queue, stop_event):
+def backup_file_path(prefix='cards'):
+    return config.log_dir(f'{prefix}_{datetime.now().strftime("%Y-%m-%d")}.log')
+
+
+class BackupProcess(Thread):
+    def __init__(self, queue, stop_event, log_file_prefix):
         super().__init__()
         self.queue = queue
         self.stop_event = stop_event
+        self.log_file_prefix = log_file_prefix
 
     def run(self):
         logging.debug('Start backup process')
-        original_stdout = sys.stdout
-        original_stderr = sys.stderr
-        sys.stdout = FakeStd()
-        sys.stderr = FakeStd()
         while not self.stop_event.is_set():
             try:
                 data = self.queue.get(timeout=1)  # wait for data from queue (1 sec timeout)
                 self._write_to_log(data)
-            except TimeoutError:
+            except Empty:
                 pass
             except Exception as e:
                 logging.error(f'Backup process error: {e}')
-        sys.stdout = original_stdout
-        sys.stderr = original_stderr
         logging.debug('Stop backup process')
 
     def _write_to_log(self, data):
-        log_file_path = config.log_dir(f'cards_{datetime.now().strftime("%Y-%m-%d")}.log')
-        with open(log_file_path, 'a') as f:
+        with open(backup_file_path(self.log_file_prefix), 'a') as f:
             f.write(data + '\n')
 
 
-@singleton
 class CardDataBackuper(object):
-    def __init__(self):
+    def __init__(self, log_file_prefix):
         self.queue = Queue()
         self.stop_event = Event()
         self.backup_process = None
+        self.log_file_prefix = log_file_prefix
 
     def ensure_backup_process_started(self):
         if self.backup_process is None:
-            self.backup_process = BackupProcess(self.queue, self.stop_event)
+            self.backup_process = BackupProcess(self.queue, self.stop_event, self.log_file_prefix)
             self.stop_event.clear()
             self.backup_process.start()
 
@@ -75,6 +74,7 @@ class CardDataBackuper(object):
 
     def save_event(self):
         if self.backup_process is not None:
+            logging.debug('Backup process: SAVE')
             self.queue.put('SAVE')
 
     def stop(self):
@@ -107,27 +107,23 @@ def find_last_save_position(file_path, chunk_size=1024):
             lines = buffer.split(b'\n')
             if position > 0:
                 buffer = lines.pop(0)  # Retain incomplete line for next iteration
+                read_size -= len(buffer)
 
             # Process lines from the end
-            for line in reversed(lines):
+            for index, line in enumerate(reversed(lines)):
                 decoded_line = line.decode('utf-8').strip()
                 if "SAVE" in decoded_line:
-                    # Calculate the position of "SAVE"
-                    save_position = position + sum(len(l) + 1 for l in lines[:lines.index(line) + 1])
-                    return save_position
-
-        # Check the first part of the file if no "SAVE" found
-        if buffer:
-            line = buffer.decode('utf-8').strip()
-            if "SAVE" in line:
-                return 0
+                    original_index = len(lines) - index - 1
+                    save_position = position + read_size - sum(len(l) + 1 for l in lines[original_index + 1:])
+                    return save_position if save_position > 0 else 0
 
     return None  # Return None if "SAVE" is not found
 
 
-def parse_backup_from_last_save():
+def parse_backup_from_last_save(log_file_prefix):
     """Parses the backup log from the last 'SAVE' entry to the end."""
-    log_file_path = config.log_dir(f'cards_{datetime.now().strftime("%Y-%m-%d")}.log')
+    log_file_path = backup_file_path(log_file_prefix)
+    logging.debug(f"Parse backup in log file path: {log_file_path}")
     if not os.path.exists(log_file_path):
         return []
 
@@ -178,9 +174,10 @@ def parse_backup_from_last_save():
 
             elif line == "end":
                 # End of entry; add to entries list
-                entries.append(entry)
-                entry = {}
-                punches = []
+                if entry:
+                    entries.append(entry)
+                    entry = {}
+                    punches = []
 
             elif parsing_punches:
                 # Parse each punch

@@ -349,6 +349,7 @@ def menu_list():
                 {
                     'title': _('on/off SFR readout'),
                     'icon': config.icon_dir('sfr.png'),
+                    'shortcut': 'F10',
                     'action': 'SFRReadoutAction'
                 },
                 {
