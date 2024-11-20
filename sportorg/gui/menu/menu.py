@@ -44,6 +44,7 @@ def menu_list():
                     'title': _('Settings'),
                     'shortcut': 'Ctrl+Alt+S',
                     'icon': config.icon_dir('settings.svg'),
+                    'id': 'settings_action',
                     'action': 'SettingsAction'
                 },
                 {

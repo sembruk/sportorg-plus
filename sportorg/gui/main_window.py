@@ -246,6 +246,30 @@ class MainWindow(QMainWindow):
                     QMessageBox.information(self, _('Info'), message)
                 Configuration().set_option('last_update_check', 'date', datetime.now().isoformat())
 
+        if (Configuration().parser.getboolean('autosave', 'recommend_autosave', fallback=True)
+                and not Configuration().configuration.get('autosave_interval')):
+            last_check_autosave_date_str = Configuration().parser.get(
+                'autosave', 'last_check', fallback='1970-01-01 00:00:00')
+            last_check_autosave_date = datetime.fromisoformat(last_check_autosave_date_str)
+            if (datetime.now() - last_check_autosave_date).days > 0:
+                Configuration().set_option('autosave', 'last_check', datetime.now().isoformat())
+                message_box = QMessageBox(
+                    QMessageBox.Question,
+                    _('Question'),
+                    _('Recommended to set autosave interval in settings to prevent data loss.\nDo you want to do it now?'),
+                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Ignore,
+                    self
+                )
+                message_box.button(QMessageBox.Yes).setText(_('Yes'))
+                message_box.button(QMessageBox.No).setText(_('No'))
+                message_box.button(QMessageBox.Ignore).setText(_('Do not show again'))
+                message_box.setDefaultButton(QMessageBox.Yes)
+                confirm = message_box.exec_()
+                if confirm == QMessageBox.Ignore:
+                    Configuration().set_option('autosave', 'recomend_autosave', False)
+                elif confirm == QMessageBox.Yes:
+                    self.action_by_id['settings_action'].trigger()
+
 
     def _setup_ui(self):
         geom = bytearray.fromhex(Configuration().parser.get(ConfigFile.GEOMETRY, 'main',  fallback='00'))
