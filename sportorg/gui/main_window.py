@@ -126,7 +126,8 @@ class MainWindow(QMainWindow):
     def interval(self):
         if self.get_configuration().get('try_restore_backup'):
             for client in [SIReaderClient, SportiduinoClient, SFRReaderClient]:
-                if client().is_need_check_backup() and client().is_result_thread_alive():
+                if client().is_need_check_backup and client().is_result_thread_alive():
+                    client().is_need_check_backup = False
                     entries = self._check_card_data_backup(client().log_file_prefix())
                     if entries is not None:
                         client().inject_backup_card_data(entries)
