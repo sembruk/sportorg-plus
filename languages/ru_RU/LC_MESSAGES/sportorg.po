@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SportOrg\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-14 17:06+0300\n"
-"PO-Revision-Date: 2024-11-14 17:07+0300\n"
+"POT-Creation-Date: 2024-11-20 17:36+0300\n"
+"PO-Revision-Date: 2024-11-20 17:36+0300\n"
 "Last-Translator: SportOrg\n"
 "Language-Team: SportOrg\n"
 "Language: ru_RU\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Poedit-Basepath: ../../../sportorg\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: gui/dialogs/about.py:20 gui/menu/menu.py:428
+#: gui/dialogs/about.py:20 gui/menu/menu.py:429
 msgid "About"
 msgstr "О нас"
 
@@ -43,7 +43,7 @@ msgstr "Номер или Имя"
 #: gui/dialogs/relay_number_dialog.py:49 gui/dialogs/rent_cards_dialog.py:46
 #: gui/dialogs/report_dialog.py:93 gui/dialogs/result_edit.py:140
 #: gui/dialogs/scores_dialog.py:60 gui/dialogs/search_dialog.py:69
-#: gui/dialogs/settings.py:234 gui/dialogs/sportorg_import_dialog.py:68
+#: gui/dialogs/settings.py:241 gui/dialogs/sportorg_import_dialog.py:68
 #: gui/dialogs/start_handicap_dialog.py:78
 #: gui/dialogs/start_time_change_dialog.py:52 gui/dialogs/team_edit.py:109
 #: gui/dialogs/teamwork_properties.py:67 gui/dialogs/telegram_dialog.py:70
@@ -60,7 +60,7 @@ msgstr "ОК"
 #: gui/dialogs/relay_clone_dialog.py:52 gui/dialogs/relay_number_dialog.py:52
 #: gui/dialogs/rent_cards_dialog.py:49 gui/dialogs/report_dialog.py:96
 #: gui/dialogs/result_edit.py:143 gui/dialogs/scores_dialog.py:63
-#: gui/dialogs/search_dialog.py:70 gui/dialogs/settings.py:237
+#: gui/dialogs/search_dialog.py:70 gui/dialogs/settings.py:244
 #: gui/dialogs/sportorg_import_dialog.py:71
 #: gui/dialogs/start_handicap_dialog.py:81
 #: gui/dialogs/start_time_change_dialog.py:55 gui/dialogs/team_edit.py:112
@@ -126,11 +126,11 @@ msgid "Number CP"
 msgstr "Номер КП"
 
 #: gui/dialogs/cp_delete.py:37 gui/dialogs/cp_delete.py:90
-#: gui/main_window.py:328 gui/menu/menu.py:193
+#: gui/main_window.py:353 gui/menu/menu.py:193
 msgid "Courses"
 msgstr "Дистанции"
 
-#: gui/dialogs/cp_delete.py:42 gui/main_window.py:326 gui/menu/menu.py:183
+#: gui/dialogs/cp_delete.py:42 gui/main_window.py:351 gui/menu/menu.py:183
 msgid "Race Results"
 msgstr "Результаты"
 
@@ -353,7 +353,7 @@ msgstr "Макс."
 msgid "Add"
 msgstr "Добавить"
 
-#: gui/dialogs/group_edit.py:123 gui/dialogs/settings.py:173
+#: gui/dialogs/group_edit.py:123 gui/dialogs/settings.py:180
 #: gui/dialogs/team_edit.py:85 gui/menu/menu.py:122
 msgid "Delete"
 msgstr "Удалить"
@@ -373,7 +373,7 @@ msgstr "Макс. место"
 msgid "Result time"
 msgstr "Результат"
 
-#: gui/dialogs/help.py:30 gui/menu/menu.py:419 gui/menu/menu.py:422
+#: gui/dialogs/help.py:30 gui/menu/menu.py:420 gui/menu/menu.py:423
 msgid "Help"
 msgstr "Помощь"
 
@@ -389,7 +389,7 @@ msgstr "Вперёд"
 msgid "Close"
 msgstr "Закрыть"
 
-#: gui/dialogs/live_dialog.py:30 gui/menu/menu.py:404
+#: gui/dialogs/live_dialog.py:30 gui/menu/menu.py:405
 msgid "Live"
 msgstr "Онлайн"
 
@@ -397,7 +397,7 @@ msgstr "Онлайн"
 msgid "Token"
 msgstr "Токен"
 
-#: gui/dialogs/live_dialog.py:49 gui/dialogs/settings.py:83
+#: gui/dialogs/live_dialog.py:49 gui/dialogs/settings.py:90
 #: gui/dialogs/telegram_dialog.py:43
 msgid "Enabled"
 msgstr "Включить"
@@ -520,7 +520,7 @@ msgstr "Новая команда \"{}\""
 msgid "Change team to No{} \"{}\""
 msgstr "Изменить команду на №{} \"{}\""
 
-#: gui/dialogs/print_properties.py:29 gui/menu/menu.py:399
+#: gui/dialogs/print_properties.py:29 gui/menu/menu.py:400
 msgid "Printer settings"
 msgstr "Настройки печати"
 
@@ -610,7 +610,7 @@ msgstr "Эстафетные номера"
 msgid "First relay number"
 msgstr "Первый эстафетный номер"
 
-#: gui/dialogs/rent_cards_dialog.py:21 gui/menu/menu.py:413
+#: gui/dialogs/rent_cards_dialog.py:21 gui/menu/menu.py:414
 msgid "Rent cards"
 msgstr "Аренда чипов"
 
@@ -626,7 +626,7 @@ msgstr "Открыть в браузере"
 msgid "Save to last file"
 msgstr "Сохранить в последний файл"
 
-#: gui/dialogs/report_dialog.py:74 gui/menu/menu.py:359
+#: gui/dialogs/report_dialog.py:74 gui/menu/menu.py:360
 msgid "Send selected"
 msgstr "Отправить выбранные"
 
@@ -745,71 +745,87 @@ msgstr "Поиск не дал результатов"
 msgid "Languages"
 msgstr "Язык интерфейса"
 
-#: gui/dialogs/settings.py:36 gui/main_window.py:128
+#: gui/dialogs/settings.py:36
+msgid "Autosave disabled if value is 0"
+msgstr "Автосохранение выключено если 0"
+
+#: gui/dialogs/settings.py:37 gui/main_window.py:152
 msgid "Auto save"
 msgstr "Автосохранение"
 
-#: gui/dialogs/settings.py:38
+#: gui/dialogs/settings.py:39
 msgid "Show toolbar"
 msgstr "Показывать панель инструментов"
 
-#: gui/dialogs/settings.py:42
+#: gui/dialogs/settings.py:43
 msgid "Open recent file"
 msgstr "Открыть последний файл"
 
-#: gui/dialogs/settings.py:46
+#: gui/dialogs/settings.py:47
 msgid "Use birthday"
 msgstr "Использовать день рождения, а не только год"
 
-#: gui/dialogs/settings.py:50 gui/menu/menu.py:432
+#: gui/dialogs/settings.py:51 gui/menu/menu.py:433
 msgid "Check updates"
 msgstr "Проверить обновления"
 
-#: gui/dialogs/settings.py:87
+#: gui/dialogs/settings.py:55
+msgid "Try restore card data from backup"
+msgstr "Пытаться восстанавливать данные чипов из резервной копии"
+
+#: gui/dialogs/settings.py:57
+msgid ""
+"Try restore card data from backup file in \"log\" directory if last session "
+"was interrupted"
+msgstr ""
+"Пытаться восстанавливать данные чипов из резервной копии в каталоге \"log\", "
+"если предыдущая сессия была прервана"
+
+#: gui/dialogs/settings.py:94
 msgid "Successful result"
 msgstr "Успешный результат"
 
-#: gui/dialogs/settings.py:93
+#: gui/dialogs/settings.py:100
 msgid "Unsuccessful result"
 msgstr "Неуспешный результат"
 
-#: gui/dialogs/settings.py:99
+#: gui/dialogs/settings.py:106
 msgid "Enable rented card sound"
 msgstr "Включить звук при аренде чипа"
 
-#: gui/dialogs/settings.py:103
+#: gui/dialogs/settings.py:110
 msgid "Rented card sound"
 msgstr "Звук при аренде чипа"
 
-#: gui/dialogs/settings.py:141 gui/menu/menu.py:11 gui/toolbar.py:7
+#: gui/dialogs/settings.py:148 gui/menu/menu.py:11 gui/toolbar.py:7
 msgid "New"
 msgstr "Новый"
 
-#: gui/dialogs/settings.py:149 gui/menu/menu.py:129
+#: gui/dialogs/settings.py:156 gui/menu/menu.py:129
 msgid "Copy"
 msgstr "Копировать"
 
-#: gui/dialogs/settings.py:157
+#: gui/dialogs/settings.py:164
 msgid "Move up"
 msgstr "Сдвинуть вверх"
 
-#: gui/dialogs/settings.py:165
+#: gui/dialogs/settings.py:172
 msgid "Move down"
 msgstr "Сдвинуть вниз"
 
-#: gui/dialogs/settings.py:199
+#: gui/dialogs/settings.py:206
 msgid "Main settings"
 msgstr "Основные настройки"
 
-#: gui/dialogs/settings.py:200
+#: gui/dialogs/settings.py:207
 msgid "Sounds"
 msgstr "Звуки"
 
-#: gui/dialogs/settings.py:201
+#: gui/dialogs/settings.py:208
 msgid "Multi day"
 msgstr "Многодневные соревнования"
 
-#: gui/dialogs/settings.py:209 gui/menu/menu.py:44
+#: gui/dialogs/settings.py:216 gui/menu/menu.py:44
 msgid "Settings"
 msgstr "Настройки"
 
@@ -998,8 +1014,8 @@ msgstr "ГР"
 msgid "Move selected member to new team"
 msgstr "Переместить выбранного участника в новую команду"
 
-#: gui/dialogs/teamwork_properties.py:23 gui/menu/menu.py:355
-#: gui/menu/menu.py:394
+#: gui/dialogs/teamwork_properties.py:23 gui/menu/menu.py:356
+#: gui/menu/menu.py:395
 msgid "Teamwork"
 msgstr "Командная работа"
 
@@ -1027,7 +1043,7 @@ msgstr "Порт"
 msgid "Client/Server"
 msgstr "Клиент/Сервер"
 
-#: gui/dialogs/telegram_dialog.py:23 gui/menu/menu.py:374 gui/menu/menu.py:409
+#: gui/dialogs/telegram_dialog.py:23 gui/menu/menu.py:375 gui/menu/menu.py:410
 msgid "Telegram"
 msgstr "Telegram"
 
@@ -1101,11 +1117,11 @@ msgstr "точка с запятой"
 msgid "custom"
 msgstr "пользовательский"
 
-#: gui/dialogs/text_io.py:129 gui/menu/menu.py:386
+#: gui/dialogs/text_io.py:129 gui/menu/menu.py:387
 msgid "Options"
 msgstr "Опции"
 
-#: gui/dialogs/timekeeping_properties.py:33 gui/menu/menu.py:389
+#: gui/dialogs/timekeeping_properties.py:33 gui/menu/menu.py:390
 msgid "Timekeeping settings"
 msgstr "Настройки хронометража"
 
@@ -1113,7 +1129,7 @@ msgstr "Настройки хронометража"
 msgid "Zero time"
 msgstr "Начало соревнований"
 
-#: gui/dialogs/timekeeping_properties.py:51 modules/sportident/sireader.py:262
+#: gui/dialogs/timekeeping_properties.py:51 modules/sportident/sireader.py:140
 msgid "Available Ports"
 msgstr "Доступные порты"
 
@@ -1325,71 +1341,80 @@ msgstr "Настройки времени"
 msgid "Available Ports In Progress"
 msgstr "Сканирование портов..."
 
-#: gui/main_window.py:155 gui/main_window.py:551 gui/main_window.py:668
-#: gui/main_window.py:734 gui/menu/actions.py:365 gui/menu/actions.py:374
+#: gui/main_window.py:117 gui/main_window.py:179 gui/main_window.py:576
+#: gui/main_window.py:695 gui/main_window.py:761 gui/menu/actions.py:365
+#: gui/menu/actions.py:374
 msgid "Question"
 msgstr "Вопрос"
 
-#: gui/main_window.py:156
+#: gui/main_window.py:118
+msgid ""
+"Found unsaved data for cards: {}.\n"
+"Do you want to restore it?"
+msgstr ""
+"Найдены несохранённые данные для чипов: {}.\n"
+"Вы хотите восстановить их?"
+
+#: gui/main_window.py:180
 msgid "Save file before exit?"
 msgstr "Сохранить изменения в файле?"
 
-#: gui/main_window.py:221 gui/menu/actions.py:625
+#: gui/main_window.py:246 gui/menu/actions.py:625
 msgid "Info"
 msgstr "Информация"
 
-#: gui/main_window.py:295
+#: gui/main_window.py:320
 msgid "Empty"
 msgstr "Пусто"
 
-#: gui/main_window.py:304
+#: gui/main_window.py:329
 msgid "Toolbar"
 msgstr "Панель инструментов"
 
-#: gui/main_window.py:325
+#: gui/main_window.py:350
 msgid "Competitors"
 msgstr "Участники"
 
-#: gui/main_window.py:327 gui/menu/menu.py:188 modules/orgeo/orgeo.py:188
+#: gui/main_window.py:352 gui/menu/menu.py:188 modules/orgeo/orgeo.py:188
 #: modules/winorient/winorient.py:56
 msgid "Groups"
 msgstr "Группы"
 
-#: gui/main_window.py:329 gui/menu/menu.py:198 modules/orgeo/orgeo.py:189
+#: gui/main_window.py:354 gui/menu/menu.py:198 modules/orgeo/orgeo.py:189
 #: modules/winorient/winorient.py:58
 msgid "Teams"
 msgstr "Команды"
 
-#: gui/main_window.py:331
+#: gui/main_window.py:356
 msgid "Logs"
 msgstr "Логи"
 
-#: gui/main_window.py:391
+#: gui/main_window.py:416
 msgid "Tab doesn't exist"
 msgstr "Раздел не существует"
 
-#: gui/main_window.py:551
+#: gui/main_window.py:576
 msgid "Are you sure you want to reassign the chip number"
 msgstr "Вы уверены, что хотите переприсвоить номер чипа"
 
-#: gui/main_window.py:589
+#: gui/main_window.py:614
 msgid "Create SportOrg file"
 msgstr "Создать файл SportOrg"
 
-#: gui/main_window.py:590 gui/menu/actions.py:82
+#: gui/main_window.py:615 gui/menu/actions.py:82
 msgid "SportOrg file (*.json)"
 msgstr "Файл SportOrg (*.json)"
 
-#: gui/main_window.py:600 gui/main_window.py:621 gui/main_window.py:657
-#: gui/main_window.py:753 gui/main_window.py:762 gui/main_window.py:771
-#: gui/main_window.py:793 gui/menu/actions.py:135 gui/menu/actions.py:149
+#: gui/main_window.py:625 gui/main_window.py:646 gui/main_window.py:684
+#: gui/main_window.py:780 gui/main_window.py:789 gui/main_window.py:798
+#: gui/main_window.py:820 gui/menu/actions.py:135 gui/menu/actions.py:149
 #: gui/menu/actions.py:162 gui/menu/actions.py:174 gui/menu/actions.py:185
 #: gui/menu/actions.py:204 gui/menu/actions.py:216 gui/menu/actions.py:229
 #: gui/menu/actions.py:628
 msgid "Error"
 msgstr "Ошибка"
 
-#: gui/main_window.py:601
+#: gui/main_window.py:626
 msgid ""
 "Canceled overwriting existing file\n"
 "\"{}\"\n"
@@ -1399,23 +1424,23 @@ msgstr ""
 "\"{}\"\n"
 "новым пустым"
 
-#: gui/main_window.py:621
+#: gui/main_window.py:646
 msgid "Cannot create file"
 msgstr "Файл не создан"
 
-#: gui/main_window.py:655
+#: gui/main_window.py:682
 msgid "File not found"
 msgstr "Файл не найден"
 
-#: gui/main_window.py:657
+#: gui/main_window.py:684
 msgid "Cannot read file, format unknown"
 msgstr "Не удается открыть файл, некорректный формат"
 
-#: gui/main_window.py:661 gui/menu/actions.py:478 gui/menu/actions.py:593
+#: gui/main_window.py:688 gui/menu/actions.py:478 gui/menu/actions.py:593
 msgid "No result selected"
 msgstr "Результат не выбран"
 
-#: gui/main_window.py:669
+#: gui/main_window.py:696
 msgid ""
 "Too many results selected for printing.\n"
 "Are you sure you want to continue?"
@@ -1423,39 +1448,39 @@ msgstr ""
 "Слишком много результатов выбрано для печати.\n"
 "Вы уверены, что хотите продолжить?"
 
-#: gui/main_window.py:689
+#: gui/main_window.py:716
 msgid "No results to print"
 msgstr "Нет результатов для печати"
 
-#: gui/main_window.py:694
+#: gui/main_window.py:721
 msgid "No printer selected"
 msgstr "Принтер не выбран"
 
-#: gui/main_window.py:734
+#: gui/main_window.py:761
 msgid "Please confirm"
 msgstr "Пожалуйста, подтвердите действие"
 
-#: gui/main_window.py:754
+#: gui/main_window.py:781
 msgid "Cannot remove group"
 msgstr "Невозможно удалить группу"
 
-#: gui/main_window.py:763
+#: gui/main_window.py:790
 msgid "Cannot remove course"
 msgstr "Невозможно удалить дистанцию"
 
-#: gui/main_window.py:772
+#: gui/main_window.py:799
 msgid "Cannot remove team"
 msgstr "Невозможно удалить команду"
 
-#: gui/main_window.py:788
+#: gui/main_window.py:815
 msgid "File lock created"
 msgstr "Файл заблокирован"
 
-#: gui/main_window.py:794
+#: gui/main_window.py:821
 msgid "Cannot open file, it is already opened"
 msgstr "Невозможно открыть файл, он уже открыт"
 
-#: gui/main_window.py:802
+#: gui/main_window.py:829
 msgid "File lock released"
 msgstr "Файл разблокирован"
 
@@ -1738,11 +1763,11 @@ msgstr "Запустить/остановить чтение чипов Sportidu
 msgid "on/off SFR readout"
 msgstr "Запустить/остановить чтение чипов SFR"
 
-#: gui/menu/menu.py:368
+#: gui/menu/menu.py:369
 msgid "On/Off"
 msgstr "Включить/Выключить"
 
-#: gui/menu/menu.py:377
+#: gui/menu/menu.py:378
 msgid "Send results"
 msgstr "Отправить результаты"
 
@@ -2040,11 +2065,11 @@ msgstr "Предварительные результаты"
 msgid "Competitor"
 msgstr "Участник"
 
-#: modules/sportident/sireader.py:218
-msgid "Opening port"
-msgstr "Открытие порта"
+#: modules/sportident/sireader.py:110
+msgid "Opening port {}"
+msgstr "Открытие порта {}"
 
-#: modules/sportident/sireader.py:220
+#: modules/sportident/sireader.py:113
 msgid "Cannot open port"
 msgstr "Ошибка при открытии порта"
 

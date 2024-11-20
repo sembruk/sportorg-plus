@@ -80,7 +80,6 @@ class MainWindow(QMainWindow):
             key='sportorgplus_locker_key', password='str(uuid.uuid1())', autoconnect=False
         )
         self.file_lock_id = None
-        self.check_backup = True
 
     def _set_style(self):
         try:
@@ -124,11 +123,10 @@ class MainWindow(QMainWindow):
         return None
 
     def interval(self):
-        if self.check_backup:
+        if self.get_configuration().get('try_restore_backup'):
             for client in [SIReaderClient, SportiduinoClient, SFRReaderClient]:
-                if client().is_result_thread_alive():
+                if client().is_need_check_backup() and client().is_result_thread_alive():
                     entries = self._check_card_data_backup(client().log_file_prefix())
-                    self.check_backup = False
                     if entries is not None:
                         client().inject_backup_card_data(entries)
 

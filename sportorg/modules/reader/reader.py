@@ -116,6 +116,7 @@ class ReaderClientBase(object):
         self._result_thread = None
         self._logger = logging.root
         self._call_back = None
+        self._check_backup = True
         self._backuper = CardDataBackuper(self.log_file_prefix())
 
         self._reader_thread_class = reader_thread_class
@@ -199,6 +200,12 @@ class ReaderClientBase(object):
     def is_result_thread_alive(self):
         if self._result_thread:
             return not self._result_thread.isFinished()
+        return False
+
+    def is_need_check_backup(self):
+        if self._check_backup:
+            self._check_backup = False
+            return True
         return False
 
     @classmethod

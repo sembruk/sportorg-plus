@@ -33,6 +33,7 @@ class MainTab(Tab):
         self.item_auto_save = QSpinBox()
         self.item_auto_save.setMaximum(3600*24)
         self.item_auto_save.setValue(Config().configuration.get('autosave_interval'))
+        self.item_auto_save.setToolTip(_('Autosave disabled if value is 0'))
         self.layout.addRow(_('Auto save') + ' (sec)', self.item_auto_save)
 
         self.item_show_toolbar = QCheckBox(_('Show toolbar'))
@@ -51,6 +52,11 @@ class MainTab(Tab):
         self.item_check_updates.setChecked(Config().configuration.get('check_updates', True))
         self.layout.addRow(self.item_check_updates)
 
+        self.item_try_restore_backup = QCheckBox(_('Try restore card data from backup'))
+        self.item_try_restore_backup.setChecked(Config().configuration.get('try_restore_backup', False))
+        self.item_try_restore_backup.setToolTip(_('Try restore card data from backup file in "log" directory if last session was interrupted'))
+        self.layout.addRow(self.item_try_restore_backup)
+
         self.widget.setLayout(self.layout)
 
     def save(self):
@@ -59,6 +65,7 @@ class MainTab(Tab):
         Config().configuration.set('open_recent_file', self.item_open_recent_file.isChecked())
         Config().configuration.set('use_birthday', self.item_use_birthday.isChecked())
         Config().configuration.set('check_updates', self.item_check_updates.isChecked())
+        Config().configuration.set('try_restore_backup', self.item_try_restore_backup.isChecked())
 
         if Config().configuration.get('show_toolbar') != self.item_show_toolbar.isChecked():
             mw = GlobalAccess().get_main_window()
