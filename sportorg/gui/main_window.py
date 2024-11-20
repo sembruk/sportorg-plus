@@ -39,7 +39,7 @@ from sportorg.gui.toolbar import toolbar_list
 from sportorg.gui.utils.custom_controls import messageBoxQuestion
 from sportorg.language import _
 from sportorg.modules.sportident.sireader import SIReaderClient
-from sportorg.modules.sportident.backup import CardDataBackuper
+from sportorg.modules.reader.backup import parse_backup_from_last_save
 from sportorg.modules.sportiduino.sportiduino import SportiduinoClient
 from sportorg.modules.teamwork import Teamwork
 from sportorg.modules.telegram.telegram import TelegramClient
@@ -109,7 +109,28 @@ class MainWindow(QMainWindow):
         False: 'sportident.png',
     }
 
+    def _check_card_data_backup(self, log_file_prefix):
+        logging.debug('Check card data backup')
+        entries = parse_backup_from_last_save(log_file_prefix)
+        logging.debug(f'Found {len(entries)} entries')
+        if entries:
+            confirm = messageBoxQuestion(self, _('Question'),
+                _('Found unsaved data for cards: {}.\nDo you want to restore it?').format(
+                    ', '.join([str(e['card_number']) for e in entries])
+                ),
+                QMessageBox.Yes | QMessageBox.No)
+            if confirm == QMessageBox.Yes:
+                return entries
+        return None
+
     def interval(self):
+        if self.get_configuration().get('try_restore_backup'):
+            for client in [SIReaderClient, SportiduinoClient, SFRReaderClient]:
+                if client().is_need_check_backup() and client().is_result_thread_alive():
+                    entries = self._check_card_data_backup(client().log_file_prefix())
+                    if entries is not None:
+                        client().inject_backup_card_data(entries)
+
         if SIReaderClient().is_alive() != self.sportident_status:
             self.sportident_status = SIReaderClient().is_alive()
             self.toolbar_property['sportident'].setIcon(
@@ -146,7 +167,6 @@ class MainWindow(QMainWindow):
         SportiduinoClient().stop()
         SIReaderClient().stop()
         SFRReaderClient().stop()
-        CardDataBackuper().stop()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Q and event.modifiers() == Qt.ControlModifier:
@@ -648,7 +668,8 @@ class MainWindow(QMainWindow):
                 File(self.file, logging.root, File.JSON).save()
                 self.apply_filters()
                 self.last_update = time.time()
-                CardDataBackuper().save_event()
+                for client in [SIReaderClient, SportiduinoClient, SFRReaderClient]:
+                    client().save_event()
             except Exception as e:
                 logging.error(str(e))
         else:
