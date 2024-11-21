@@ -156,11 +156,13 @@ def parse_backup_from_last_save(log_file_prefix):
 
             elif line.startswith("start:"):
                 # Extract start time
-                time = line.split(": ")[1]
+                l = line.split(": ")
+                time = l[1] if len(l) > 1 else None
                 entry["start"] = time_to_datetime(hhmmss_to_time(time)) if time else None
             elif line.startswith("finish:"):
                 # Extract finish time
-                time = line.split(": ")[1]
+                l = line.split(": ")
+                time = l[1] if len(l) > 1 else None
                 entry["finish"] = time_to_datetime(hhmmss_to_time(time)) if time else None
 
             elif line == "split_begin":
