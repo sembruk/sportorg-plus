@@ -44,7 +44,8 @@ class SFRReaderThread(ReaderBase):
 
 class SFRResultThread(ResultThreadBase):
     def _check_data(self, card_data):
-        card_data['card_number'] = card_data['bib']  # SFR has no card id, only bib
+        if 'bib' in card_data:
+            card_data['card_number'] = card_data['bib']  # SFR has no card id, only bib
         punches = []
         for p in card_data['punches']:
             if str(p[0]) != '0' and p[0] != '':

@@ -4,8 +4,9 @@ import os
 import platform
 import re
 import time
-
 import serial
+
+from threading import main_thread
 from PySide2.QtCore import QThread, Signal
 from sportident import SIReader, SIReaderReadout, SIReaderSRR, SIReaderControl, SIReaderException, SIReaderCardChanged
 
@@ -38,8 +39,10 @@ class SIReaderThread(ReaderBase):
             try:
                 while not si.poll_sicard():
                     time.sleep(0.2)
-                    if not main_thread().is_alive():
-                        break
+                    if not main_thread().is_alive() or self._stop_event.is_set():
+                        si.disconnect()
+                        self._logger.debug('Stop sireader')
+                        return
                 card_data = si.read_sicard()
                 card_data['card_type'] = si.cardtype
                 self._queue.put(ReaderCommand('card_data', card_data), timeout=1)
@@ -56,25 +59,24 @@ class SIReaderThread(ReaderBase):
                 return
             except Exception as e:
                 self._logger.exception(str(e))
-        si.disconnect()
-        self._logger.debug('Stop sireader')
 
 
 class SIResultThread(ResultThreadBase):
     def _check_data(self, card_data):
         # TODO requires more complex checking for long starts > 12 hours
-        start_time = self.get_system_zero_time()
-        if start_time and card_data['card_type'] == 'SI5':
-            start_time = self.time_to_sec(start_time)
-            for i in range(len(card_data['punches'])):
-                if self.time_to_sec(card_data['punches'][i][1]) < start_time:
-                    new_datetime = card_data['punches'][i][1].replace(hour=(card_data['punches'][i][1].hour + 12) % 24)
-                    card_data['punches'][i] = (card_data['punches'][i][0], new_datetime)
+        if 'card_type' in card_data:
+            start_time = self.get_system_zero_time()
+            if start_time and card_data['card_type'] == 'SI5':
+                start_time = self.time_to_sec(start_time)
+                for i in range(len(card_data['punches'])):
+                    if self.time_to_sec(card_data['punches'][i][1]) < start_time:
+                        new_datetime = card_data['punches'][i][1].replace(hour=(card_data['punches'][i][1].hour + 12) % 24)
+                        card_data['punches'][i] = (card_data['punches'][i][0], new_datetime)
 
-                # simple check for morning starts (10:00 a.m. was 22:00 in splits)
-                if self.time_to_sec(card_data['punches'][i][1]) - 12 * 3600 > start_time:
-                    new_datetime = card_data['punches'][i][1].replace(hour=card_data['punches'][i][1].hour - 12)
-                    card_data['punches'][i] = (card_data['punches'][i][0], new_datetime)
+                    # simple check for morning starts (10:00 a.m. was 22:00 in splits)
+                    if self.time_to_sec(card_data['punches'][i][1]) - 12 * 3600 > start_time:
+                        new_datetime = card_data['punches'][i][1].replace(hour=card_data['punches'][i][1].hour - 12)
+                        card_data['punches'][i] = (card_data['punches'][i][0], new_datetime)
 
         return card_data
 
