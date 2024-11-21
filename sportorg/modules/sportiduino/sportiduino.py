@@ -3,7 +3,6 @@ from threading import main_thread
 
 import time
 import serial
-import termios
 
 from sportorg.common.singleton import singleton
 from sportorg.libs.sportiduino import sportiduino
@@ -33,11 +32,12 @@ class SportiduinoReaderThread(ReaderBase):
                 self._sportiduino_poll_card(sduino)
             except sportiduino.SportiduinoException as e:
                 self._logger.error(str(e))
-            except (serial.serialutil.SerialException, termios.error) as e:
+            except serial.serialutil.SerialException as e:
                 self._logger.error(str(e))
                 break
             except Exception as e:
                 self._logger.error(str(e))
+                break
         sduino.disconnect()
         self._logger.debug('Stop sportiduino reader')
 
