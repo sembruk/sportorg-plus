@@ -2,6 +2,7 @@ import gpxpy
 import csv
 import logging
 import utm
+from sportorg.libs.iof import parser as iof_parser
 
 from sportorg.models.memory import race, ControlPoint
 from sportorg.language import _
@@ -60,4 +61,31 @@ def import_coordinates_from_csv(csv_file_name):
             cps[code] = (x, y)
         sort_and_add_control_points(cps)
 
+def import_coordinates_from_iof_xml(iof_xml_file_name):
+    with open(iof_xml_file_name) as iof_file:
+        parse_results = iof_parser.parse(iof_file)
+        if not len(parse_results):
+            logging.error(_('Cannot parse IOF XML file'))
+            return
+
+        for result in parse_results:
+            if result.name == 'CourseData':
+                cps = {}
+                if 'controls' not in result.data:
+                    logging.error(_('Controls not found in IOF XML file'))
+                    return
+                for control in result.data['controls']:
+                    code = control['id'].lower().strip()
+                    if code == 's' or code == 's1':
+                        code = 'start'
+                    if code == 'f' or code == 'f1':
+                        code = 'finish'
+                    lat = float(control['position']['lat'])
+                    lng = float(control['position']['lng'])
+                    utm_coords = utm.from_latlon(lat, lng)
+                    x = int(utm_coords[0])
+                    y = int(utm_coords[1])
+                    cps[code] = (x, y)
+                sort_and_add_control_points(cps)
+             
 

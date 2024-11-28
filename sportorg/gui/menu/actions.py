@@ -177,13 +177,17 @@ class OcadTXTv8ImportAction(Action, metaclass=ActionFactory):
 
 class CpCoordinatesImportAction(Action, metaclass=ActionFactory):
     def execute(self):
-        file_name = get_open_file_name(_('Open CP coordinates file'), _("CP coordinates (*.gpx *.csv)"))
+        file_name = get_open_file_name(_('Open CP coordinates file'), _("CP coordinates (*.gpx *.csv *.xml)"))
         if file_name:
             try:
                 if file_name.endswith('.gpx'):
                     coordinates.import_coordinates_from_gpx(file_name)
-                else:
+                elif file_name.endswith('.csv'):
                     coordinates.import_coordinates_from_csv(file_name)
+                elif file_name.endswith('.xml'):
+                    coordinates.import_coordinates_from_iof_xml(file_name)
+                else:
+                    raise Exception('Unknown file type')
             except Exception as e:
                 logging.error(str(e))
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
