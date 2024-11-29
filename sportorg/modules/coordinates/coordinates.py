@@ -14,6 +14,8 @@ def sort_and_add_control_points(cps):
     if 'start' in cps:
         start_x = cps['start'][0]
         start_y = cps['start'][1]
+    if 'finish' not in cps:
+        cps['finish'] = cps['start']
 
     obj = race()
 

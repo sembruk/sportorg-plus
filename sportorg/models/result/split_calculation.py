@@ -99,6 +99,7 @@ class PersonSplits(object):
             finish_desc = find(self.race.control_points, code='finish')
             if finish_desc and prev_cp_desc is not None:
                 finish_leg_length = math.sqrt((finish_desc.x - prev_cp_desc.x)**2 + (finish_desc.y - prev_cp_desc.y)**2)
+                self.length += finish_leg_length
             self.result.speed = get_speed_min_per_km(self.result.get_pure_otime(), self.length)
             self.result.length = '{:.1f} км'.format(self.length/1000.0)
 
