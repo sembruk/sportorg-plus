@@ -219,7 +219,7 @@ class Course(Model):
         self.length = 0
         self.climb = 0
         self._controls = []  # type: List[CourseControl]
-        self.controls = []  # unrolled copy of _controls
+        self.unrolled_controls = []  # unrolled copy of _controls
 
         self.count_person = 0
         self.count_group = 0
@@ -236,6 +236,15 @@ class Course(Model):
                 return False
 
         return True
+
+    @property
+    def controls(self):
+        return self.unrolled_controls
+
+    @controls.setter
+    def controls(self, value):
+        self._controls = value
+        self.unrolled_controls = self.get_unrolled_controls()
 
     def is_unknown(self):
         for control in self.controls:
@@ -274,7 +283,7 @@ class Course(Model):
             control = CourseControl()
             control.update_data(item)
             self._controls.append(control)
-        self.controls = self.get_unrolled_controls()
+        self.unrolled_controls = self.get_unrolled_controls()
 
     def get_unrolled_controls(self):
         # return unrolled controls list, e.g. '*(31-45)[3]' -> '*(31-45) *(31-45) *(31-45)'
