@@ -139,7 +139,7 @@
             {key: 'index', title: '№', size: 4},
             {key: 'team', title: 'Команда', size: 20},
             {key: 'name', title: 'Участники (№ чипа)', size: 30},
-            {key: 'subgroup', title: 'П/группа', size: 8, active: false},
+            {key: 'subgroup', title: 'П/группа', size: 8},
             {key: 'comment', title: '', size: 20},
             {key: 'start', title: 'Время старта', size: 13, active: false}
         ],
@@ -177,7 +177,7 @@
             try {
                 var isTeamRace = race.data.race_type === 6
                 var isRogaining = race.settings.result_processing_mode === "scores" && race.settings.result_processing_score_mode == "rogain";
-                //this.getField('subgroup').active = isRogaining
+                this.getField('subgroup').active = isRogaining
             } catch (e){}
             return this;
         }
