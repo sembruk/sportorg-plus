@@ -45,13 +45,13 @@ jobs:
       - name: Build
         run: |
           echo "VERSION=${{ env.VERSION }}"
-          python setup_.py build
+          python builder.py build
         env:
           VERSION: ${{ env.VERSION }}
 
       - name: Generate installer
         run: |
-          python setup_.py bdist_msi
+          python builder.py bdist_msi
 
       - name: Upload the artifact
         uses: actions/upload-artifact@v4
