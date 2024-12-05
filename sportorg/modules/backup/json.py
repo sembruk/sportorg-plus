@@ -12,7 +12,7 @@ from sportorg.models.start.start_preparation import update_subgroups
 
 def dump(file):
     data = {
-        'version': config.VERSION.file,
+        'version': str(config.VERSION),
         'current_race': get_current_race_index(),
         'races': [race_downgrade(r.to_dict()) for r in races()]
     }

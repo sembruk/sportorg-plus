@@ -5,6 +5,7 @@ https://developer.github.com/v3/
 import logging
 import requests
 from sportorg import config
+from sportorg.common.version import Version
 from sportorg.language import _
 
 
@@ -33,7 +34,7 @@ def check_version_is_latest(version):
     logging.debug('Check version is latest: {} >= {}'.format(version, latest_version))
     if not latest_version:
         return True
-    return str(version) >= str(latest_version)
+    return version >= Version(latest_version)
 
 def update_available(version):
     if not check_version_is_latest(version):
