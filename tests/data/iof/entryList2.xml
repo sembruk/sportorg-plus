@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EntryList xmlns="http://www.orienteering.org/datastandard/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:orgeo="http://orgeo.ru/iof-xml-extensions/3.0" iofVersion="3.0" createTime="2024-08-20T18:12:00+03:00" creator="Orgeo">
+<Event>
+<Id>99999</Id>
+<Name>Rogaining 2024</Name>
+<StartTime>
+<Date>2024-09-01</Date>
+</StartTime>
+<EndTime>
+<Date>2024-09-01</Date>
+</EndTime>
+<Classification>National</Classification>
+<Form>Team</Form>
+<Class maxNumberOfTeamMembers="5">
+<Id>8MO</Id>
+<Name>8MO</Name>
+<ShortName>8MO</ShortName>
+</Class>
+<Race>
+<RaceNumber>1</RaceNumber>
+<Name>Rogaining</Name>
+<StartTime>
+<Date>2024-09-01</Date>
+<Time>11:30:00+04:00</Time>
+</StartTime>
+<Position lng="38.0" lat="54.0"/>
+<URL type="Website">http://orgeo.ru/online/sv?id=99999&amp;sk=fffff&amp;sub=1&amp;</URL>
+</Race>
+<URL type="Website">https://orgeo.ru/event/99999</URL>
+</Event>
+<PersonEntry modifyTime="2024-08-19T18:40:39+03:00">
+<Person sex="M">
+<Id>1296299-0001</Id>
+<Name>
+<Family>Петров</Family>
+<Given>Александр</Given>
+</Name>
+<BirthDate>1995-01-01</BirthDate>
+<Extensions>
+<orgeo:BibNumber></orgeo:BibNumber>
+<orgeo:Qual></orgeo:Qual>
+<orgeo:QualWinOrient></orgeo:QualWinOrient>
+<orgeo:QualSFR></orgeo:QualSFR>
+</Extensions>
+</Person>
+<Organisation type="Other">
+<Id></Id>
+<Name>Moscow</Name>
+<Country code="RUS"></Country>
+<Role type="ContactPerson">
+<Person>
+<Id>99999</Id>
+<Name>
+<Family>Петров</Family>
+<Given>Александр</Given>
+</Name>
+<Contact type="MobilePhoneNumber">+79123456789</Contact>
+<Contact type="EmailAddress">petrov@example.com</Contact>
+</Person>
+</Role>
+</Organisation>
+<ControlCard>999999</ControlCard>
+<Class>
+<Id>8MO</Id>
+<Name>8MO</Name>
+</Class>
+<ServiceRequest>
+<Id>1</Id>
+<Service>
+<Id>1</Id>
+<Name>Comment</Name>
+</Service>
+<RequestedQuantity>1</RequestedQuantity>
+<Comment>1000, Оплачено,</Comment>
+</ServiceRequest>
+<EntryTime>2024-08-19T18:40:39+03:00</EntryTime>
+</PersonEntry>
+</EntryList>

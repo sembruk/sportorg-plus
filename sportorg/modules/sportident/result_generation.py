@@ -142,7 +142,6 @@ class ResultSportidentGeneration:
                 # existing result changed, recalculate group results and printout
                 self._result = existing_res
                 ResultChecker.checking(self._result)
-                ResultChecker.calculate_penalty(self._result)
 
             return True
 
@@ -184,7 +183,6 @@ class ResultSportidentGeneration:
             self._find_person_by_result()
             try:
                 ResultChecker.checking(self._result)
-                ResultChecker.calculate_penalty(self._result)
             except ResultCheckerException as e:
                 logging.error(str(e))
 
