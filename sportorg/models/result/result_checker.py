@@ -23,7 +23,9 @@ class ResultChecker:
 
         if race().get_setting('result_processing_mode', 'time') == 'scores':
             result.check(course)
-            result.scores, result.penalty_points = self.calculate_scores_rogaining(result)
+            scores = self.calculate_rogaine_scores(result)
+            result.penalty_points = self.calculate_rogaine_penalty(result, result.scores)
+            result.scores = scores - result.penalty_points
             return True
 
         if race().get_setting('marked_route_dont_dsq', False):
@@ -230,7 +232,7 @@ class ResultChecker:
         return int(code)//10  # score = code / 10
 
     @staticmethod
-    def calculate_scores_rogaining(result):
+    def calculate_rogaine_scores(result):
         user_array = []
         points = 0
         for cur_split in result.splits:
@@ -239,6 +241,10 @@ class ResultChecker:
                 if code not in user_array:
                     user_array.append(code)
                     points += ResultChecker.get_control_score(code)
+        return points
+
+    @staticmethod
+    def calculate_rogaine_penalty(result, score):
         penalty_points = 0
         if result.person and result.person.group:
             user_time = result.get_result_otime()
@@ -249,9 +255,6 @@ class ResultChecker:
                 minutes_diff = (seconds_diff + 59) // 60  # note, 1:01 = 2 minutes
                 penalty_step = race().get_setting('result_processing_scores_minute_penalty', 1.0)
                 penalty_points = minutes_diff*penalty_step
-                points -= penalty_points
-        if points < 0:
-            points = 0
-        return points, penalty_points
+        return min(penalty_points, score)
 
 

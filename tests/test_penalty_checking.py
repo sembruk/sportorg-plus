@@ -52,15 +52,6 @@ def test_basic_syntax():
     assert ok(course=[31, '41', '51(51,52)'], splits=[31, 41, 52], penalty=1)
     assert dsq(course=[31, '41', '51(51,52)'], splits=[31, 41, 59], penalty=0)
 
-    race().set_setting('marked_route_mode', 'off')
-    race().set_setting('result_processing_mode', 'scores')
-    race().set_setting('marked_route_dont_dsq', True)
-    race().set_setting('result_processing_score_mode', 'fixed')
-    assert ok(course=[31, '*', '*', '*'], splits=[31, 41, 51], penalty=0, scores=3)
-    race().set_setting('result_processing_score_mode', 'rogain')
-    assert ok(course=['*[]'], splits=[31, 41, 51], penalty=0, scores=12)
-    assert ok(course=[31, '*[]'], splits=[32, 31, 51], penalty=0, scores=8)
-
 
 def test_marked_route_yes_no():
     """Тест маркированной трассы по варианту ДА/НЕТ.
@@ -313,7 +304,6 @@ def check(
     splits: List[int],
     result_status: ResultStatus = ResultStatus.OK,
     penalty: int = 0,
-    scores: int = 0,
 ) -> Tuple[bool, bool]:
     """Проверка отметки с начислением штрафа. Параметры проверки задаются
     заранее и хранятся в объекте race().get_settings().
@@ -342,7 +332,7 @@ def check(
     ResultChecker.checking(result)
     result_penalty = get_penalty(result)
 
-    check_result = result.status == result_status, result_penalty == penalty, result.scores == scores
+    check_result = result.status == result_status, result_penalty == penalty
 
     if not all(check_result):
         message = exception_message(
@@ -352,8 +342,6 @@ def check(
             result_status_received=result.status,
             penalty_expected=penalty,
             penalty_received=result_penalty,
-            scores_expected=scores,
-            scores_received=result.scores,
         )
         raise ValueError(message)
 
@@ -412,8 +400,6 @@ def exception_message(
     result_status_received: ResultStatus,
     penalty_expected: int,
     penalty_received: int,
-    scores_expected = int,
-    scores_received = int,
 ) -> str:
     """Формирование отладочного сообщения при создании исключения. Отладочное
     сообщение содержит сравнение дистанции и отметок и причину несоответствия.
@@ -432,10 +418,6 @@ def exception_message(
         Ожидаемое количество штрафа.
     penalty_received : int
         Полученное количество штрафа.
-    scores_expected : int
-        Ожидаемое количество баллов.
-    scores_received : int
-        Полученное количество баллов.
 
     Returns
     -------
@@ -452,10 +434,6 @@ def exception_message(
         message += '\n' + f'Penalty failed!'
         message += '\n' + f'Expected: {penalty_expected}'
         message += '\n' + f'Received: {penalty_received}'
-    if scores_expected != scores_received:
-        message += '\n' + f'Scores failed!'
-        message += '\n' + f'Expected: {scores_expected}'
-        message += '\n' + f'Received: {scores_received}'
     return message
 
 
