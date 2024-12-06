@@ -1,15 +1,16 @@
 # Руководство пользователя SportOrgPlus
 
 ## [Установка](installation.md)
+## [Интерфейс приложения](ui/ui_general.md)
 
 ## Проведение соревнований
 
-- [Краткая инструкция для рогейна](event_management/rogaining.md)
+- [Краткая инструкция для рогейна](user-guide/rogaining.md)
 
 ### Предварительная подготовка к старту
 
 - [Общие настройки программы](ui/dialogs/dialog_event_settings.md)
-- [Создание нового события](event_management/preparation/new_event.md)
+- [Создание нового события](user-guide/new_event.md)
 - [Импорт предварительных заявок](user-guide/import_entries.md)
 - [Импорт дистанций](user-guide/import_courses.md)
 - [Присвоение дистанций для групп](user-guide/group_course.md)
@@ -55,8 +56,10 @@
 
 - [Многодневные соревнования](user-guide/multiday.md)
 - [Проверка отметки в различных дисциплинах](user-guide/course.md)
-- [Массовое редактирование](ui/dialogs/dialog_mass_edit.md)
+<!--- Массовое редактирование-->
+- [Текстовый импорт/экспорт](ui/dialogs/dialog_text_io.md)
 - [Лабиринт](user-guide/maze.md)
+- [Импорт из другого файла SportOrg](ui/dialogs/dialog_import_sportorg.md)
 <!--- Эстафеты-->
 <!--- Расширенная конфигурация-->
 <!--    - Словарь имен-->
