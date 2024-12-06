@@ -37,5 +37,6 @@
 
 ![Screenshot](../../img/dialog_event_properties.png)
 
-
+Если [импортировать заявки](../../user-guide/import_entries.md) из Orgeo в формате IOF XML,
+то свойства соревнования будут заполнены автоматически.
 

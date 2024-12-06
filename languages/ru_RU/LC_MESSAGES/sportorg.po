@@ -811,7 +811,7 @@ msgstr "Использовать день рождения, а не только
 
 #: gui/dialogs/settings.py:51 gui/menu/menu.py:450
 msgid "Check updates"
-msgstr "Проверить обновления"
+msgstr "Проверять обновления"
 
 #: gui/dialogs/settings.py:55
 msgid "Try restore card data from backup"
