@@ -369,6 +369,33 @@ def test_course_butterfly():
     assert dsq(c, [31, 32, 41, 42, 33, 32, 51, 33, 70])
 
 
+course1 = ['*(31-39)[]', 40, '*(41-49)[]']
+course2 = ['*(31-39)[]', '*(41-49)[]']
+
+@pytest.mark.parametrize(
+    'course, controls, expected',
+    [
+        (course1, [31, 32, 33, 34], 4),
+        (course1, [31, 32, 33, 34, 40], 5),
+        (course1, [31, 32, 33, 34, 41], 4),
+        (course1, [31, 32, 33, 34, 40, 41, 42, 43, 44], 9),
+        (course1, [31, 32, 33, 34, 40, 35, 42, 43, 44], 8),
+        (course2, [31, 32, 33, 34], 4),
+        (course2, [31, 32, 33, 34, 40], 4),
+        (course2, [31, 32, 33, 34, 41], 5),
+        (course2, [31, 32, 33, 34, 41, 42, 43, 44], 8),
+        (course2, [31, 32, 33, 34, 41, 35, 42, 43, 44], 8),
+    ]
+)
+def test_rogaining_course_with_two_laps(course, controls, expected):
+    create_race()
+    race().set_setting('result_processing_mode', 'scores')
+    race().set_setting('result_processing_score_mode', 'fixed')
+    result = make_result(controls)
+    assert result.check(make_course(course)) == True
+    assert ResultChecker.calculate_rogaine_scores(result) == expected
+
+
 @pytest.mark.parametrize(
     'controls, expected',
     [
@@ -381,8 +408,8 @@ def test_course_butterfly():
 )
 def test_calculate_rogaine_score(controls, expected):
     create_race()
-    race().set_setting('result_processing_score_mode', 'rogain')  # wrong spelling
     race().set_setting('result_processing_mode', 'scores')
+    race().set_setting('result_processing_score_mode', 'rogain')  # wrong spelling
     assert ok(['*[]'], controls)
     res = make_result(controls)
     assert ResultChecker.calculate_rogaine_scores(res) == expected
