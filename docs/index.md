@@ -13,6 +13,7 @@
 - [Создание нового события](user-guide/new_event.md)
 - [Импорт предварительных заявок](user-guide/import_entries.md)
 - [Импорт дистанций](user-guide/import_courses.md)
+- [Импорт координат контрольных пунктов](user-guide/import_coords.md)
 - [Присвоение дистанций для групп](user-guide/group_course.md)
 - [Присвоение коридоров для групп](user-guide/group_corridor.md)
 - Предстартовая подготовка

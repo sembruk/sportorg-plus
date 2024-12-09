@@ -8,14 +8,13 @@ from sportorg.models.memory import race, ControlPoint
 from sportorg.language import _
 
 def sort_and_add_control_points(cps):
-    start_x = 0
-    start_y = 0
-
-    if 'start' in cps:
-        start_x = cps['start'][0]
-        start_y = cps['start'][1]
+    if 'start' not in cps:
+        logging.info(_('Start control point not found, using default (0, 0)'))
+        cps['start'] = (0, 0)
     if 'finish' not in cps:
         cps['finish'] = cps['start']
+    start_x = cps['start'][0]
+    start_y = cps['start'][1]
 
     obj = race()
 
