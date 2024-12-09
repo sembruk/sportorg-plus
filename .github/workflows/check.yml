@@ -5,6 +5,7 @@ on:
     paths:
       - "sportorg/**"
       - "tests/**"
+      - "docs/**"
   workflow_dispatch:
 
 jobs:
