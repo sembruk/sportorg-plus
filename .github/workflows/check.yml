@@ -39,8 +39,8 @@ jobs:
 
       - name: Install socat
         run: |
-          apt update
-          apt install socat
+          sudo apt update
+          sudo apt install socat
 
       - name: Install python dependencies
         run: |
