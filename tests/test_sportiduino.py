@@ -1,7 +1,8 @@
-import subprocess
-import serial
+import os
 import platform
 import time
+import subprocess
+import serial
 from threading import Thread, Event
 from sportorg.models.memory import race
 from PySide2.QtCore import QObject, Slot, Signal, QCoreApplication, QTimer
@@ -87,9 +88,31 @@ def app():
     yield app
     app.quit()
 
+@pytest.fixture
+def set_utc_timezone():
+    # Save the current TZ environment variable to restore it later
+    original_tz = os.environ.get("TZ")
+
+    # Set the desired timezone to UTC
+    os.environ["TZ"] = "UTC"
+
+    # Apply the change
+    time.tzset()
+
+    yield
+
+    # Restore the original timezone
+    if original_tz is not None:
+        os.environ["TZ"] = original_tz
+    else:
+        del os.environ["TZ"]
+
+    # Reapply the original timezone
+    time.tzset()
+
 
 @pytest.mark.skipif(platform.system() != 'Linux', reason="This test only works on Linux")
-def test_sportiduino(app, result_handler, socat):
+def test_sportiduino(app, result_handler, socat, set_utc_timezone):
     _, link1, link2 = socat
 
     stop_event = Event()
@@ -112,22 +135,22 @@ def test_sportiduino(app, result_handler, socat):
     assert len(result_handler.results) == 1
     result = result_handler.results[0]
     assert result.card_number == 400
-    assert str(result.start_time) == '21:54:24'
-    assert str(result.finish_time) == '01:53:13'
+    assert str(result.start_time) == '18:54:24'
+    assert str(result.finish_time) == '22:53:13'
 
     expected = [
-        (37, '22:15:27'),
-        (38, '22:48:34'),
-        (35, '23:00:35'),
-        (36, '23:08:04'),
-        (52, '23:21:49'),
-        (49, '23:31:12'),
-        (48, '23:42:15'),
-        (34, '00:14:24'),
-        (33, '00:41:29'),
-        (32, '01:09:53'),
-        (31, '01:16:08'),
-        (53, '01:42:43'),
+        (37, '19:15:27'),
+        (38, '19:48:34'),
+        (35, '20:00:35'),
+        (36, '20:08:04'),
+        (52, '20:21:49'),
+        (49, '20:31:12'),
+        (48, '20:42:15'),
+        (34, '21:14:24'),
+        (33, '21:41:29'),
+        (32, '22:09:53'),
+        (31, '22:16:08'),
+        (53, '22:42:43'),
     ]
 
     for i, split in enumerate(result.splits):
