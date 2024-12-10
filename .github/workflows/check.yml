@@ -37,6 +37,11 @@ jobs:
       - name: Init .env
         run: cp .env.example .env
 
+      - name: Install socat
+        run: |
+          apt update
+          apt install socat
+
       - name: Install python dependencies
         run: |
           python -m pip install --upgrade pip
