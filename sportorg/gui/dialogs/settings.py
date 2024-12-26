@@ -8,7 +8,7 @@ from sportorg import config
 from sportorg.common.audio import get_sounds
 from sportorg.gui.global_access import GlobalAccess
 from sportorg.gui.utils.custom_controls import AdvComboBox
-from sportorg.language import _, get_languages
+from sportorg.language import _, get_languages, current_locale
 from sportorg.models.memory import races, Race, set_current_race_index, add_race, copy_race, get_current_race_index, \
     del_race, move_up_race, move_down_race
 from sportorg.modules.configs.configs import Config
@@ -27,7 +27,7 @@ class MainTab(Tab):
         self.label_lang = QLabel(_('Languages'))
         self.item_lang = AdvComboBox()
         self.item_lang.addItems(get_languages())
-        self.item_lang.setCurrentText(Config().configuration.get('current_locale', 'ru_RU'))
+        self.item_lang.setCurrentText(current_locale)
         self.layout.addRow(self.label_lang, self.item_lang)
 
         self.item_auto_save = QSpinBox()

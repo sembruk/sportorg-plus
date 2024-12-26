@@ -2,6 +2,7 @@ import configparser
 import gettext
 import logging
 import os
+from PySide2.QtCore import QLocale
 from sportorg import config
 
 
@@ -13,10 +14,15 @@ def _get_conf_locale():
         logging.exception(e)
         # remove incorrect config
         os.remove(config.CONFIG_INI)
-    return conf.get('locale', 'current', fallback='ru_RU')
+    system_locale = QLocale.system().name()
+    logging.debug(f"Sytem locale: {system_locale}")
+    default_locale = 'ru_RU'
+    if default_locale != system_locale:
+        default_locale = 'en_US'
+    return conf.get('locale', 'current', fallback=default_locale)
 
 
-locale_current = _get_conf_locale()
+current_locale = _get_conf_locale()
 
 
 if config.DEBUG:
@@ -35,7 +41,7 @@ if config.DEBUG:
 
 
 def locale():
-    cat = gettext.Catalog('sportorg', config.LOCALE_DIR, languages=[locale_current])
+    cat = gettext.Catalog('sportorg', config.LOCALE_DIR, languages=[current_locale])
 
     def get_text(message):
         result = cat.gettext(message)

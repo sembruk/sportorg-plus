@@ -3,6 +3,7 @@ import logging
 import os
 
 from sportorg import config as sportorg_config
+from sportorg.language import current_locale
 
 from sportorg.common.singleton import Singleton
 
@@ -75,7 +76,7 @@ class Config(metaclass=Singleton):
         self._config_parser = configparser.ConfigParser()
         self._configurations = {
             ConfigFile.CONFIGURATION: Configurations({
-                'current_locale': 'ru_RU',
+                'current_locale': current_locale,
                 'autoconnect': False,
                 'open_recent_file': False,
                 'use_birthday': False,
@@ -153,7 +154,7 @@ class Config(metaclass=Singleton):
                             self.parser.get(config_name, option, fallback=self._configurations[config_name].get(option))
                         )
 
-            self.configuration.set('current_locale', self.parser.get(ConfigFile.LOCALE, 'current', fallback='ru_RU'))
+            self.configuration.set('current_locale', self.parser.get(ConfigFile.LOCALE, 'current', fallback=current_locale))
         except Exception as e:
             logging.exception(e)
             # remove incorrect config
