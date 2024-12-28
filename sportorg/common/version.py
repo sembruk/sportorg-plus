@@ -78,3 +78,6 @@ class Version:
     def is_compatible(self, o):
         return self.major == o.major
 
+    def is_full_compatible(self, o):
+        return self.major == o.major and self.minor == o.minor
+

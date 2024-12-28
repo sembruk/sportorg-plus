@@ -8,11 +8,12 @@ from sportorg.models.result.result_checker import ResultChecker
 from sportorg.models.result.score_calculation import ScoreCalculation
 from sportorg.models.result.split_calculation import RaceSplits
 from sportorg.models.start.start_preparation import update_subgroups
+from sportorg.common.version import Version
 
 
 def dump(file):
     data = {
-        'version': str(config.VERSION),
+        'sportorg_plus': str(config.VERSION),
         'current_race': get_current_race_index(),
         'races': [race_downgrade(r.to_dict()) for r in races()]
     }
@@ -37,6 +38,12 @@ def load(file):
 
 def get_races_from_file(file):
     data = json.load(file)
+    if 'sportorg_plus' in data:
+        file_version = Version(data['sportorg_plus'])
+        if not file_version.is_full_compatible(config.VERSION):
+            if file_version > config.VERSION:
+                # TODO: show warning
+                pass
     if 'races' not in data:
         data = {
             'races': [data] if not isinstance(data, list) else data,
