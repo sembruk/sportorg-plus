@@ -50,7 +50,6 @@
 
 ## v1.3.0 - 2024-02-07
 
-* Export results to CSV file using jinja2 template
 * Экспорт результатов в CSV файл с использованием шаблона jinja2
 * Улычшен импорт Orgeo CSV
 * Улучшен диалог Подготовки старта
