@@ -153,7 +153,7 @@ class MainWindow(QMainWindow):
                 else:
                     logging.debug(translate('No file to auto save'))
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
         while not self.log_queue.empty():
             text = self.log_queue.get()
@@ -204,7 +204,7 @@ class MainWindow(QMainWindow):
                 if isinstance(recent_files, list):
                     self.recent_files = recent_files
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
 
     def conf_write(self):
         Configuration().set_option(ConfigFile.GEOMETRY, 'main', self.saveGeometry().toHex().data().decode())
@@ -390,7 +390,7 @@ class MainWindow(QMainWindow):
                     if column_order:
                         table.set_column_order(column_order)
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
 
     def _menu_disable(self, tab_index):
         for item in self.menu_list_for_disabled:
@@ -466,7 +466,7 @@ class MainWindow(QMainWindow):
             table.setModel(ControlPointMemoryModel())
             Broker().produce('init_model')
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def refresh(self):
         logging.debug('Refreshing interface')
@@ -501,7 +501,7 @@ class MainWindow(QMainWindow):
             print('Refresh in {:.3f} seconds.'.format(time.time() - t))
             Broker().produce('refresh')
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def clear_filters(self, remove_condition=True):
         if self.get_person_table():
@@ -584,11 +584,11 @@ class MainWindow(QMainWindow):
                         try:
                             split_printout(result)
                         except NoResultToPrintException as e:
-                            logging.error(str(e))
+                            logging.exception(e)
                         except NoPrinterSelectedException as e:
-                            logging.error(str(e))
+                            logging.exception(e)
                         except Exception as e:
-                            logging.error(str(e))
+                            logging.exception(e)
                     elif result.person and result.person.group:
                         GroupSplits(race(), result.person.group).generate(True)
                     Teamwork().send(result.to_dict())
@@ -626,7 +626,7 @@ class MainWindow(QMainWindow):
                             break
             self.refresh()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def add_sfr_result_from_reader(self, result):
         self.add_sportident_result_from_sireader(result)
@@ -643,7 +643,7 @@ class MainWindow(QMainWindow):
             Broker().produce('teamwork_recieving', command.data)
             self.refresh()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     # Actions
     def create_file(self, *args, update_data=True, is_new=True):
@@ -679,7 +679,7 @@ class MainWindow(QMainWindow):
                 self.set_title()
                 self.init_model()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self, _('Error'), _('Cannot create file') + ': ' + file_name)
             self.refresh()
 
@@ -696,7 +696,7 @@ class MainWindow(QMainWindow):
                 for client in [SIReaderClient, SportiduinoClient, SFRReaderClient]:
                     client().save_event()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
         else:
             self.save_file_as()
 
@@ -784,7 +784,7 @@ class MainWindow(QMainWindow):
                 ControlPointEditDialog(cp, True).exec_()
                 self.refresh()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def delete_object(self):
         try:
@@ -792,7 +792,7 @@ class MainWindow(QMainWindow):
                 return
             self._delete_object()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def _delete_object(self):
         indexes = self.get_selected_rows()

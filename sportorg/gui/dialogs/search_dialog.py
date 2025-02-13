@@ -59,7 +59,7 @@ class SearchDialog(QDialog):
                     QMessageBox.warning(self, _('Search'), _('The search has not given any results'))
                 self.table.selectRow(offset)
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def cancel(self):
         self.close()

@@ -35,7 +35,7 @@ class Widget(QtWidgets.QWidget):
                     GlobalAccess().get_main_window().refresh()
                     pass
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
 
         self.control_points_table.activated.connect(control_point_double_clicked)
         self.control_points_layout.addWidget(self.control_points_table)

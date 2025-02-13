@@ -68,7 +68,7 @@ class PrintProcess(Process):
             text_document.setHtml(self.html)
             text_document.print_(printer)
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
 
 def print_html(printer_name, html, left=5.0, top=5.0, right=5.0, bottom=5.0, scale=100):

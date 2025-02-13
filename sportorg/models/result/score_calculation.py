@@ -23,7 +23,7 @@ class ScoreCalculation(object):
                     'time': time
                 }), 0)
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 self.wrong_formula = True
         return 0
 

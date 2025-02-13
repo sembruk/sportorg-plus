@@ -106,7 +106,7 @@ class ResultSportidentGeneration:
                 self.assign_chip_reading = 'off'
                 self.card_read_repeated = False
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def _relay_find_leg(self):
         if self._find_person_by_result():
@@ -184,7 +184,7 @@ class ResultSportidentGeneration:
             try:
                 ResultChecker.checking(self._result)
             except ResultCheckerException as e:
-                logging.error(str(e))
+                logging.exception(e)
 
             self._add_result_to_race()
 

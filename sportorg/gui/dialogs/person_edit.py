@@ -163,7 +163,7 @@ class PersonEditDialog(QDialog):
             try:
                 self.apply_changes_impl()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
             self.close()
 
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -357,7 +357,7 @@ class PersonEditDialog(QDialog):
             if self.current_object.team:
                 self.item_team.setCurrentText(self.current_object.team.full_name)
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def apply_changes_impl(self):
         person = self.current_object

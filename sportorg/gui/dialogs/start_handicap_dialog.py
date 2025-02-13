@@ -69,7 +69,7 @@ class StartHandicapDialog(QDialog):
             try:
                 self.apply_changes_impl()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 logging.exception(e)
             self.close()
 

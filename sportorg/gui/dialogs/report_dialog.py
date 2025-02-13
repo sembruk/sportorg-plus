@@ -83,9 +83,9 @@ class ReportDialog(QDialog):
             try:
                 self.apply_changes_impl()
             except FileNotFoundError as e:
-                logging.error(str(e))
+                logging.exception(e)
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 logging.exception(e)
             self.close()
 

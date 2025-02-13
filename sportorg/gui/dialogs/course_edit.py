@@ -80,7 +80,7 @@ class CourseEditDialog(QDialog):
         try:
             self.apply_changes_impl()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
         self.close()
 
     def cancel_changes(self):
@@ -145,7 +145,7 @@ class CourseEditDialog(QDialog):
                 try:
                     control.length = int(i.split()[1])
                 except Exception as e:
-                    logging.error(str(e))
+                    logging.exception(e)
                     control.length = 0
             course._controls.append(control)
         course.controls = course.get_unrolled_controls()

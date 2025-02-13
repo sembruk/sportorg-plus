@@ -55,7 +55,7 @@ class CPDeleteDialog(QDialog):
             try:
                 self.apply_changes_impl()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
             self.close()
 
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -106,7 +106,7 @@ class CPDeleteDialog(QDialog):
                     )
             self.item_info.setText(text)
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
             self.close()
 
     def apply_changes_impl(self):

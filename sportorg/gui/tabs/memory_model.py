@@ -88,7 +88,7 @@ class AbstractSportOrgMemoryModel(QAbstractTableModel):
                 answer = self.cache[row][column]
                 return answer
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
         return
 
     def clear_filter(self, remove_condition=True):
@@ -210,7 +210,7 @@ class AbstractSportOrgMemoryModel(QAbstractTableModel):
                 self.init_cache()
             self.layoutChanged.emit()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def update_one_object(self, part, index):
         self.values[index] = self.get_values_from_object(part)

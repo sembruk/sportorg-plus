@@ -132,7 +132,7 @@ class CSVWinorientImportAction(Action, metaclass=ActionFactory):
             try:
                 winorient.import_csv(file_name)
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
             self.app.init_model()
 
@@ -146,7 +146,7 @@ class CSVOrgeoImportAction(Action, metaclass=ActionFactory):
                 if ret:
                     QMessageBox.information(self.app, _('Warning'), ret)
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
             self.app.init_model()
 
@@ -158,7 +158,6 @@ class WDBWinorientImportAction(Action, metaclass=ActionFactory):
             try:
                 winorient.import_wo_wdb(file_name)
             except WDBImportError as e:
-                logging.error(str(e))
                 logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
             self.app.init_model()
@@ -171,7 +170,7 @@ class OcadTXTv8ImportAction(Action, metaclass=ActionFactory):
             try:
                 ocad.import_txt_v8(file_name)
             except OcadImportException as e:
-                logging.error(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
             self.app.init_model()
 
@@ -189,7 +188,7 @@ class CpCoordinatesImportAction(Action, metaclass=ActionFactory):
                 else:
                     raise Exception('Unknown file type')
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
             self.app.refresh()
 
@@ -220,7 +219,7 @@ class IOFResultListExportAction(Action, metaclass=ActionFactory):
             try:
                 iof_xml.export_result_list(file_name)
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Export error') + ': ' + file_name)
 
 
@@ -617,7 +616,7 @@ class TelegramSendAction(Action, metaclass=ActionFactory):
                     pass
                 TelegramClient().send_result(items[index])
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
 
 class OnlineSendAction(Action, metaclass=ActionFactory):
@@ -672,7 +671,7 @@ class CheckUpdatesAction(Action, metaclass=ActionFactory):
 
             QMessageBox.information(self.app, _('Info'), message)
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
             QMessageBox.warning(self.app, _('Error'), str(e))
 
 

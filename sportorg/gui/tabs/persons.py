@@ -52,7 +52,7 @@ class Widget(QtWidgets.QWidget):
                     dialog.exec_()
                     GlobalAccess().get_main_window().refresh()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
 
         def entry_single_clicked(index):
             try:
@@ -63,7 +63,7 @@ class Widget(QtWidgets.QWidget):
                         GlobalAccess().get_main_window().refresh()
 
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
 
         self.person_table.activated.connect(entry_double_clicked)
         self.person_table.clicked.connect(entry_single_clicked)

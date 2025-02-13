@@ -160,7 +160,7 @@ class ResultEditDialog(QDialog):
         try:
             self.apply_changes_impl()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
         self.close()
 
     def keyPressEvent(self, event):
@@ -233,7 +233,7 @@ class ResultEditDialog(QDialog):
         try:
             PersonEditDialog(self.current_object.person).exec_()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def apply_changes_impl(self):
         result = self.current_object
@@ -309,7 +309,7 @@ class ResultEditDialog(QDialog):
                 if result.person and result.person.group:
                     GroupSplits(race(), result.person.group).generate(True)
             except ResultCheckerException as e:
-                logging.error(str(e))
+                logging.exception(e)
         ResultCalculation(race()).process_results()
         live_client.send(result)
         Teamwork().send(result.to_dict())

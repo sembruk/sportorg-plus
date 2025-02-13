@@ -35,7 +35,7 @@ class Widget(QtWidgets.QWidget):
                     dialog.exec_()
                     GlobalAccess().get_main_window().refresh()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
 
         self.team_table.activated.connect(team_double_clicked)
         self.team_layout.addWidget(self.team_table)

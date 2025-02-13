@@ -28,7 +28,7 @@ class TelegramSendThread(Thread):
                 self.parse_mode
             )
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
 
 class BotOption:
@@ -75,7 +75,7 @@ class TelegramClient:
             for key, val in data_dict.items():
                 text = text.replace('{' + str(key) + '}', str(val))
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
         logging.info('Telegram {}'.format(text))
         TelegramSendThread(
             options.token,

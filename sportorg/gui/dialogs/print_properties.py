@@ -96,7 +96,7 @@ class PrintPropertiesDialog(QDialog):
             try:
                 self.apply_changes_impl()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
             self.close()
 
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -118,7 +118,7 @@ class PrintPropertiesDialog(QDialog):
         # try:
         #     QPrinter().setPrinterName(printer_name)
         # except Exception as e:
-        #     logging.error(str(e))
+        #     logging.exception(e)
         #     printer_name = default_printer_name
         self.selected_split_printer.setText(printer_name)
 
@@ -142,7 +142,7 @@ class PrintPropertiesDialog(QDialog):
             pd.exec_()
             return printer.printerName()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
         return None
 
     def apply_changes_impl(self):
