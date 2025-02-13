@@ -90,9 +90,9 @@ class OrgeoCSVReader:
             person_dict['date_of_birth'] = date_of_birth
         if 'claim_id' in person_dict:
             person_dict['claim_id'] = int(person_dict['claim_id'])
-            if 'team_name' in person_dict:
-                claim_id = person_dict['claim_id']
-                self._teams[claim_id] = person_dict['team_name']
+            claim_id = person_dict['claim_id']
+            team_name = person_dict['team_name'] if 'team_name' in person_dict else ''
+            self._teams[claim_id] = team_name
         self._data.append(person_dict)
 
     @property
