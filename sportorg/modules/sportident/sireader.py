@@ -119,7 +119,7 @@ class SIReaderClient(ReaderClientBase):
         ports = []
         if platform.system() == 'Linux':
             scan_ports = [os.path.join('/dev', f) for f in os.listdir('/dev') if
-                     re.match('ttyS.*|ttyUSB.*', f)]
+                     re.match('ttyUSB.*', f)]
         elif platform.system() == 'Windows':
             scan_ports = ['COM' + str(i) for i in range(48)]
 

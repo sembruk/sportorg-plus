@@ -1382,7 +1382,7 @@ msgid "Time settings"
 msgstr "Настройки времени"
 
 #: gui/dialogs/timekeeping_properties.py:273
-msgid "Available Ports In Progress"
+msgid "Scanning ports..."
 msgstr "Сканирование портов..."
 
 #: gui/main_window.py:117 gui/main_window.py:179 gui/main_window.py:258

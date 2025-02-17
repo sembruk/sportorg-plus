@@ -14,6 +14,7 @@ from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.modules.sportident.sireader import ScanPortsThread
 from sportorg.utils.time import time_to_otime
 
+scan_ports_string = _('Scanning ports...')
 
 class TimekeepingPropertiesDialog(QDialog):
     def __init__(self):
@@ -270,7 +271,8 @@ class TimekeepingPropertiesDialog(QDialog):
         self.show()
 
     def scan_ports(self):
-        self.item_si_port.addItem(_('Available Ports In Progress'))
+        self.item_si_port.addItem(scan_ports_string)
+        self.item_si_port.setCurrentIndex(0)
         self.thread.result_signal.connect(self.on_result_ready)
         self.thread.start()
 
@@ -490,7 +492,10 @@ class TimekeepingPropertiesDialog(QDialog):
         if old_start_cp_number != start_cp_number or old_finish_cp_number != finish_cp_number:
             race().clear_results()
 
-        obj.set_setting('system_port', self.item_si_port.currentText())
+        port = self.item_si_port.currentText()
+        if port == scan_ports_string:
+            port = ''
+        obj.set_setting('system_port', port)
 
         obj.set_setting('system_start_source', start_source)
         obj.set_setting('system_finish_source', finish_source)
