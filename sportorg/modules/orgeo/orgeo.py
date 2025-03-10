@@ -72,7 +72,7 @@ class OrgeoCSVReader:
         return self._data
 
     def append(self, person):
-        if not person or len(person) < 11:
+        if not person or len(person) < 1:
             return
 
         person_dict = {}
