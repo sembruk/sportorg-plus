@@ -10,7 +10,7 @@ from sportorg.modules.configs.configs import Config
 def detect_encoding(file_path):
     for encoding in ['utf-8', 'cp1251']:
         try:
-            with open (file_path, encoding=encoding) as file:
+            with open(file_path, encoding=encoding) as file:
                 _ = file.read()  # Attempt to read the file
             return encoding
         except UnicodeDecodeError:
