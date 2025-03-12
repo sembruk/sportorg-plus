@@ -8,7 +8,7 @@ from sportorg.modules.configs.configs import Config
 
 
 def detect_encoding(file_path):
-    for encoding in ['utf-8', 'cp1251']:
+    for encoding in ['utf-8-sig', 'cp1251']:
         try:
             with open(file_path, encoding=encoding) as file:
                 _ = file.read()  # Attempt to read the file

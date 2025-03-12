@@ -39,7 +39,7 @@ def sort_and_add_control_points(cps):
 
 
 def import_coordinates_from_gpx(gpx_file_name):
-    with open(gpx_file_name, encoding='utf-8') as gpx_file:
+    with open(gpx_file_name, encoding='utf-8-sig') as gpx_file:
         gpx = gpxpy.parse(gpx_file)
         cps = {}
         for wpt in gpx.waypoints:
@@ -63,7 +63,7 @@ def import_coordinates_from_csv(csv_file_name):
         sort_and_add_control_points(cps)
 
 def import_coordinates_from_iof_xml(iof_xml_file_name):
-    with open(iof_xml_file_name, encoding='utf-8') as iof_file:
+    with open(iof_xml_file_name, encoding='utf-8-sig') as iof_file:
         parse_results = iof_parser.parse(iof_file)
         if not len(parse_results):
             logging.error(_('Cannot parse IOF XML file'))
