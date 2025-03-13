@@ -151,7 +151,7 @@ class MainWindow(QMainWindow):
                         self.save_file()
                         logging.info(_('Auto save'))
                 else:
-                    logging.debug(translate('No file to auto save'))
+                    logging.debug(_('No file to auto save'))
         except Exception as e:
             logging.exception(e)
 
