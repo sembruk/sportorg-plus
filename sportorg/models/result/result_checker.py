@@ -24,7 +24,7 @@ class ResultChecker:
         if race().get_setting('result_processing_mode', 'time') == 'scores':
             result.check(course)
             scores = self.calculate_rogaine_scores(result)
-            result.penalty_points = self.calculate_rogaine_penalty(result, result.scores)
+            result.penalty_points = self.calculate_rogaine_penalty(result, scores)
             result.scores = scores - result.penalty_points
             return True
 
