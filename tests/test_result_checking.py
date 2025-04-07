@@ -457,6 +457,30 @@ def test_calculate_rogaine_penalty(score, max_time, finish, expected):
     result.finish_time = OTime(*finish)
     assert ResultChecker.calculate_rogaine_penalty(result, score) == expected
 
+@pytest.mark.parametrize(
+    'controls, max_time, finish, expected_score, expected_penalty',
+    [
+        ([31, 32, 33, 34], (0, 1, 0, 0), (0, 0, 59, 59), 12, 0),
+        ([31, 32, 33, 34], (0, 1, 0, 0), (0, 1, 0, 1), 11, 1),
+        ([11, 22, 33, 44], (0, 1, 0, 0), (0, 1, 4, 15), 5, 5)
+    ],
+)
+
+def test_calculate_rogaine_score_and_penalty(controls, finish, max_time, expected_score, expected_penalty):
+    create_race()
+    race().set_setting('result_processing_mode', 'scores')
+    race().set_setting('result_processing_score_mode', 'rogain')
+    race().set_setting('result_processing_scores_minute_penalty', 1.0)
+    race().groups[0].max_time = OTime(*max_time)
+    result = race().results[0]
+    assert ok(['*[]'], controls)
+    result.splits = [make_split_control(code) for code in controls]
+    result.finish_time = OTime(*finish)
+    assert ResultChecker.checking(result)
+    assert result.penalty_points == expected_penalty
+    assert result.scores == expected_score
+ 
+
 
 def test_non_obvious_behavior():
     """Неочевидное поведение при проверке дистанции. Не всегда это некорректная работа
