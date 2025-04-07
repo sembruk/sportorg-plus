@@ -135,7 +135,7 @@ class CourseEditDialog(QDialog):
 
         text = self.item_controls.toPlainText()
 
-        course._controls.clear()
+        controls = []
         for i in text.split('\n'):
             control = CourseControl()
             if i is None or len(i) == 0:
@@ -147,11 +147,10 @@ class CourseEditDialog(QDialog):
                 except Exception as e:
                     logging.exception(e)
                     control.length = 0
-            course._controls.append(control)
-        course.controls = course.get_unrolled_controls()
+            controls.append(control)
+        course.controls = controls
 
         obj = race()
-        obj.add_cp_coords(course.get_cp_coords())
         ResultChecker.check_all()
         ResultCalculation(obj).process_results()
         RaceSplits(obj).generate()

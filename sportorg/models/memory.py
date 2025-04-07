@@ -261,10 +261,16 @@ class Course(Model):
 
     def to_dict(self):
         _controls = [control.to_dict() for control in self._controls]
+        controls_count = self.get_controls_count_str()
+        if '≥' in controls_count:
+            controls_count = -1  # no determined count
+        else:
+            controls_count = int(controls_count)
         return {
             'object': self.__class__.__name__,
             'id': str(self.id),
             'controls': _controls,
+            'controls_count': controls_count,  # for displaying in reports
             'bib': self.bib,
             'name': self.name,
             'length': self.length,
@@ -302,6 +308,13 @@ class Course(Model):
             else:
                 unrolled_controls.append(control)
         return unrolled_controls
+
+    def get_controls_count_str(self):
+        count_str = str(len(self.unrolled_controls))
+        for control in self.unrolled_controls:
+            if '[]' in control.code:
+                count_str = '≥' + count_str
+        return count_str
 
 class Subgroup(Model):
     def __init__(self):
@@ -1777,14 +1790,6 @@ class Race(Model):
                 if person.id != p.id and person.full_name and person.full_name == p.full_name and person.birth_date == p.birth_date:
                     ret.append(person)
         return ret
-
-    def add_cp_coords(self, control_points):
-        for cp in control_points:
-            control_point = find(self.control_points, code=str(cp.code))
-            if control_point:
-                control_point = cp
-            else:
-                self.control_points.append(cp)
 
 
 class Qualification(IntEnum):

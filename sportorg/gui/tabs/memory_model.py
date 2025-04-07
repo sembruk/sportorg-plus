@@ -466,7 +466,7 @@ class GroupMemoryModel(AbstractSportOrgMemoryModel):
     def get_values_from_object(self, group):
         course = group.course
 
-        control_count = len(course.controls) if course else 0
+        control_count = course.get_controls_count_str() if course else 0
 
         return [
             group.name,
@@ -523,7 +523,7 @@ class CourseMemoryModel(AbstractSportOrgMemoryModel):
         return [
             course.name,
             course.length,
-            len(course.controls),
+            course.get_controls_count_str(),
             course.climb,
             ' '.join(course.get_code_list()),
         ]
