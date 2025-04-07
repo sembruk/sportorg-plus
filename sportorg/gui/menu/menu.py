@@ -245,11 +245,11 @@ def menu_list():
                     'action': 'RelayCloneAction'
                 },
                 {
-                    'title': _('Use bib as card number'),
+                    'title': _('Replace bib with card number'),
                     'action': 'CopyBibToCardNumber'
                 },
                 {
-                    'title': _('Use card number as bib'),
+                    'title': _('Replace card number with bib'),
                     'action': 'CopyCardNumberToBib'
                 },
                 {

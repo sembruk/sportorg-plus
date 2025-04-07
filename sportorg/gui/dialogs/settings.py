@@ -24,7 +24,7 @@ class MainTab(Tab):
         self.widget = QWidget()
         self.layout = QFormLayout(parent)
 
-        self.label_lang = QLabel(_('Languages'))
+        self.label_lang = QLabel(_('Language'))
         self.item_lang = AdvComboBox()
         self.item_lang.addItems(get_languages())
         self.item_lang.setCurrentText(current_locale)

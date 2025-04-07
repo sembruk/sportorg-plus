@@ -126,7 +126,7 @@ class Widget(QtWidgets.QWidget):
         self.result_course_group_box.setTitle(_('Course'))
         self.result_course_name_label.setText(_('Name'))
         self.result_course_length_label.setText(_('Length'))
-        self.result_card_group_box.setTitle(_('Chip'))
+        self.result_card_group_box.setTitle(_('Card'))
         self.result_card_start_label.setText(_('Start'))
         self.result_card_finish_label.setText(_('Finish'))
 

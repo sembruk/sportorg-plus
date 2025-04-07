@@ -134,7 +134,7 @@ class PersonEditDialog(QDialog):
         self.layout.addRow(self.label_start_group, self.item_start_group)
 
         self.is_ok['card'] = True
-        self.label_card = QLabel(_('Punch card #'))
+        self.label_card = QLabel(_('Card number'))
         self.item_card = QSpinBox()
         self.item_card.setMinimum(0)
         self.item_card.setMaximum(9999999)

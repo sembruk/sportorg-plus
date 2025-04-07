@@ -107,7 +107,7 @@ class ResultEditDialog(QDialog):
 
         self.layout.addRow(QLabel(_('Created at')), self.item_created_at)
         if self.current_object.is_punch():
-            self.layout.addRow(QLabel(_('Card')), self.item_card_number)
+            self.layout.addRow(QLabel(_('Card number')), self.item_card_number)
         self.layout.addRow(QLabel(_('Bib')), self.item_bib)
         self.layout.addRow(QLabel(''), self.label_person_info)
         if more24:

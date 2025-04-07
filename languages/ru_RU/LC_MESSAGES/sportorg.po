@@ -82,11 +82,6 @@ msgstr "Отмена"
 msgid "Group"
 msgstr "Группа"
 
-#: gui/dialogs/bib_dialog.py:83 gui/dialogs/result_edit.py:110
-#: gui/dialogs/result_edit.py:188 modules/printing/printout_split.py:85
-msgid "Card"
-msgstr "Номер чипа"
-
 #: gui/dialogs/bib_dialog.py:86 gui/dialogs/result_edit.py:191
 msgid "not found"
 msgstr "не найдено"
@@ -532,10 +527,6 @@ msgstr "Квалификация"
 msgid "Bib"
 msgstr "Номер"
 
-#: gui/dialogs/person_edit.py:137
-msgid "Punch card #"
-msgstr "Номер чипа"
-
 #: gui/dialogs/person_edit.py:178 gui/dialogs/team_edit.py:36
 msgid "Team properties"
 msgstr "Свойства команды"
@@ -786,7 +777,7 @@ msgid "The search has not given any results"
 msgstr "Поиск не дал результатов"
 
 #: gui/dialogs/settings.py:27
-msgid "Languages"
+msgid "Language"
 msgstr "Язык интерфейса"
 
 #: gui/dialogs/settings.py:36
@@ -914,8 +905,8 @@ msgid "Max gap from leader"
 msgstr "Максимальное отставание для гандикапа"
 
 #: gui/dialogs/start_handicap_dialog.py:41
-msgid "Start time for 2 group"
-msgstr "Время старта непопавших в гандикап"
+msgid "Start time for 2nd group"
+msgstr "Время старта не попавших в гандикап"
 
 #: gui/dialogs/start_handicap_dialog.py:51
 msgid "Offset after DSQ"
@@ -1060,7 +1051,7 @@ msgid "Teamwork"
 msgstr "Командная работа"
 
 #: gui/dialogs/teamwork_properties.py:39
-msgid "Type connection"
+msgid "Connection type"
 msgstr "Тип соединения"
 
 #: gui/dialogs/teamwork_properties.py:41
@@ -1227,7 +1218,7 @@ msgid "Light beam"
 msgstr "Луч"
 
 #: gui/dialogs/timekeeping_properties.py:105
-msgid "Assigning a chip when reading"
+msgid "Assigning a card when reading"
 msgstr "Присвоение чипов при чтении"
 
 #: gui/dialogs/timekeeping_properties.py:107
@@ -1235,7 +1226,7 @@ msgid "Off"
 msgstr "Отключено"
 
 #: gui/dialogs/timekeeping_properties.py:109
-msgid "Only unknown members"
+msgid "Only unknown cards"
 msgstr "Только неизвестные чипы"
 
 #: gui/dialogs/timekeeping_properties.py:111
@@ -1247,7 +1238,7 @@ msgid "Athlete auto create"
 msgstr "Создавать новых спортсменов"
 
 #: gui/dialogs/timekeeping_properties.py:118
-msgid "Several readout of chip"
+msgid "Several readout of card"
 msgstr "Повторное чтение чипов"
 
 #: gui/dialogs/timekeeping_properties.py:120
@@ -1283,7 +1274,7 @@ msgid "by scores"
 msgstr "по баллам"
 
 #: gui/dialogs/timekeeping_properties.py:151
-msgid "rogain scores"
+msgid "rogaine scores"
 msgstr "рогейн (45КП = 4балла, 78КП = 7баллов)"
 
 #: gui/dialogs/timekeeping_properties.py:153
@@ -1319,7 +1310,7 @@ msgid "lap station"
 msgstr "станция на штрафном круге"
 
 #: gui/dialogs/timekeeping_properties.py:185
-msgid "Don't disqualify"
+msgid "Don't disqualify for missed punches"
 msgstr "Не снимать участников за пропущенные КП"
 
 #: gui/dialogs/timekeeping_properties.py:187
@@ -1346,7 +1337,7 @@ msgstr ""
 " time - результат участника"
 
 #: gui/dialogs/timekeeping_properties.py:219
-msgid "Accuracy"
+msgid "Accuracy, digits after dot"
 msgstr "Учитывать доли сек. знаков"
 
 #: gui/dialogs/timekeeping_properties.py:226
@@ -1414,7 +1405,7 @@ msgid ""
 msgstr ""
 "Рекомендуется установить интервал автосохранения в настройках, чтобы "
 "избежать потери данных.\n"
-"Вы хотите сделать это сейчас?"
+"Вы хотите сделать это сейчас?"
 
 #: gui/main_window.py:265
 msgid "Do not show again"
@@ -1451,8 +1442,8 @@ msgid "Tab doesn't exist"
 msgstr "Раздел не существует"
 
 #: gui/main_window.py:612
-msgid "Are you sure you want to reassign the chip number"
-msgstr "Вы уверены, что хотите переприсвоить номер чипа"
+msgid "Are you sure you want to reassign the card number?"
+msgstr "Вы уверены, что хотите переназначить номер чипа?"
 
 #: gui/main_window.py:651
 msgid "Create SportOrg file"
@@ -1477,7 +1468,7 @@ msgid ""
 "\"{}\"\n"
 "with new empty file"
 msgstr ""
-"Отменена перезапись существующего файла\n"
+"Отменена перезаписи существующего файла\n"
 "\"{}\"\n"
 "новым пустым"
 
@@ -1621,11 +1612,11 @@ msgid "Open IOF xml"
 msgstr "Открыть IOF xml"
 
 #: gui/menu/actions.py:378 gui/menu/menu.py:248
-msgid "Use bib as card number"
+msgid "Replace bib with card number"
 msgstr "Заменить номера чипов нагрудными номерами"
 
 #: gui/menu/actions.py:387 gui/menu/menu.py:252
-msgid "Use card number as bib"
+msgid "Replace card number with bib"
 msgstr "Заменить нагрудные номера номерами чипов"
 
 #: gui/menu/actions.py:412 gui/menu/menu.py:269 gui/toolbar.py:12
@@ -1864,7 +1855,7 @@ msgid "Out of competition title"
 msgstr "В/К"
 
 #: gui/tabs/memory_model.py:307 gui/tabs/memory_model.py:377
-msgid "Rented stub"
+msgid "Own card"
 msgstr "Свой чип"
 
 #: gui/tabs/memory_model.py:313 models/memory.py:865
@@ -1933,7 +1924,7 @@ msgid "Length"
 msgstr "Длина"
 
 #: gui/tabs/results.py:129
-msgid "Chip"
+msgid "Card"
 msgstr "Чип"
 
 #: gui/toolbar.py:11
@@ -2104,7 +2095,7 @@ msgstr "всего"
 
 #: modules/printing/printout_split.py:144
 msgid "Who can win you"
-msgstr "Вас могут выиграть"
+msgstr "Вас могут обогнать"
 
 #: modules/printing/printout_split.py:145
 msgid "Final result will be known"

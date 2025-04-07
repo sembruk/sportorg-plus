@@ -36,7 +36,7 @@ class TeamworkPropertiesDialog(QDialog):
         self.teamwork_item_port.setMaximum(65535)
         self.teamwork_item_token = QLineEdit()
         self.teamwork_groupbox = QGroupBox()
-        self.teamwork_groupbox.setTitle(_('Type connection'))
+        self.teamwork_groupbox.setTitle(_('Connection type'))
         self.teamwork_groupbox_layout = QFormLayout()
         self.teamwork_item_client = QRadioButton(_('Client'))
         self.teamwork_item_server = QRadioButton(_('Server'))

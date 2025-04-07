@@ -609,7 +609,7 @@ class MainWindow(QMainWindow):
                         if i < len(race().persons):
                             cur_person = race().persons[i]
                             if cur_person.card_number:
-                                confirm = messageBoxQuestion(self, _('Question'), _('Are you sure you want to reassign the chip number'), QMessageBox.Yes | QMessageBox.No)
+                                confirm = messageBoxQuestion(self, _('Question'), _('Are you sure you want to reassign the card number?'), QMessageBox.Yes | QMessageBox.No)
                                 if confirm == QMessageBox.No:
                                     break
                             race().person_card_number(cur_person, result.card_number)

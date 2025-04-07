@@ -52,9 +52,9 @@ class PrintPropertiesDialog(QDialog):
         self.layout.addRow(self.label_template)
         self.item_template = AdvComboBox()
         #self.item_template.setMaximumWidth(300)
-        if platform.system() == 'Windows':
-            self.item_template.addItem(_('Internal printing'))
-            self.item_template.addItem(_('Internal printing') + ' ' + _('scale') + '=75')
+        #if platform.system() == 'Windows':
+        #    self.item_template.addItem(_('Internal printing'))
+        #    self.item_template.addItem(_('Internal printing') + ' ' + _('scale') + '=75')
         self.item_template.addItems(get_templates(config.template_dir('split')))
         self.layout.addRow(self.item_template)
 

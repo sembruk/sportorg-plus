@@ -74,3 +74,10 @@ msgstr "Penalty legs"
 msgid "Mf"
 msgstr "MF"
 
+msgid "scores formula hint"
+msgstr ""
+"Create scores formula. Available following variables: \n"
+" leader - result of group leader; \n"
+" time - result of participant."
+
+
