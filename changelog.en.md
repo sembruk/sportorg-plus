@@ -1,5 +1,15 @@
 # SportOrgPlus Changelog
 
+## v1.5.1 - 2025-04-09
+
+* Fixed rogaining penalty calculation at card reading
+* Fixed coordinate import from GPX and IOF XML at Windows
+* Improved timekeeping properties dialog behavior
+* Improved Orgeo CSV import
+* Updated English interface
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.5.0...v1.5.1)
+
 ## v1.5.0 - 2025-01-20
 
 * Added tab with control points coordinates and scores
