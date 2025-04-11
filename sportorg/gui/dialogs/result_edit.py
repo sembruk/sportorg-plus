@@ -93,7 +93,8 @@ class ResultEditDialog(QDialog):
         self.item_penalty_laps.setMaximum(1000000)
 
         self.item_status = QComboBox()
-        self.item_status.addItems(ResultStatus.get_titles())
+        status_titles = [s.get_title() for s in ResultStatus if s not in (ResultStatus.MISSING_PUNCH, ResultStatus.OVERTIME)]
+        self.item_status.addItems(status_titles)
 
         self.item_status_comment = AdvComboBox()
         self.item_status_comment.setMaximumWidth(300)
@@ -223,7 +224,11 @@ class ResultEditDialog(QDialog):
 
         self.item_days.setValue(self.current_object.days)
 
-        self.item_status.setCurrentText(self.current_object.status.get_title())
+        status = self.current_object.status.get_title()
+        if self.item_status.findText(status) == -1:  # not found
+            self.item_status.addItem(status)
+
+        self.item_status.setCurrentText(status)
 
         self.item_status_comment.setCurrentText(self.current_object.status_comment)
 

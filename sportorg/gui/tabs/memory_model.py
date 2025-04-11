@@ -374,7 +374,7 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
             if person.team:
                 team = person.team.full_name
 
-            rented_card = _('Rented card') if is_rented_card else _('Rented stub')
+            rented_card = _('Rented card') if is_rented_card else _('Own card')
 
         start = ''
         if i.get_start_time():
