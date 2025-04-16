@@ -316,7 +316,11 @@ class ResultEditDialog(QDialog):
             except ResultCheckerException as e:
                 logging.exception(e)
         ResultCalculation(race()).process_results()
-        live_client.send(result)
+        if race().is_team_race() and result.person and result.person.team:
+            live_client.send(result.person.team)
+        else:
+            live_client.send(result)
+        self.close()
         Teamwork().send(result.to_dict())
 
 

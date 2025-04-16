@@ -593,7 +593,10 @@ class MainWindow(QMainWindow):
                     elif result.person and result.person.group:
                         GroupSplits(race(), result.person.group).generate(True)
                     Teamwork().send(result.to_dict())
-                    live_client.send(result)
+                    if race().is_team_race() and result.person and result.person.team:
+                        live_client.send(result.person.team)
+                    else:
+                        live_client.send(result)
                     TelegramClient().send_result(result)
                     if result.person:
                         if result.is_status_ok():
