@@ -565,11 +565,12 @@ class MainWindow(QMainWindow):
         sel_model = table.selectionModel()
         indexes = sel_model.selectedRows()
 
-        ret = []
-        for i in indexes:
-            orig_index_int = i.row()
-            ret.append(orig_index_int)
-        return ret
+        return [i.row() for i in indexes] if indexes else []
+
+    def clear_selection(self, table=None):
+        if table is None:
+            table = self.get_current_table()
+        table.selectionModel().clearSelection()
 
     def add_sportident_result_from_sireader(self, result):
         try:
@@ -844,6 +845,7 @@ class MainWindow(QMainWindow):
         elif tab == 5:
             res = race().delete_control_points(indexes)
             self.refresh()
+        self.clear_selection()
 
         if len(res):
             Teamwork().delete([r.to_dict() for r in res])

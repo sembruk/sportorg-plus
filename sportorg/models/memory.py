@@ -1735,10 +1735,12 @@ class Race(Model):
         print("Team max number:", self.team_max_number)
 
     def get_persons_by_group(self, group):
-        return find(self.persons, group=group, return_all=True)
+        items = find(self.persons, group=group, return_all=True)
+        return items if items is not None else []
 
     def get_persons_by_team(self, team):
-        return find(self.persons, team=team, return_all=True)
+        items = find(self.persons, team=team, return_all=True)
+        return items if items is not None else []
 
     def get_persons_by_corridor(self, corridor):
         ret = []

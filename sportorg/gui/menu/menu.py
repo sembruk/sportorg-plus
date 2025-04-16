@@ -260,6 +260,11 @@ def menu_list():
                     'title': _('Update subgroups'),
                     'action': 'UpdateSubroups'
                 },
+                {
+                    'title': _('Merge groups'),
+                    'tabs': [2],
+                    'action': 'MergeGroupsAction'
+                }
             ]
         },
         {

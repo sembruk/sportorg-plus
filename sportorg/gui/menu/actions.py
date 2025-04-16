@@ -5,7 +5,7 @@ from typing import Any
 
 from PySide2 import QtCore, QtGui
 
-from PySide2.QtWidgets import QMessageBox, QApplication, QTableView
+from PySide2.QtWidgets import QMessageBox, QApplication, QTableView, QInputDialog
 
 from sportorg import config
 from sportorg.common.otime import OTime
@@ -40,7 +40,7 @@ from sportorg.libs.winorient.wdb import write_wdb
 from sportorg.models.memory import race, ResultStatus, ResultManual, find
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.result.result_checker import ResultChecker
-from sportorg.models.start.start_preparation import guess_corridors_for_groups, copy_bib_to_card_number, copy_card_number_to_bib, split_teams, update_subgroups
+from sportorg.models.start.start_preparation import guess_corridors_for_groups, copy_bib_to_card_number, copy_card_number_to_bib, split_teams, update_subgroups, merge_groups
 from sportorg.modules.backup.json import get_races_from_file
 from sportorg.modules.iof import iof_xml
 from sportorg.modules.live.live import live_client
@@ -395,6 +395,25 @@ class SplitTeamsAction(Action, metaclass=ActionFactory):
         split_teams()
         self.app.refresh()
 
+class MergeGroupsAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        try:
+            if self.app.current_tab != 2:
+                logging.warning(_('Can only merge groups in groups tab'))
+                return
+            indexes = self.app.get_selected_rows()
+            if len(indexes) < 2:
+                logging.warning(_('Please select at least 2 groups'))
+                return
+            selected_groups = {race().groups[i].name: i for i in indexes}
+            group_name, ok = QInputDialog.getItem(self.app, _('Merge groups'), _('Keep group'), selected_groups.keys(), 0, False)
+            if not ok:
+                return
+            if merge_groups(indexes, selected_groups[group_name]):
+                self.app.clear_selection()
+            self.app.refresh()
+        except Exception as e:
+            logging.exception(e)
 
 class UpdateSubroups(Action, metaclass=ActionFactory):
     def execute(self):
@@ -638,10 +657,8 @@ class OnlineSendAction(Action, metaclass=ActionFactory):
                 return
             selected_items = []
             for index in indexes:
-                if index < 0:
+                if index < 0 or index >= len(items):
                     continue
-                if index >= len(items):
-                    pass
                 selected_items.append(items[index])
             if self.app.current_tab == 1:
                 # Most recent results are sent last

@@ -6,7 +6,7 @@ from copy import copy
 
 from sportorg.common.otime import OTime
 
-from sportorg.models.memory import race, Group, Person, Team, Result, ResultStatus, find
+from sportorg.models.memory import race, Group, Person, Team, Result, ResultStatus, find, NotEmptyException
 from sportorg.models.result.result_calculation import ResultCalculation
 
 
@@ -526,8 +526,34 @@ def update_subgroups(group=None):
     teams = obj.teams
     if group is not None:
         teams = find(obj.teams, group=group, return_all=True)
-    for team in obj.teams:
-        team.update_subgroups()
+    if teams:
+        for team in teams:
+            team.update_subgroups()
+
+
+def merge_groups(indexes, group_index):
+    obj = race()
+    res_group = obj.groups[group_index]
+    indexes.remove(group_index)
+    for i in indexes:
+        group = obj.groups[i]
+        for person in obj.get_persons_by_group(group):
+            person.group = res_group
+        if obj.is_team_race():
+            teams = find(obj.teams, group=group, return_all=True)
+            if teams:
+                for team in teams:
+                    team.group = res_group
+
+    obj.update_counters()
+
+    indexes = sorted(indexes, reverse=True)
+    for i in indexes:
+        group = obj.groups[i]
+        if group.count_person > 0:
+            raise NotEmptyException('Cannot remove group {}'.format(group.name))
+        del obj.groups[i]
+    return True
 
 
 def clone_relay_legs(min_bib, max_bib, increment):
