@@ -189,21 +189,20 @@ class AbstractSportOrgMemoryModel(QAbstractTableModel):
 
         self.search_offset = -1
 
+    def sort_key(self, obj, column):
+        item = self.get_item(obj, column)
+        return item is None, str(type(item)), item
+
     def sort(self, p_int, order=None):
         """Sort table by given column number.
         """
-        def sort_key(x):
-            item = self.get_item(x, p_int)
-            return item is None, str(type(item)), item
         try:
             self.layoutAboutToBeChanged.emit()
 
             source_array = self.get_source_array()
 
             if len(source_array):
-                source_array = sorted(source_array, key=sort_key)
-                if order == Qt.DescendingOrder:
-                    source_array = source_array[::-1]
+                source_array = sorted(source_array, key=lambda x: self.sort_key(x, p_int), reverse=order == Qt.DescendingOrder)
 
                 self.set_source_array(source_array)
 
@@ -614,4 +613,18 @@ class ControlPointMemoryModel(AbstractSportOrgMemoryModel):
 
     def set_source_array(self, array):
         self.race.control_points = array
+
+    def sort_key(self, obj, column):
+        item = self.get_item(obj, column)
+
+        if item == 'start':
+            return (0,)  # Lowest possible rank
+        elif item == 'finish':
+            return (3,)  # Highest possible rank
+
+        try:
+            num = int(item)
+            return (1, num)
+        except (ValueError, TypeError):
+            return (2, str(item))
 

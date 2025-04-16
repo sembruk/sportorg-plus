@@ -7,6 +7,17 @@ from sportorg.libs.iof import parser as iof_parser
 from sportorg.models.memory import race, ControlPoint
 from sportorg.language import _
 
+def custom_sort_key(k):
+    if k == 'start':
+        return (0,)  # Lowest possible rank
+    elif k == 'finish':
+        return (3,)  # Highest possible rank
+    try:
+        num = int(k)
+        return (1, num)
+    except (ValueError, TypeError):
+        return (2, str(k))
+
 def sort_and_add_control_points(cps):
     if 'start' not in cps:
         logging.info(_('Start control point not found, using default (0, 0)'))
@@ -34,7 +45,7 @@ def sort_and_add_control_points(cps):
             if code.isdigit():
                 cp.score = int(cp.code)//10
         cp_dict[cp.code] = cp
-    obj.control_points = [v for k,v in sorted(cp_dict.items())]
+    obj.control_points = [v for k,v in sorted(cp_dict.items(), key=lambda item: custom_sort_key(item[0]))]
     logging.info(_('Imported {} control points from file. Total {}').format(len(cps), len(obj.control_points)))
 
 
