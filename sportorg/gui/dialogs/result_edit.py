@@ -311,6 +311,12 @@ class ResultEditDialog(QDialog):
             result.clear()
             try:
                 ResultChecker.checking(result)
+                if race().is_team_race() and result.person and result.person.team:
+                    team = result.person.team
+                    if team.result:
+                        for r in team.result.members_results:
+                            if r is not result:
+                                ResultChecker.checking(r)
                 if result.person and result.person.group:
                     GroupSplits(race(), result.person.group).generate(True)
             except ResultCheckerException as e:
