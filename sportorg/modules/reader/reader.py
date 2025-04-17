@@ -16,7 +16,6 @@ class ReaderCommand:
 
 
 class ReaderBase(QThread):
-    #data_sender = Signal(object)
 
     def __init__(self, port, queue, stop_event, logger):
         super().__init__()
@@ -28,27 +27,6 @@ class ReaderBase(QThread):
     def run(self):
         raise NotImplementedError("Derived classes must implement this method.")
 
-    def _check_data(self, card_data):
-        return card_data
-
-    @staticmethod
-    def _get_result(card_data, result_type):
-        result = memory.race().new_result(result_type)
-        result.card_number = card_data.get('bib') or card_data.get('card_number')
-
-        for punch in card_data['punches']:
-            t = punch[1]
-            if t:
-                split = memory.Split()
-                split.code = str(punch[0])
-                split.time = time_to_otime(t)
-                split.days = memory.race().get_days(t)
-                result.splits.append(split)
-
-        result.start_time = time_to_otime(card_data['start']) if 'start' in card_data else None
-        result.finish_time = time_to_otime(card_data['finish']) if 'finish' in card_data else None
-
-        return result
 
 class ResultThreadBase(QThread):
     data_sender = Signal(object)
@@ -99,10 +77,8 @@ class ResultThreadBase(QThread):
                 split.days = memory.race().get_days(t)
                 result.splits.append(split)
 
-        if 'start' in card_data:
-            result.start_time = time_to_otime(card_data['start'])
-        if 'finish' in card_data:
-            result.finish_time = time_to_otime(card_data['finish'])
+        result.start_time = time_to_otime(card_data['start']) if 'start' in card_data else None
+        result.finish_time = time_to_otime(card_data['finish']) if 'finish' in card_data else None
 
         return result
 
