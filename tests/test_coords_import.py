@@ -20,12 +20,12 @@ def test_import_coordinates_from_gpx(file_name, function):
     assert len(cur_race.control_points) == 6
 
     expected = [
+        ('start', 0, 0, 0),
         ('31', 3, 100, -359),
         ('32', 3, -214, -462),
         ('33', 3, -574, -309),
         ('34', 3, -482, 82),
         ('finish', 0, -194, 177),
-        ('start', 0, 0, 0),
     ]
 
     for i, (code, score, x, y) in enumerate(expected):
