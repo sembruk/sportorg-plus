@@ -394,11 +394,6 @@ class SplitTeamsAction(Action, metaclass=ActionFactory):
         split_teams()
         self.app.refresh()
 
-class SplitTeamsAction(Action, metaclass=ActionFactory):
-    def execute(self):
-        split_teams()
-        self.app.refresh()
-
 class MergeGroupsAction(Action, metaclass=ActionFactory):
     def execute(self):
         try:

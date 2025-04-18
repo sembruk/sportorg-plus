@@ -188,8 +188,8 @@
         </table>
         <br> Финиш:  {{result.finish_msec|tohhmmss}}
         <br> Время:  {{(result.result_msec - result.penalty_time + result.credit_time)|tohhmmss}} {% if result.speed %} ({{result.speed}}) {% endif %}
-        <br> Штраф: {% if result.penalty_time > 0 %}+{{result.penalty_time|tohhmmss}}{% endif %}
-        <!--<br> Бонус: -{{result.credit_time|tohhmmss}}-->
+        <!--<br> Штраф: {% if result.penalty_time > 0 %}+{{result.penalty_time|tohhmmss}}{% endif %}-->
+        <br> Бонус: -{{result.credit_time|tohhmmss}}
         <br> Штраф: +{{result.penalty_time|tohhmmss}}
         <br> <b>Результат: {{result.result}}</b>
         {% if result.length %}

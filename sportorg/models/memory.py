@@ -1130,37 +1130,36 @@ class ResultSportident(Result):
             s.has_penalty = True
             s.course_index = -1
 
-        # BNO: reset credit_time for bonuses
+        #### BNO: reset credit_time for bonuses
         self.credit_time = OTime()
         unique_bonuses = set()
         check_only_bonus = False
 
-        #prev_code = None
-        #for i in range(len(self.splits)):
-        #    try:
-        #        split = self.splits[i]
-        #        cur_code = split.code
-        #        if prev_code is None:
-        #            prev_code = cur_code
-        #        ss = prev_code+'-'+cur_code
-        #        if int(prev_code) > int(cur_code):
-        #            ss = cur_code+'-'+prev_code
-        #        #if ss == '33-44':
-        #        #    self.status = ResultStatus.DISQUALIFIED
+        prev_code = None
+        for i in range(len(self.splits)):
+            split = self.splits[i]
+            cur_code = split.code
+            #if prev_code is None:
+            #    prev_code = cur_code
+            #ss = prev_code+'-'+cur_code
+            #if int(prev_code) > int(cur_code):
+            #    ss = cur_code+'-'+prev_code
+            #if ss == '33-44':
+            #    self.status = ResultStatus.DISQUALIFIED
 
-        #        prev_code = cur_code
-        #        # BNO2022: check bonuses
-        #        # CP 82, 83 - 15 minutes
-        #        #if int(cur_code)//10 == 8:
-        #        #    if cur_code not in unique_bonuses:
-        #        #        unique_bonuses.add(cur_code)
-        #        #        if int(cur_code) < 84:
-        #        #            self.credit_time += OTime(minute=15)
-        #        #    continue
-        #        #elif check_only_bonus:
-        #        #    if i == len(self.splits)-1:
-        #        #        return True
-        #        #    continue
+            prev_code = cur_code
+            # check bonuses
+            # CP 53 - 15 minutes
+            if int(cur_code) == 53:
+                if cur_code not in unique_bonuses:
+                    unique_bonuses.add(cur_code)
+                    self.credit_time += OTime(minute=15)
+                continue
+            elif check_only_bonus:
+                if i == len(self.splits)-1:
+                    return True
+                continue
+        ####
 
         course_index = 0
         prev_unique_cp_list = []
@@ -1312,9 +1311,9 @@ class Person(Model):
             return self.birth_date.year
         return 0
 
-    @property
-    def year_of_birth(self):
-        return self.get_year()
+    #@property
+    #def year_of_birth(self):
+    #    return self.get_year()
 
     def set_year(self, year):
         """Change only year of birth_date"""

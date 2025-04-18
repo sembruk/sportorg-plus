@@ -102,29 +102,29 @@ class ResultSportidentGeneration:
         if self._person:
             return True
 
-        name,surname,year_of_birth,team_name,group_name = get_person_info_by_card_number_from_db(self._result.card_number)
-        if name and surname and year_of_birth and team_name and group_name:
-            person = find(race().persons, name=name, surname=surname, year_of_birth=year_of_birth)
-            if person:
-                person.card_number = self._result.card_number
-                person.bib = self._result.card_number
-                self._person = person
-                return True
+        #name,surname,year_of_birth,team_name,group_name = get_person_info_by_card_number_from_db(self._result.card_number)
+        #if name and surname and year_of_birth and team_name and group_name:
+        #    person = find(race().persons, name=name, surname=surname, year_of_birth=year_of_birth)
+        #    if person:
+        #        person.card_number = self._result.card_number
+        #        person.bib = self._result.card_number
+        #        self._person = person
+        #        return True
 
-            self._person = Person()
-            self._person.bib = self._result.card_number
-            self._person.name = name
-            self._person.surname = surname
-            self._person.set_year(year_of_birth)
-            team = race().add_new_team(team_name)
-            team.name = team_name
-            self._person.team = team
-            self._person.group = find(race().groups, name=group_name)
-            logging.info('New person: {}'.format(self._person))
+        #    self._person = Person()
+        #    self._person.bib = self._result.card_number
+        #    self._person.name = name
+        #    self._person.surname = surname
+        #    self._person.set_year(year_of_birth)
+        #    team = race().add_new_team(team_name)
+        #    team.name = team_name
+        #    self._person.team = team
+        #    self._person.group = find(race().groups, name=group_name)
+        #    logging.info('New person: {}'.format(self._person))
 
-            #self._result.person = self._person
-            race().persons.append(self._person)
-            return True
+        #    #self._result.person = self._person
+        #    race().persons.append(self._person)
+        #    return True
 
         for person in race().persons:
             if person.card_number and person.card_number == self._result.card_number:
@@ -146,9 +146,9 @@ class ResultSportidentGeneration:
             bib_dialog = BibDialog('{}'.format(self._result.card_number))
             bib_dialog.exec_()
             self._person = bib_dialog.get_person()
-            if self._person:
-                self._person.card_number = self._result.card_number
-                self._person.bib = self._result.card_number
+            #if self._person:
+            #    self._person.card_number = self._result.card_number
+            #    self._person.bib = self._result.card_number
             self.bib_dialog_executed = True
         except Exception as e:
             logging.exception(e)

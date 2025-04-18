@@ -519,7 +519,7 @@
             {key: 'scores_without_penalty', title: 'Очки', size: 5, active: false},
             {key: 'penalty_points', title: 'Штраф', size: 9, active: false},
             {key: 'time', title: 'Время', size: 9},
-            {key: 'penalty_time', title: 'Штраф', size: 9},
+            {key: 'penalty_time', title: 'Штраф', size: 9, active: false},
             {key: 'credit_time', title: 'Бонусы', size: 9},
             {key: 'penalty_laps', title: 'Штраф', size: 9, active: false},
             {key: 'result', title: 'Результат', size: 16},
@@ -749,6 +749,7 @@
             }
         },
         {% endraw %}{% if race.settings.result_processing_mode != 'scores' %}
+        /*
         {
             title: 'Штрафное время',
             value: Fields.isActive('penalty_time'),
@@ -757,6 +758,7 @@
                 render()
             }
         },
+        */
         /*
         {
             title: 'Кол-во штрафных кругов',

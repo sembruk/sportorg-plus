@@ -156,9 +156,6 @@ class ReportDialog(QDialog):
                 template_path_items.remove(i)
         report_suffix = '_'.join(template_path_items)
 
-        for team in current_race['teams']:
-            team.pop('contact', None)
-
         if template_path.endswith('.docx'):
             # DOCX template processing
             full_path = config.template_dir() + template_path
