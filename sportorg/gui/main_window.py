@@ -4,6 +4,7 @@ import logging
 import time
 import pylocker
 from queue import Queue
+from datetime import datetime
 from PySide2 import QtGui, QtWidgets
 from PySide2.QtCore import Qt, QModelIndex, QItemSelectionModel, QTimer, QRect
 from PySide2.QtWidgets import QMainWindow, QTableView, QMessageBox
@@ -15,12 +16,13 @@ from sportorg.gui.dialogs.course_edit import CourseEditDialog
 from sportorg.gui.dialogs.person_edit import PersonEditDialog
 from sportorg.gui.dialogs.group_edit import GroupEditDialog
 from sportorg.gui.dialogs.team_edit import TeamEditDialog
+from sportorg.gui.dialogs.control_point_edit import ControlPointEditDialog
 from sportorg.models.constant import RentCards
 from sportorg.models.memory import Race, race, NotEmptyException, new_event, set_current_race_index
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.result.split_calculation import GroupSplits
 from sportorg.modules.backup.file import File
-from sportorg.modules.live.live import LiveClient
+from sportorg.modules.live.live import live_client
 from sportorg.modules.printing.model import NoResultToPrintException, split_printout, NoPrinterSelectedException
 from sportorg.modules.configs.configs import Config as Configuration, ConfigFile
 from sportorg.modules.sfr.sfrreader import SFRReaderClient
@@ -29,16 +31,19 @@ from sportorg.modules.sportident.result_generation import ResultSportidentGenera
 from sportorg.common.broker import Broker
 from sportorg.gui.dialogs.file_dialog import get_save_file_name
 from sportorg.gui.menu import menu_list, Factory
-from sportorg.gui.tabs import persons, groups, teams, results, courses, log
+from sportorg.gui.tabs import persons, groups, teams, results, courses, control_points, log
+from sportorg.gui.tabs.table import TableView
 from sportorg.gui.tabs.memory_model import PersonMemoryModel, ResultMemoryModel, GroupMemoryModel, \
-    CourseMemoryModel, TeamMemoryModel
+    CourseMemoryModel, TeamMemoryModel, ControlPointMemoryModel
 from sportorg.gui.toolbar import toolbar_list
 from sportorg.gui.utils.custom_controls import messageBoxQuestion
 from sportorg.language import _
 from sportorg.modules.sportident.sireader import SIReaderClient
+from sportorg.modules.reader.backup import parse_backup_from_last_save
 from sportorg.modules.sportiduino.sportiduino import SportiduinoClient
 from sportorg.modules.teamwork import Teamwork
 from sportorg.modules.telegram.telegram import TelegramClient
+from sportorg.modules.updater import checker
 
 
 class ConsolePanelHandler(logging.Handler):
@@ -104,7 +109,29 @@ class MainWindow(QMainWindow):
         False: 'sportident.png',
     }
 
+    def _check_card_data_backup(self, log_file_prefix):
+        logging.debug('Check card data backup')
+        entries = parse_backup_from_last_save(log_file_prefix)
+        logging.debug(f'Found {len(entries)} entries')
+        if entries:
+            confirm = messageBoxQuestion(self, _('Question'),
+                _('Found unsaved data for cards: {}.\nDo you want to restore it?').format(
+                    ', '.join([str(e['card_number']) for e in entries])
+                ),
+                QMessageBox.Yes | QMessageBox.No)
+            if confirm == QMessageBox.Yes:
+                return entries
+        return None
+
     def interval(self):
+        if self.get_configuration().get('try_restore_backup'):
+            for client in [SIReaderClient, SportiduinoClient, SFRReaderClient]:
+                if client().is_need_check_backup and client().is_result_thread_alive():
+                    client().is_need_check_backup = False
+                    entries = self._check_card_data_backup(client().log_file_prefix())
+                    if entries is not None:
+                        client().inject_backup_card_data(entries)
+
         if SIReaderClient().is_alive() != self.sportident_status:
             self.sportident_status = SIReaderClient().is_alive()
             self.toolbar_property['sportident'].setIcon(
@@ -124,9 +151,9 @@ class MainWindow(QMainWindow):
                         self.save_file()
                         logging.info(_('Auto save'))
                 else:
-                    logging.debug(translate('No file to auto save'))
+                    logging.debug(_('No file to auto save'))
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
         while not self.log_queue.empty():
             text = self.log_queue.get()
@@ -177,7 +204,7 @@ class MainWindow(QMainWindow):
                 if isinstance(recent_files, list):
                     self.recent_files = recent_files
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
 
     def conf_write(self):
         Configuration().set_option(ConfigFile.GEOMETRY, 'main', self.saveGeometry().toHex().data().decode())
@@ -206,8 +233,43 @@ class MainWindow(QMainWindow):
         self.service_timer.timeout.connect(self.interval)
         self.service_timer.start(1000) # msec
 
-        LiveClient().init()
+        live_client.init()
         self._menu_disable(self.current_tab)
+
+        if Configuration().configuration.get('check_updates'):
+            last_update_check_date_str = Configuration().parser.get(
+                'last_update_check', 'date', fallback='1970-01-01 00:00:00')
+            last_version_check_date = datetime.fromisoformat(last_update_check_date_str)
+            if (datetime.now() - last_version_check_date).days >= 7:
+                message = checker.update_available(config.VERSION)
+                if message is not None:
+                    QMessageBox.information(self, _('Info'), message)
+                Configuration().set_option('last_update_check', 'date', datetime.now().isoformat())
+
+        if (Configuration().parser.getboolean('autosave', 'recommend_autosave', fallback=True)
+                and not Configuration().configuration.get('autosave_interval')):
+            last_check_autosave_date_str = Configuration().parser.get(
+                'autosave', 'last_check', fallback='1970-01-01 00:00:00')
+            last_check_autosave_date = datetime.fromisoformat(last_check_autosave_date_str)
+            if (datetime.now() - last_check_autosave_date).days > 0:
+                Configuration().set_option('autosave', 'last_check', datetime.now().isoformat())
+                message_box = QMessageBox(
+                    QMessageBox.Question,
+                    _('Question'),
+                    _('Recommended to set autosave interval in settings to prevent data loss.\nDo you want to do it now?'),
+                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Ignore,
+                    self
+                )
+                message_box.button(QMessageBox.Yes).setText(_('Yes'))
+                message_box.button(QMessageBox.No).setText(_('No'))
+                message_box.button(QMessageBox.Ignore).setText(_('Do not show again'))
+                message_box.setDefaultButton(QMessageBox.Yes)
+                confirm = message_box.exec_()
+                if confirm == QMessageBox.Ignore:
+                    Configuration().set_option('autosave', 'recomend_autosave', False)
+                elif confirm == QMessageBox.Yes:
+                    self.action_by_id['settings_action'].trigger()
+
 
     def _setup_ui(self):
         geom = bytearray.fromhex(Configuration().parser.get(ConfigFile.GEOMETRY, 'main',  fallback='00'))
@@ -314,6 +376,7 @@ class MainWindow(QMainWindow):
         self.tabwidget.addTab(groups.Widget(), _('Groups'))
         self.tabwidget.addTab(courses.Widget(), _('Courses'))
         self.tabwidget.addTab(teams.Widget(), _('Teams'))
+        self.tabwidget.addTab(control_points.Widget(), _('Controls'))
         self.logging_tab = log.Widget()
         self.tabwidget.addTab(self.logging_tab, _('Logs'))
         self.tabwidget.currentChanged.connect(self._menu_disable)
@@ -327,7 +390,7 @@ class MainWindow(QMainWindow):
                     if column_order:
                         table.set_column_order(column_order)
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
 
     def _menu_disable(self, tab_index):
         for item in self.menu_list_for_disabled:
@@ -399,9 +462,11 @@ class MainWindow(QMainWindow):
             table.setModel(CourseMemoryModel())
             table = self.get_team_table()
             table.setModel(TeamMemoryModel())
+            table = self.get_control_point_table()
+            table.setModel(ControlPointMemoryModel())
             Broker().produce('init_model')
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def refresh(self):
         logging.debug('Refreshing interface')
@@ -426,12 +491,17 @@ class MainWindow(QMainWindow):
             table = self.get_team_table()
             table.model().init_cache()
             table.model().layoutChanged.emit()
+
+            table = self.get_control_point_table()
+            table.model().init_cache()
+            table.model().layoutChanged.emit()
+
             self.set_title()
 
             print('Refresh in {:.3f} seconds.'.format(time.time() - t))
             Broker().produce('refresh')
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def clear_filters(self, remove_condition=True):
         if self.get_person_table():
@@ -460,10 +530,10 @@ class MainWindow(QMainWindow):
             self._update_recent_files_menu()
 
     def get_tables(self):
-        return self.findChildren(QtWidgets.QTableView)
+        return self.findChildren(TableView)
 
     def get_table_by_name(self, name):
-        return self.findChild(QtWidgets.QTableView, name)
+        return self.findChild(TableView, name)
 
     def get_person_table(self):
         return self.get_table_by_name('PersonTable')
@@ -479,9 +549,12 @@ class MainWindow(QMainWindow):
 
     def get_team_table(self):
         return self.get_table_by_name('TeamTable')
+    
+    def get_control_point_table(self):
+        return self.get_table_by_name('ControlPointTable')
 
     def get_current_table(self):
-        map_ = ['PersonTable', 'ResultTable', 'GroupTable', 'CourseTable', 'TeamTable']
+        map_ = ['PersonTable', 'ResultTable', 'GroupTable', 'CourseTable', 'TeamTable', 'ControlPointTable']
         idx = self.current_tab
         if idx < len(map_):
             return self.get_table_by_name(map_[idx])
@@ -492,11 +565,12 @@ class MainWindow(QMainWindow):
         sel_model = table.selectionModel()
         indexes = sel_model.selectedRows()
 
-        ret = []
-        for i in indexes:
-            orig_index_int = i.row()
-            ret.append(orig_index_int)
-        return ret
+        return [i.row() for i in indexes] if indexes else []
+
+    def clear_selection(self, table=None):
+        if table is None:
+            table = self.get_current_table()
+        table.selectionModel().clearSelection()
 
     def add_sportident_result_from_sireader(self, result):
         try:
@@ -511,14 +585,18 @@ class MainWindow(QMainWindow):
                         try:
                             split_printout(result)
                         except NoResultToPrintException as e:
-                            logging.error(str(e))
+                            logging.exception(e)
                         except NoPrinterSelectedException as e:
-                            logging.error(str(e))
+                            logging.exception(e)
                         except Exception as e:
-                            logging.error(str(e))
+                            logging.exception(e)
                     elif result.person and result.person.group:
                         GroupSplits(race(), result.person.group).generate(True)
                     Teamwork().send(result.to_dict())
+                    if race().is_team_race() and result.person and result.person.team:
+                        live_client.send(result.person.team)
+                    else:
+                        live_client.send(result)
                     TelegramClient().send_result(result)
                     if result.person:
                         if result.is_status_ok():
@@ -535,7 +613,7 @@ class MainWindow(QMainWindow):
                         if i < len(race().persons):
                             cur_person = race().persons[i]
                             if cur_person.card_number:
-                                confirm = messageBoxQuestion(self, _('Question'), _('Are you sure you want to reassign the chip number'), QMessageBox.Yes | QMessageBox.No)
+                                confirm = messageBoxQuestion(self, _('Question'), _('Are you sure you want to reassign the card number?'), QMessageBox.Yes | QMessageBox.No)
                                 if confirm == QMessageBox.No:
                                     break
                             race().person_card_number(cur_person, result.card_number)
@@ -548,10 +626,11 @@ class MainWindow(QMainWindow):
                                 Teamwork().send(old_person.to_dict())
                             person.is_rented_card = True
                             Teamwork().send(person.to_dict())
+                            live_client.send(person)
                             break
             self.refresh()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def add_sfr_result_from_reader(self, result):
         self.add_sportident_result_from_sireader(result)
@@ -568,7 +647,7 @@ class MainWindow(QMainWindow):
             Broker().produce('teamwork_recieving', command.data)
             self.refresh()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     # Actions
     def create_file(self, *args, update_data=True, is_new=True):
@@ -604,7 +683,7 @@ class MainWindow(QMainWindow):
                 self.set_title()
                 self.init_model()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self, _('Error'), _('Cannot create file') + ': ' + file_name)
             self.refresh()
 
@@ -618,8 +697,10 @@ class MainWindow(QMainWindow):
                 File(self.file, logging.root, File.JSON).save()
                 self.apply_filters()
                 self.last_update = time.time()
+                for client in [SIReaderClient, SportiduinoClient, SFRReaderClient]:
+                    client().save_event()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
         else:
             self.save_file_as()
 
@@ -699,19 +780,23 @@ class MainWindow(QMainWindow):
                 CourseEditDialog(c, True).exec_()
                 self.refresh()
             elif tab == 4:
-                o = race().add_new_team()
-                TeamEditDialog(o, True).exec_()
+                team = race().add_new_team()
+                TeamEditDialog(team, True).exec_()
+                self.refresh()
+            elif tab == 5:
+                cp = race().add_new_control_point()
+                ControlPointEditDialog(cp, True).exec_()
                 self.refresh()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def delete_object(self):
         try:
-            if self.current_tab not in range(5):
+            if self.current_tab not in range(6):
                 return
             self._delete_object()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def _delete_object(self):
         indexes = self.get_selected_rows()
@@ -726,17 +811,19 @@ class MainWindow(QMainWindow):
         if tab == 0:
             res = race().delete_persons(indexes)
             ResultCalculation(race()).process_results()
+            live_client.delete(res)
             self.refresh()
         elif tab == 1:
             res = race().delete_results(indexes)
             ResultCalculation(race()).process_results()
+            live_client.delete(res)
             self.refresh()
         elif tab == 2:
             try:
                 res = race().delete_groups(indexes)
             except NotEmptyException as e:
                 logging.warning(str(e))
-                QMessageBox.question(self.get_group_table(),
+                QMessageBox.warning(self.get_group_table(),
                                      _('Error'),
                                      _('Cannot remove group'))
             self.refresh()
@@ -745,7 +832,7 @@ class MainWindow(QMainWindow):
                 res = race().delete_courses(indexes)
             except NotEmptyException as e:
                 logging.warning(str(e))
-                QMessageBox.question(self.get_course_table(),
+                QMessageBox.warning(self.get_course_table(),
                                      _('Error'),
                                      _('Cannot remove course'))
             self.refresh()
@@ -754,10 +841,15 @@ class MainWindow(QMainWindow):
                 res = race().delete_teams(indexes)
             except NotEmptyException as e:
                 logging.warning(str(e))
-                QMessageBox.question(self.get_team_table(),
+                QMessageBox.warning(self.get_team_table(),
                                      _('Error'),
                                      _('Cannot remove team'))
             self.refresh()
+        elif tab == 5:
+            res = race().delete_control_points(indexes)
+            self.refresh()
+        self.clear_selection()
+
         if len(res):
             Teamwork().delete([r.to_dict() for r in res])
 

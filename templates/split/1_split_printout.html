@@ -8,9 +8,12 @@
         td {
             padding-right: 7px;
         }
-        body {
-            font-weight: bold;
+        table.splits td {
+            padding-left: 7px;
         }
+        //body {
+        //    font-weight: bold;
+        //}
 
         .small-text {
             font-size: 75%;
@@ -146,9 +149,9 @@
         <br> Команда: {{team.name}}
         <br> Чип: {{person.card_number}}
         <br> Старт: {{result.start_msec|tohhmmss}}
-        <table>
+        <table class="splits">
           <tr>
-            <th></th>
+            <th>№</th>
             <th>КП</th>
             <th>Время</th>
             <th>Сплит</th>
@@ -170,7 +173,6 @@
                         <td></td>
                     {% endif %}    
                     -->
-                    <td></td>
                 </tr>
             {% else %}
                 <tr>
@@ -185,10 +187,14 @@
         {% endfor %}
         </table>
         <br> Финиш:  {{result.finish_msec|tohhmmss}}
-        <br> Время:  {{(result.result_msec - result.penalty_time + result.credit_time)|tohhmmss}} ({{result.speed}})
+        <br> Время:  {{(result.result_msec - result.penalty_time + result.credit_time)|tohhmmss}} {% if result.speed %} ({{result.speed}}) {% endif %}
         <br> Штраф: {% if result.penalty_time > 0 %}+{{result.penalty_time|tohhmmss}}{% endif %}
         <!--<br> Бонус: -{{result.credit_time|tohhmmss}}-->
-        <br> Результат: {{result.result}} ({{result.length}})
+        <br> Штраф: +{{result.penalty_time|tohhmmss}}
+        <br> <b>Результат: {{result.result}}</b>
+        {% if result.length %}
+        <br> Длина по прямым: {{result.length}}
+        {% endif %}
         <!--
         {% if result.place > 0 %}
             <br> Место: {{result.place}} из {{group.count_finished}} (всего {{group.count_person}})
@@ -209,14 +215,22 @@
         {% endif %}
         <br>
         <!--<table>
+            {% set ns = namespace(last_place=-1) %}
             {% for item in items %}
                 {% if item.result.place|int < 11 and item.result.place|int > 0 %}
-                    <tr>
-                        <td>{{item.result.place}}</td>
-                        <td>{{item.person.name}} {{item.person.surname}}</td>
-                        <td>{{item.person.bib}}</td>
-                        <td>{{item.result.result}}</td>
-                    </tr>
+                    {% if item.result.place|int != ns.last_place %}
+                        <tr>
+                            <td>{{item.result.place}}</td>
+                            <td>{{item.person.name}} {{item.person.surname}}</td>
+                            <td>{{item.result.result}}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td></td>
+                            <td>{{item.person.name}} {{item.person.surname}}</td>
+                        </tr>
+                    {% endif %}
+                    {% set ns.last_place = item.result.place|int %}
                 {% endif %}
             {% endfor %}
         </table>-->

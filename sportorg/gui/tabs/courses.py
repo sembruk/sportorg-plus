@@ -35,7 +35,7 @@ class Widget(QtWidgets.QWidget):
                     dialog.exec_()
                     GlobalAccess().get_main_window().refresh()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
 
         self.course_table.activated.connect(course_double_clicked)
         self.course_layout.addWidget(self.course_table)

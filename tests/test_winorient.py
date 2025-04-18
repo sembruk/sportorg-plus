@@ -1,4 +1,4 @@
-from sportorg.models.memory import race, Person, Group, find, Qualification, Organization
+from sportorg.models.memory import race, Person, Group, find, Qualification, Team
 from sportorg.modules.winorient import winorient
 
 
@@ -8,8 +8,8 @@ def test_import_csv():
     assert isinstance(person, Person), 'Not person'
     assert isinstance(person.group, Group), 'Not group'
     assert person.group.name == 'МУЖЧИНЫ', 'Group name error'
-    assert isinstance(person.organization, Organization), 'Not organization'
-    assert person.organization.name == 'УралГУФК, Челябинск', 'Organization name error'
+    assert isinstance(person.team, Team), 'Not team'
+    assert person.team.name == 'УралГУФК, Челябинск', 'Team name error'
     assert person.get_year() == 1995, 'Year error'
     assert person.card_number == 1005404, 'Card number error'
     assert person.comment == 'C:123', 'Comment error'

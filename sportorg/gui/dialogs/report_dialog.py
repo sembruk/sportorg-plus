@@ -7,6 +7,7 @@ import webbrowser
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QFormLayout, QLabel, QDialog, QPushButton, QDialogButtonBox, QCheckBox
 from docxtpl import DocxTemplate
+from copy import copy, deepcopy
 
 from sportorg import config
 from sportorg.common.template import get_templates, get_text_from_file
@@ -82,9 +83,9 @@ class ReportDialog(QDialog):
             try:
                 self.apply_changes_impl()
             except FileNotFoundError as e:
-                logging.error(str(e))
+                logging.exception(e)
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 logging.exception(e)
             self.close()
 
@@ -131,7 +132,7 @@ class ReportDialog(QDialog):
         ScoreCalculation(obj).calculate_scores()
 
         races_dict = [r.to_dict() for r in races()]
-        current_race = races_dict[get_current_race_index()]
+        current_race = copy(races_dict[get_current_race_index()])
 
         if selected_items['groups']:
             current_race['groups'] = selected_items['groups']
@@ -141,6 +142,10 @@ class ReportDialog(QDialog):
             team.pop('contact', None)
         for person in current_race['persons']:
             person.pop('birth_date', None)
+        current_race['settings'] = deepcopy(current_race['settings'])
+        current_race['settings'].pop('live_token', None)
+        current_race['settings'].pop('live_url', None)
+        current_race['settings'].pop('live_urls', None)
 
         template_path_items = template_path.split('/')[-1]
         template_path_items = '.'.join(template_path_items.split('.')[:-1]).split('_')

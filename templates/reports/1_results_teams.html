@@ -87,7 +87,8 @@
         if (result.status !== 1) {
             r.diff = '';
             r.place_show = '';
-            r.scores = '';
+            // Copy status description from result
+            r.scores = r.result;
             r.penalty_time = '';
             r.penalty_points = '';
         }
@@ -318,8 +319,8 @@
                 this.getField('penalty_time').active = location.href.indexOf('penalty_time=1') > -1;
 
                 this.getField('scores_without_penalty').active = isRogaining
-                this.getField('scores').active = isRogaining
                 this.getField('penalty_points').active = isRogaining
+                this.getField('scores').active = isRogaining
                 this.getField('result').active = !isRogaining
                 this.getField('diff').active = !isRogaining
                 this.getField('qual').active = !isTeamRace
@@ -375,8 +376,8 @@
             var titleBlock = document.createElement('h2');
             titleBlock.id = groupName;
             var groupTitle = groupName;
-            if (course && course.controls && course.controls.length){
-                groupTitle += ', ' + course.controls.length + ' КП';
+            if (course && course.controls && course.controls_count > 0){
+                groupTitle += ', ' + course.controls_count + ' КП';
             }
             if (course && course.length){
                 groupTitle += ', ' + course.length / 1000 + ' км';

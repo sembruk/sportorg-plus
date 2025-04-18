@@ -8,11 +8,12 @@ from sportorg.models.result.result_checker import ResultChecker
 from sportorg.models.result.score_calculation import ScoreCalculation
 from sportorg.models.result.split_calculation import RaceSplits
 from sportorg.models.start.start_preparation import update_subgroups
+from sportorg.common.version import Version
 
 
 def dump(file):
     data = {
-        'version': config.VERSION.file,
+        'sportorg_plus': str(config.VERSION),
         'current_race': get_current_race_index(),
         'races': [race_downgrade(r.to_dict()) for r in races()]
     }
@@ -24,18 +25,23 @@ def load(file):
     new_event(event)
     set_current_race_index(current_race)
     obj = race()
-    #for course in obj.courses:
-    #    obj.add_cp_coords(course.get_cp_coords())
     ResultChecker.check_all()
     ResultCalculation(obj).process_results()
     RaceSplits(obj).generate()
     ScoreCalculation(obj).calculate_scores()
     update_subgroups()
     obj.update_team_max_number()
+    obj.update_team_person_counters()
 
 
 def get_races_from_file(file):
     data = json.load(file)
+    if 'sportorg_plus' in data:
+        file_version = Version(data['sportorg_plus'])
+        if not file_version.is_full_compatible(config.VERSION):
+            if file_version > config.VERSION:
+                # TODO: show warning
+                pass
     if 'races' not in data:
         data = {
             'races': [data] if not isinstance(data, list) else data,

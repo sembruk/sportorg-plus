@@ -6,6 +6,7 @@ from abc import abstractmethod
 from datetime import date
 from enum import IntEnum, Enum
 from typing import Dict, List, Any
+from copy import copy, deepcopy
 
 import dateutil.parser
 
@@ -167,9 +168,6 @@ class CourseControl(Model):
                 char = tmp[index]
         return str(res)
 
-    def get_course_cp_template(self):
-        return str(self.code).split('|')[0]
-
     def to_dict(self):
         return {
             'object': self.__class__.__name__,
@@ -220,7 +218,8 @@ class Course(Model):
         self.bib = 0
         self.length = 0
         self.climb = 0
-        self.controls = []  # type: List[CourseControl]
+        self._controls = []  # type: List[CourseControl]
+        self.unrolled_controls = []  # unrolled copy of _controls
 
         self.count_person = 0
         self.count_group = 0
@@ -238,6 +237,15 @@ class Course(Model):
 
         return True
 
+    @property
+    def controls(self):
+        return self.unrolled_controls
+
+    @controls.setter
+    def controls(self, value):
+        self._controls = value
+        self.unrolled_controls = self.get_unrolled_controls()
+
     def is_unknown(self):
         for control in self.controls:
             if '*' in control.code or '%' in control.code or '(' in control.code:
@@ -247,16 +255,22 @@ class Course(Model):
 
     def get_code_list(self):
         ret = []
-        for i in self.controls:
+        for i in self._controls:
             ret.append(str(i.code))
         return ret
 
     def to_dict(self):
-        controls = [control.to_dict() for control in self.controls]
+        _controls = [control.to_dict() for control in self._controls]
+        controls_count = self.get_controls_count_str()
+        if '≥' in controls_count:
+            controls_count = -1  # no determined count
+        else:
+            controls_count = int(controls_count)
         return {
             'object': self.__class__.__name__,
             'id': str(self.id),
-            'controls': controls,
+            'controls': _controls,
+            'controls_count': controls_count,  # for displaying in reports
             'bib': self.bib,
             'name': self.name,
             'length': self.length,
@@ -270,42 +284,37 @@ class Course(Model):
         self.length = int(data['length'])
         self.climb = int(data['climb'])
         self.corridor = int(data['corridor'])
-        self.controls = []
+        self._controls = []
         for item in data['controls']:
             control = CourseControl()
             control.update_data(item)
-            self.controls.append(control)
+            self._controls.append(control)
+        self.unrolled_controls = self.get_unrolled_controls()
 
     def get_unrolled_controls(self):
         # return unrolled controls list, e.g. '*(31-45)[3]' -> '*(31-45) *(31-45) *(31-45)'
         unrolled_controls = []
-        for control in self.controls:
-            template = control.get_course_cp_template()
+        for control in self._controls:
+            template = control.code
             match = re.search(r'\[(\d+)(?:-(\d+))?\]', template)
             if match:
+                new_control = deepcopy(control)
+                new_control.code = control.code.split('[')[0]
                 copies = int(match.group(1))
                 # TODO Second number isn't used yet
                 # second_number = int(match.group(2)) if match.group(2) else None
                 for i in range(copies):
-                    unrolled_controls.append(control)
+                    unrolled_controls.append(new_control)
             else:
                 unrolled_controls.append(control)
         return unrolled_controls
 
-    def get_cp_coords(self):
-        controls = []
-        for cp in self.controls:
-            l = cp.code.split('|')
-            if len(l) > 1:
-                coords_str = l[1]
-                coords = coords_str.split(';')
-                if len(coords) == 3:
-                    cp = ControlPoint()
-                    cp.code = coords[0]
-                    cp.x = float(coords[1])
-                    cp.y = float(coords[2])
-                    controls.append(cp)
-        return controls
+    def get_controls_count_str(self):
+        count_str = str(len(self.unrolled_controls))
+        for control in self.unrolled_controls:
+            if '[]' in control.code:
+                count_str = '≥' + count_str
+        return count_str
 
 class Subgroup(Model):
     def __init__(self):
@@ -957,12 +966,19 @@ class ResultSportident(Result):
         self.__finish_time = None
 
     def __repr__(self):
-        splits = ''
-        for split in self.splits:
-            splits += '{} — {}\n'.format(split[0], split[1])
+        splits = '\n'.join(
+            f'{split.code} — {split.time}' for split in self.splits
+        )
+
         person = self.person.full_name if self.person else ''
-        return "Card: {}\nStart: {}\nFinish: {}\nPerson: {}\nSplits:\n{}".format(
-            self.card_number, self.start_time, self.finish_time, person, splits)
+        return (
+            f'Card: {self.card_number}\n'
+            f'Start: {self.start_time}\n'
+            f'Finish: {self.finish_time}\n'
+            f'Person: {person}\n'
+            'Splits:\n'
+            f'{splits}'
+        )
 
     def __eq__(self, other):
         eq = self.card_number == other.card_number and super().__eq__(other)
@@ -1104,8 +1120,7 @@ class ResultSportident(Result):
     def check(self, course=None):
         if not course:
             return super().check()
-        controls = course.get_unrolled_controls()
-        count_controls = len(controls)
+        count_controls = len(course.controls)
         if count_controls == 0:
             return True
 
@@ -1151,7 +1166,7 @@ class ResultSportident(Result):
         prev_unique_cp_list = []
         for split in self.splits:
             try:
-                template = controls[course_index].get_course_cp_template()
+                template = course.controls[course_index].code
 
                 if self.check_split(split, template, prev_unique_cp_list):
                     if template.find('[]') > -1:
@@ -1159,9 +1174,9 @@ class ResultSportident(Result):
                     else:
                         course_index += 1
                 elif template.find('[]') > -1 \
-                        and course_index < len(controls) - 1:
+                        and course_index < len(course.controls) - 1:
                     # check next
-                    template = controls[course_index + 1].get_course_cp_template()
+                    template = course.controls[course_index + 1].code
                     if self.check_split(split, template, prev_unique_cp_list):
                         if template.find('[]') > -1:
                             course_index += 1
@@ -1466,7 +1481,7 @@ class Race(Model):
         self.relay_teams = []  # type: List[RelayTeam]
         self.teams = []  # type: List[Team]
         self.settings = {}  # type: Dict[str, Any]
-        self.controls = {}  # type: Dict[code, ControlPoint]
+        self.control_points = [] # type: List[ControlPoint]
         self.team_max_number = 0
 
     def __repr__(self):
@@ -1492,7 +1507,7 @@ class Race(Model):
             'id': str(self.id),
             'data': self.data.to_dict(),
             'settings': self.settings,
-            'controls': [item.to_dict() for item in self.controls.values()],
+            'control_points': [item.to_dict() for item in self.control_points],
             'relay_teams': [item.to_dict() for item in self.relay_teams],
             'teams': [item.to_dict() for item in self.teams],
             'courses': [item.to_dict() for item in self.courses],
@@ -1509,12 +1524,12 @@ class Race(Model):
                 self.data.update_data(dict_obj['data'])
             if 'settings' in dict_obj:
                 self.settings = dict_obj['settings']
-            if 'controls' in dict_obj:
-                self.controls = {}
-                for item_obj in dict_obj['controls']:
+            if 'control_points' in dict_obj:
+                self.control_points = []
+                for item_obj in dict_obj['control_points']:
                     control = ControlPoint()
                     control.update_data(item_obj)
-                    self.controls[control.code] = control
+                    self.control_points.append(control)
             key_list = ['courses', 'groups', 'teams', 'persons', 'results']
             for key in key_list:
                 if key in dict_obj:
@@ -1590,6 +1605,7 @@ class Race(Model):
                     result.person = None
                     result.bib = person.bib
             del self.persons[i]
+        self.update_team_person_counters()
         return persons
 
     def delete_results(self, indexes):
@@ -1643,6 +1659,12 @@ class Race(Model):
             del self.teams[i]
         self.update_team_max_number()
         return teams
+
+    def delete_control_points(self, indexes):
+        indexes = sorted(indexes, reverse=True)
+        for i in indexes:
+            del self.control_points[i]
+        return self.control_points
 
     def find_person_result(self, person):
         for i in self.results:
@@ -1714,9 +1736,25 @@ class Race(Model):
     def add_new_team(self, append_to_race=False):
         new_team = Team()
         new_team.number = self.team_max_number + 1
+        self.team_max_number = new_team.number
         if append_to_race:
             self.teams.insert(0, new_team)
         return new_team
+
+    def add_new_control_point(self, append_to_race=False):
+        new_control_point = ControlPoint()
+        if append_to_race:
+            self.control_points.insert(0, new_control_point)
+        return new_control_point
+
+    def update_team_person_counters(self):
+        # recalculate team counters
+        for i in self.teams:
+            i.count_person = 0
+
+        for i in self.persons:
+            if i.team:
+                i.team.count_person += 1
 
     def update_counters(self):
         # recalculate group counters
@@ -1742,13 +1780,7 @@ class Race(Model):
                 i.course.count_person += i.count_person
                 i.course.count_group += 1
 
-        # recalculate team counters
-        for i in self.teams:
-            i.count_person = 0
-
-        for i in self.persons:
-            if i.team:
-                i.team.count_person += 1
+        self.update_team_person_counters()
 
     def update_team_max_number(self):
         self.team_max_number = 0
@@ -1758,10 +1790,12 @@ class Race(Model):
         print("Team max number:", self.team_max_number)
 
     def get_persons_by_group(self, group):
-        return find(self.persons, group=group, return_all=True)
+        items = find(self.persons, group=group, return_all=True)
+        return items if items is not None else []
 
     def get_persons_by_team(self, team):
-        return find(self.persons, team=team, return_all=True)
+        items = find(self.persons, team=team, return_all=True)
+        return items if items is not None else []
 
     def get_persons_by_corridor(self, corridor):
         ret = []
@@ -1813,10 +1847,6 @@ class Race(Model):
                 if person.id != p.id and person.full_name and person.full_name == p.full_name and person.birth_date == p.birth_date:
                     ret.append(person)
         return ret
-
-    def add_cp_coords(self, controls):
-        for cp in controls:
-            self.controls[cp.code] = cp
 
 
 class Qualification(IntEnum):

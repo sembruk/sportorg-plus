@@ -17,25 +17,26 @@
 
 Если Вы работаете с одним файлом и хотите создать новый, не забудьте сохранить изменения в текущем файле.
 
-![Screenshot](../../img/file_new.png)
+![Screenshot](../img/file_new.png)
 
 Укажите имя файла и директорию для сохранения, по умолчанию имя файла формируется из текущей даты.
 
-![Screenshot](../../img/file_new_enter_filename.png)
+![Screenshot](../img/file_new_enter_filename.png)
 
 После создания нового файла его имя будет показано в верхней части окна.
 
-![Screenshot](../../img/file_new_created.png)
+![Screenshot](../img/file_new_created.png)
 
 ## Изменение данных о соревновании
 
 Для изменения данных о соревновании выберете пункт меню Файл - Свойства соревнования
 
-![Screenshot](../../img/file_event_properties.png)
+![Screenshot](../img/file_event_properties.png)
 
-Введите данные о соревнованиях в появившемся диалоге. [Подробнее...](../../ui/dialogs/dialog_event_properties.md)
+Введите данные о соревнованиях в появившемся диалоге. [Подробнее...](../ui/dialogs/dialog_event_properties.md)
 
-![Screenshot](../../img/dialog_event_properties.png)
+![Screenshot](../img/dialog_event_properties.png)
 
-
+Если [импортировать заявки](import_entries.md) из Orgeo в формате IOF XML,
+то свойства соревнования будут заполнены автоматически.
 

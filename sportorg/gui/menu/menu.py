@@ -44,6 +44,7 @@ def menu_list():
                     'title': _('Settings'),
                     'shortcut': 'Ctrl+Alt+S',
                     'icon': config.icon_dir('settings.svg'),
+                    'id': 'settings_action',
                     'action': 'SettingsAction'
                 },
                 {
@@ -113,7 +114,7 @@ def menu_list():
             'actions': [
                 {
                     'title': _('Add object'),
-                    'tabs': list(range(5)),
+                    'tabs': list(range(6)),
                     'shortcut': ['insert', 'i'],
                     'icon': config.icon_dir('add.svg'),
                     'action': 'AddObjectAction'
@@ -121,20 +122,20 @@ def menu_list():
                 {
                     'title': _('Delete'),
                     'shortcut': 'Del',
-                    'tabs': list(range(5)),
+                    'tabs': list(range(6)),
                     'icon': config.icon_dir('delete.svg'),
                     'action': 'DeleteAction'
                 },
                 {
                     'title': _('Copy'),
                     'shortcut': 'Ctrl+C',
-                    'tabs': list(range(5)),
+                    'tabs': list(range(6)),
                     'action': 'CopyAction'
                 },
                 {
                     'title': _('Duplicate'),
                     'shortcut': 'Ctrl+D',
-                    'tabs': list(range(5)),
+                    'tabs': list(range(6)),
                     'action': 'DuplicateAction'
                 },
                 {
@@ -167,7 +168,7 @@ def menu_list():
                 {
                     'title': _('Search'),
                     'shortcut': 'Ctrl+F',
-                    'tabs': list(range(5)),
+                    'tabs': list(range(6)),
                     'icon': config.icon_dir('search.svg'),
                     'action': 'SearchAction'
                 },
@@ -200,8 +201,13 @@ def menu_list():
                     'action': 'ToTeamsAction'
                 },
                 {
-                    'title': _('Log'),
+                    'title': _('Controls'),
                     'shortcut': 'Ctrl+6',
+                    'action': 'ToControlPointsAction'
+                },
+                {
+                    'title': _('Log'),
+                    'shortcut': 'Ctrl+7',
                     'action': 'ToLogAction'
                 }
             ]
@@ -239,11 +245,11 @@ def menu_list():
                 #    'action': 'RelayCloneAction'
                 #},
                 {
-                    'title': _('Use bib as card number'),
+                    'title': _('Replace bib with card number'),
                     'action': 'CopyBibToCardNumber'
                 },
                 {
-                    'title': _('Use card number as bib'),
+                    'title': _('Replace card number with bib'),
                     'action': 'CopyCardNumberToBib'
                 },
                 {
@@ -254,6 +260,11 @@ def menu_list():
                     'title': _('Update subgroups'),
                     'action': 'UpdateSubroups'
                 },
+                {
+                    'title': _('Merge groups'),
+                    'tabs': [2],
+                    'action': 'MergeGroupsAction'
+                }
             ]
         },
         {
@@ -357,6 +368,7 @@ def menu_list():
                 {
                     'title': _('on/off SFR readout'),
                     'icon': config.icon_dir('sfr.png'),
+                    'shortcut': 'F10',
                     'action': 'SFRReadoutAction'
                 },
                 {
@@ -365,7 +377,7 @@ def menu_list():
                     'actions': [
                         {
                             'title': _('Send selected'),
-                            'shortcut': 'Ctrl+K',
+                            'shortcut': 'Ctrl+Shift+K',
                             'tabs': list(range(5)),
                             'action': 'TeamworkSendAction'
                         },
@@ -387,6 +399,17 @@ def menu_list():
                             'action': 'TelegramSendAction'
                         },
                     ]
+                },
+                {
+                    'title': _('Online'),
+                    'actions': [
+                        {
+                            'title': _('Send selected'),
+                            'shortcut': 'Ctrl+K',
+                            'tabs': [0, 1, 2, 3, 4],
+                            'action': 'OnlineSendAction',
+                        },
+                    ],
                 },
             ]
         },

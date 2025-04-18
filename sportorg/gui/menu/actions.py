@@ -5,7 +5,7 @@ from typing import Any
 
 from PySide2 import QtCore, QtGui
 
-from PySide2.QtWidgets import QMessageBox, QApplication, QTableView
+from PySide2.QtWidgets import QMessageBox, QApplication, QTableView, QInputDialog
 
 from sportorg import config
 from sportorg.common.otime import OTime
@@ -40,12 +40,13 @@ from sportorg.libs.winorient.wdb import write_wdb
 from sportorg.models.memory import race, ResultStatus, ResultManual, find
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.result.result_checker import ResultChecker
-from sportorg.models.start.start_preparation import guess_corridors_for_groups, copy_bib_to_card_number, copy_card_number_to_bib, split_teams, update_subgroups
+from sportorg.models.start.start_preparation import guess_corridors_for_groups, copy_bib_to_card_number, copy_card_number_to_bib, split_teams, update_subgroups, merge_groups
 from sportorg.modules.backup.json import get_races_from_file
 from sportorg.modules.iof import iof_xml
+from sportorg.modules.live.live import live_client
 from sportorg.modules.ocad import ocad
 from sportorg.modules.ocad.ocad import OcadImportException
-from sportorg.modules.gpx import gpx
+from sportorg.modules.coordinates import coordinates
 from sportorg.modules.sfr.sfrreader import SFRReaderClient
 from sportorg.modules.sportident.sireader import SIReaderClient
 from sportorg.modules.sportiduino.sportiduino import SportiduinoClient
@@ -90,7 +91,7 @@ class SaveAsAction(Action, metaclass=ActionFactory):
 
 class CopyAction(Action, metaclass=ActionFactory):
     def execute(self):
-        if self.app.current_tab not in range(5):
+        if self.app.current_tab not in range(6):
             return
         table = self.app.get_current_table()
         sel_model = table.selectionModel()
@@ -104,7 +105,7 @@ class CopyAction(Action, metaclass=ActionFactory):
 
 class DuplicateAction(Action, metaclass=ActionFactory):
     def execute(self):
-        if self.app.current_tab not in range(5):
+        if self.app.current_tab not in range(6):
             return
         table = self.app.get_current_table()
         sel_model = table.selectionModel()
@@ -131,7 +132,7 @@ class CSVWinorientImportAction(Action, metaclass=ActionFactory):
             try:
                 winorient.import_csv(file_name)
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
             self.app.init_model()
 
@@ -145,7 +146,7 @@ class CSVOrgeoImportAction(Action, metaclass=ActionFactory):
                 if ret:
                     QMessageBox.information(self.app, _('Warning'), ret)
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
             self.app.init_model()
 
@@ -157,7 +158,6 @@ class WDBWinorientImportAction(Action, metaclass=ActionFactory):
             try:
                 winorient.import_wo_wdb(file_name)
             except WDBImportError as e:
-                logging.error(str(e))
                 logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
             self.app.init_model()
@@ -170,20 +170,27 @@ class OcadTXTv8ImportAction(Action, metaclass=ActionFactory):
             try:
                 ocad.import_txt_v8(file_name)
             except OcadImportException as e:
-                logging.error(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
             self.app.init_model()
 
 class CpCoordinatesImportAction(Action, metaclass=ActionFactory):
     def execute(self):
-        file_name = get_open_file_name(_('Open CP coordinates file'), _("Waypoints GPX (*.gpx)"))
+        file_name = get_open_file_name(_('Open CP coordinates file'), _("CP coordinates (*.gpx *.csv *.xml)"))
         if file_name:
             try:
-                gpx.import_coordinates_from_gpx(file_name)
+                if file_name.endswith('.gpx'):
+                    coordinates.import_coordinates_from_gpx(file_name)
+                elif file_name.endswith('.csv'):
+                    coordinates.import_coordinates_from_csv(file_name)
+                elif file_name.endswith('.xml'):
+                    coordinates.import_coordinates_from_iof_xml(file_name)
+                else:
+                    raise Exception('Unknown file type')
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
-            self.app.init_model()
+            self.app.refresh()
 
 
 class WDBWinorientExportAction(Action, metaclass=ActionFactory):
@@ -200,7 +207,7 @@ class WDBWinorientExportAction(Action, metaclass=ActionFactory):
 
                 write_wdb(wdb_object, file_name)
             except Exception as e:
-                logging.exception(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Export error') + ': ' + file_name)
 
 
@@ -212,7 +219,7 @@ class IOFResultListExportAction(Action, metaclass=ActionFactory):
             try:
                 iof_xml.export_result_list(file_name)
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Export error') + ': ' + file_name)
 
 
@@ -225,7 +232,7 @@ class IOFEntryListImportAction(Action, metaclass=ActionFactory):
                 if ret:
                     QMessageBox.information(self.app, _('Warning'), ret)
             except Exception as e:
-                logging.exception(str(e))
+                logging.exception(e)
                 QMessageBox.warning(self.app, _('Error'), _('Import error') + ': ' + file_name)
             self.app.init_model()
 
@@ -269,7 +276,7 @@ class FilterAction(Action, metaclass=ActionFactory):
 
 class SearchAction(Action, metaclass=ActionFactory):
     def execute(self):
-        if self.app.current_tab not in range(5):
+        if self.app.current_tab not in range(6):
             return
         table = self.app.get_current_table()
         SearchDialog(table).exec_()
@@ -300,9 +307,15 @@ class ToTeamsAction(Action, metaclass=ActionFactory):
     def execute(self):
         self.app.select_tab(4)
 
-class ToLogAction(Action, metaclass=ActionFactory):
+
+class ToControlPointsAction(Action, metaclass=ActionFactory):
     def execute(self):
         self.app.select_tab(5)
+
+
+class ToLogAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        self.app.select_tab(6)
 
 
 class StartPreparationAction(Action, metaclass=ActionFactory):
@@ -386,6 +399,25 @@ class SplitTeamsAction(Action, metaclass=ActionFactory):
         split_teams()
         self.app.refresh()
 
+class MergeGroupsAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        try:
+            if self.app.current_tab != 2:
+                logging.warning(_('Can only merge groups in groups tab'))
+                return
+            indexes = self.app.get_selected_rows()
+            if len(indexes) < 2:
+                logging.warning(_('Please select at least 2 groups'))
+                return
+            selected_groups = {race().groups[i].name: i for i in indexes}
+            group_name, ok = QInputDialog.getItem(self.app, _('Merge groups'), _('Keep group'), selected_groups.keys(), 0, False)
+            if not ok:
+                return
+            if merge_groups(indexes, selected_groups[group_name]):
+                self.app.clear_selection()
+            self.app.refresh()
+        except Exception as e:
+            logging.exception(e)
 
 class UpdateSubroups(Action, metaclass=ActionFactory):
     def execute(self):
@@ -397,6 +429,7 @@ class ManualFinishAction(Action, metaclass=ActionFactory):
     def execute(self):
         result = race().new_result(ResultManual)
         Teamwork().send(result.to_dict())
+        live_client.send(result)
         race().add_new_result(result)
         logging.info(_('Manual finish'))
         self.app.refresh()
@@ -507,6 +540,7 @@ class ChangeStatusAction(Action, metaclass=ActionFactory):
         else:
             result.status = ResultStatus.OK
         Teamwork().send(result.to_dict())
+        live_client.send(result)
         self.app.refresh()
 
 
@@ -605,7 +639,37 @@ class TelegramSendAction(Action, metaclass=ActionFactory):
                     pass
                 TelegramClient().send_result(items[index])
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
+
+
+class OnlineSendAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        try:
+            items = []
+            if self.app.current_tab == 0:
+                items = race().persons
+            if self.app.current_tab == 1:
+                items = race().results
+            if self.app.current_tab == 2:
+                items = race().groups
+            if self.app.current_tab == 3:
+                items = race().courses
+            if self.app.current_tab == 4:
+                items = race().teams
+            indexes = self.app.get_selected_rows()
+            if not indexes:
+                return
+            selected_items = []
+            for index in indexes:
+                if index < 0 or index >= len(items):
+                    continue
+                selected_items.append(items[index])
+            if self.app.current_tab == 1:
+                # Most recent results are sent last
+                selected_items = selected_items[::-1]
+            live_client.send(selected_items)
+        except Exception as e:
+            logging.exception(e)
 
 
 class AboutAction(Action, metaclass=ActionFactory):
@@ -621,16 +685,14 @@ class HelpAction(Action, metaclass=ActionFactory):
 class CheckUpdatesAction(Action, metaclass=ActionFactory):
     def execute(self):
         try:
-            if not checker.check_version(config.VERSION):
-                message = _('Update available')
-                message += ' ' + checker.get_version()
-                message += '\n' + config.REPO_URL + '/releases/latest'
-            else:
+            message = checker.update_available(config.VERSION)
+
+            if message is None:
                 message = _('You are using the latest version')
 
             QMessageBox.information(self.app, _('Info'), message)
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
             QMessageBox.warning(self.app, _('Error'), str(e))
 
 

@@ -8,9 +8,9 @@ from sportorg.modules.configs.configs import Config
 
 
 def detect_encoding(file_path):
-    for encoding in ['utf-8', 'cp1251']:
+    for encoding in ['utf-8-sig', 'cp1251']:
         try:
-            with open (file_path, encoding=encoding) as file:
+            with open(file_path, encoding=encoding) as file:
                 _ = file.read()  # Attempt to read the file
             return encoding
         except UnicodeDecodeError:
@@ -72,7 +72,7 @@ class OrgeoCSVReader:
         return self._data
 
     def append(self, person):
-        if not person or len(person) < 11:
+        if not person or len(person) < 1:
             return
 
         person_dict = {}
@@ -90,9 +90,9 @@ class OrgeoCSVReader:
             person_dict['date_of_birth'] = date_of_birth
         if 'claim_id' in person_dict:
             person_dict['claim_id'] = int(person_dict['claim_id'])
-            if 'team_name' in person_dict:
-                claim_id = person_dict['claim_id']
-                self._teams[claim_id] = person_dict['team_name']
+            claim_id = person_dict['claim_id']
+            team_name = person_dict['team_name'] if 'team_name' in person_dict else ''
+            self._teams[claim_id] = team_name
         self._data.append(person_dict)
 
     @property

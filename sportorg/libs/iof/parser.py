@@ -29,6 +29,7 @@ def course_data(tree, ns):
     root = tree.getroot()
     if 'CourseData' not in root.tag:
         return
+    controls = []
     courses = []
 
     version = '0'
@@ -38,13 +39,25 @@ def course_data(tree, ns):
         version = root.find('IOFVersion').attrib['version'][0]
 
     if version == '3':
+        for control_el in root.find('iof:RaceCourseData', ns).findall('iof:Control', ns):
+            controls.append(
+                {
+                    'id': control_el.find('iof:Id', ns).text,
+                    'position': {
+                        'lat': control_el.find('iof:Position', ns).attrib.get('lat'),
+                        'lng': control_el.find('iof:Position', ns).attrib.get('lng'),
+                    },
+                }
+            )
         for course_el in root.find('iof:RaceCourseData', ns).findall('iof:Course', ns):
             course = {
                 'name': course_el.find('iof:Name', ns).text,
-                'length': int(course_el.find('iof:Length', ns).text),
-                'climb': int(course_el.find('iof:Climb', ns).text),
                 'controls': [],
             }
+            length_el = course_el.find('iof:Length', ns)
+            course['length'] = int(length_el.text) if length_el is not None else None,
+            climb_el = course_el.find('iof:Climb', ns)
+            course['climb'] = int(climb_el.text) if climb_el is not None else None,
 
             for course_control_el in course_el.findall('iof:CourseControl', ns):
                 leg_length = 0
@@ -86,7 +99,7 @@ def course_data(tree, ns):
                 )
             courses.append(course)
 
-    return courses
+    return {'controls': controls, 'courses': courses}
 
 
 def entry_list(tree, ns):

@@ -80,7 +80,7 @@ class CourseEditDialog(QDialog):
         try:
             self.apply_changes_impl()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
         self.close()
 
     def cancel_changes(self):
@@ -114,10 +114,10 @@ class CourseEditDialog(QDialog):
             self.item_length.setValue(self.current_object.length)
         if self.current_object.climb:
             self.item_climb.setValue(self.current_object.climb)
-        if self.current_object.controls:
-            self.item_control_qty.setValue(len(self.current_object.controls))
-        for i in self.current_object.controls:
-            self.item_controls.append('{} {}'.format(i.code, i.length if i.length else ''))
+        if self.current_object._controls:
+            self.item_control_qty.setValue(len(self.current_object._controls))
+        for c in self.current_object._controls:
+            self.item_controls.append('{} {}'.format(c.code, c.length if c.length else ''))
 
     def apply_changes_impl(self):
         course = self.current_object
@@ -135,7 +135,7 @@ class CourseEditDialog(QDialog):
 
         text = self.item_controls.toPlainText()
 
-        course.controls.clear()
+        controls = []
         for i in text.split('\n'):
             control = CourseControl()
             if i is None or len(i) == 0:
@@ -145,12 +145,12 @@ class CourseEditDialog(QDialog):
                 try:
                     control.length = int(i.split()[1])
                 except Exception as e:
-                    logging.error(str(e))
+                    logging.exception(e)
                     control.length = 0
-            course.controls.append(control)
+            controls.append(control)
+        course.controls = controls
 
         obj = race()
-        obj.add_cp_coords(course.get_cp_coords())
         ResultChecker.check_all()
         ResultCalculation(obj).process_results()
         RaceSplits(obj).generate()

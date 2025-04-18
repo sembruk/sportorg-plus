@@ -22,12 +22,17 @@
 
 [Скачать](https://github.com/sembruk/sportorg-plus/releases/latest) и запустить файл установки \*.msi.
 
-### Установка на ОС GNU/Linux
+### Установка и запуск на ОС GNU/Linux
 
 Скачать проект
 
 ```commandline
 git clone https://github.com/sembruk/sportorg-plus.git
+```
+
+Перейти в директорию
+
+```commandline
 cd sportorg-plus
 ```
 
@@ -37,11 +42,10 @@ cd sportorg-plus
 pip3 install -r requirements.txt
 ```
 
-## Запуск на ОС GNU/Linux
+## Запустить
 
 ```commandline
-cd sportorg-plus
-./SportOrg.pyw
+./SportOrgPlus.pyw
 ```
 
 ### Скриншоты

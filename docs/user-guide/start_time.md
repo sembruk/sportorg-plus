@@ -14,9 +14,16 @@
 * Брать стартовый интервал из настроек групп – при активации этой настройки для каждой группы может быть использован произвольный интервал старта, который задается в свойствах группы.
 
 ![Screenshot](img/46.png)
+
 ![Screenshot](img/47.png)
+
 ![Screenshot](img/48.png)
+
 ![Screenshot](img/49.png)
+
 ![Screenshot](img/50.png)
+
 ![Screenshot](img/51.png)
+
 ![Screenshot](img/52.png)
+

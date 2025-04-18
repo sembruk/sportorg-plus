@@ -1,6 +1,8 @@
 {
+  "current_race": 0,
   "races": [
     {
+      "control_points": [],
       "courses": [
         {
           "bib": 0,
@@ -44,13 +46,18 @@
       "groups": [
         {
           "__type": null,
+          "count_finished": 2,
+          "count_person": 1,
           "course_id": "f6a25b2a-4d56-45db-9486-a416990bc1cf",
           "first_number": 0,
           "id": "a1f1f92c-9f1b-46f1-bd94-30ed830154a6",
+          "is_any_course": false,
           "long_name": "Group1",
           "max_age": 0,
           "max_time": 5400000,
+          "max_year": 0,
           "min_age": 0,
+          "min_year": 0,
           "name": "G1",
           "object": "Group",
           "order_in_corridor": 0,
@@ -128,81 +135,72 @@
           "relay_legs": 0,
           "sex": 0,
           "start_corridor": 0,
-          "start_interval": 0
+          "start_interval": 0,
+          "start_time": null,
+          "subgroups": []
         }
       ],
       "id": "97d1f039-7522-4286-9749-58f35465d503",
       "object": "Race",
-      "organizations": [
-        {
-          "address": {
-            "care_of": "",
-            "city": "",
-            "country": {
-              "code": "",
-              "code2": "",
-              "code3": "",
-              "digital_code": "",
-              "name": "",
-              "object": "Country"
-            },
-            "object": "Address",
-            "state": "",
-            "street": "",
-            "zip_code": ""
-          },
-          "contact": {
-            "name": "",
-            "object": "Contact",
-            "value": ""
-          },
-          "count_person": 0,
-          "id": "72e30070-d35e-423a-a95b-b585f351c650",
-          "name": "Abris",
-          "object": "Organization"
-        }
-      ],
       "persons": [
         {
-          "address": null,
+          "age": 28,
           "bib": 1,
-          "birth_date": null,
+          "birth_date": "1996-01-01",
+          "card_number": 9777775,
           "comment": "",
-          "contact": [],
           "group_id": "a1f1f92c-9f1b-46f1-bd94-30ed830154a6",
           "id": "d134e1db-5c57-47e8-94e1-a4b51651662f",
           "is_out_of_competition": false,
           "is_paid": false,
           "is_personal": false,
-          "is_rented_sportident_card": false,
+          "is_rented_card": false,
           "name": "Danil",
           "national_code": null,
-          "nationality": null,
           "object": "Person",
-          "organization_id": "72e30070-d35e-423a-a95b-b585f351c650",
           "qual": 7,
           "sex": 0,
-          "sportident_card": 9777775,
           "start_group": 0,
           "start_time": 37800000,
+          "subgroups_str": "",
           "surname": "Akhtarov",
+          "team_id": "72e30070-d35e-423a-a95b-b585f351c650",
           "world_code": null,
           "year": 1996
         }
       ],
+      "relay_teams": [],
       "results": [
         {
           "assigned_rank": 0,
+          "bib": 0,
+          "can_win_count": null,
+          "card_number": 0,
+          "created_at": 1733401124.0642579,
+          "credit_time": 0,
           "days": 0,
           "diff": 0,
+          "diff_scores": 0,
+          "final_result_time": null,
+          "finish_msec": 41521341,
           "finish_time": 41521341,
           "id": "d4f25f07-6f12-47d7-a24d-f479e1c535a4",
+          "length": 0,
           "object": "ResultManual",
           "penalty_laps": 0,
-          "penalty_time": null,
+          "penalty_points": 0,
+          "penalty_time": 0,
           "person_id": "d134e1db-5c57-47e8-94e1-a4b51651662f",
           "place": 1,
+          "result": "01:02:01",
+          "result_msec": 3721000,
+          "result_relay": "01:02:01",
+          "result_relay_msec": 3721000,
+          "result_team_msec": 0,
           "scores": 0,
+          "speed": "11:04/км",
+          "splits": [],
+          "start_msec": 37800000,
           "start_time": null,
           "status": 1,
           "status_comment": "",
@@ -210,26 +208,57 @@
         },
         {
           "assigned_rank": 0,
+          "bib": 0,
+          "can_win_count": null,
+          "card_number": 0,
+          "created_at": 1733401124.0643468,
+          "credit_time": 0,
           "days": 0,
           "diff": null,
+          "diff_scores": 0,
+          "final_result_time": null,
+          "finish_msec": 41552966,
           "finish_time": 41552966,
           "id": "13d423f0-0b49-45af-baad-7c0e3ed41542",
+          "length": 0,
           "object": "ResultSportident",
           "penalty_laps": 0,
-          "penalty_time": null,
+          "penalty_points": 0,
+          "penalty_time": 0,
           "person_id": "d134e1db-5c57-47e8-94e1-a4b51651662f",
           "place": -1,
+          "result": "п.п.3.13.12.2",
+          "result_msec": 3752000,
+          "result_relay": "п.п.3.13.12.2",
+          "result_relay_msec": 3752000,
+          "result_team_msec": 0,
           "scores": 0,
+          "speed": "11:10/км",
           "splits": [],
-          "sportident_card": 0,
+          "start_msec": 37800000,
           "start_time": null,
           "status": 4,
-          "status_comment": "\u043f.\u043f.3.13.12.2",
+          "status_comment": "п.п.3.13.12.2",
           "system_type": 2
         }
       ],
-      "settings": {}
+      "settings": {},
+      "teams": [
+        {
+          "code": "",
+          "contact": "",
+          "count_person": 1,
+          "country": "",
+          "group_id": "a1f1f92c-9f1b-46f1-bd94-30ed830154a6",
+          "id": "72e30070-d35e-423a-a95b-b585f351c650",
+          "name": "Abris",
+          "number": 1,
+          "object": "Team",
+          "region": "",
+          "subgroup_result": []
+        }
+      ]
     }
   ],
-  "version": "1.0.0.0"
+  "version": "1.4.2"
 }

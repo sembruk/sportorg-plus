@@ -4,37 +4,19 @@ import os
 import platform
 import re
 import time
-from queue import Queue, Empty
-from threading import main_thread, Event
-
 import serial
-from PySide2.QtCore import QThread, Signal, Qt
+
+from threading import main_thread
+from PySide2.QtCore import QThread, Signal
 from sportident import SIReader, SIReaderReadout, SIReaderSRR, SIReaderControl, SIReaderException, SIReaderCardChanged
 
 from sportorg.common.singleton import singleton
 from sportorg.language import _
 from sportorg.models import memory
-from sportorg.modules.sportident import backup
-from sportorg.utils.time import time_to_otime
+from sportorg.modules.reader.reader import ReaderCommand, ReaderBase, ResultThreadBase, ReaderClientBase
 
 
-class SIReaderCommand:
-    def __init__(self, command, data=None):
-        self.command = command
-        self.data = data
-
-
-class SIReaderThread(QThread):
-    def __init__(self, port, queue, stop_event, logger, debug=False):
-        self.port = port
-        super().__init__()
-        # self.setName(self.__class__.__name__)
-        self.setObjectName(self.__class__.__name__)
-        self._queue = queue
-        self._stop_event = stop_event
-        self._logger = logger
-        self._debug = debug
-
+class SIReaderThread(ReaderBase):
     def run(self):
         try:
             si = SIReaderReadout(port=self.port)
@@ -53,7 +35,7 @@ class SIReaderThread(QThread):
         max_error = 2000
         error_count = 0
 
-        while True:
+        while not self._stop_event.is_set():
             try:
                 while not si.poll_sicard():
                     time.sleep(0.2)
@@ -63,7 +45,7 @@ class SIReaderThread(QThread):
                         return
                 card_data = si.read_sicard()
                 card_data['card_type'] = si.cardtype
-                self._queue.put(SIReaderCommand('card_data', card_data), timeout=1)
+                self._queue.put(ReaderCommand('card_data', card_data), timeout=1)
                 si.ack_sicard()
             except SIReaderException as e:
                 error_count += 1
@@ -79,70 +61,24 @@ class SIReaderThread(QThread):
                 self._logger.exception(str(e))
 
 
-class ResultThread(QThread):
-    data_sender = Signal(object)
-
-    def __init__(self, queue, stop_event, logger, start_time=None):
-        super().__init__()
-        # self.setName(self.__class__.__name__)
-        self.setObjectName(self.__class__.__name__)
-        self._queue = queue
-        self._stop_event = stop_event
-        self._logger = logger
-        self.start_time = start_time
-
-    def run(self):
-        time.sleep(3)
-        while True:
-            try:
-                cmd = self._queue.get(timeout=5)
-                if cmd.command == 'card_data':
-                    result = self._get_result(self._check_data(cmd.data))
-                    self.data_sender.emit(result)
-                    backup.backup_data(cmd.data)
-            except Empty:
-                if not main_thread().is_alive() or self._stop_event.is_set():
-                    break
-            except Exception as e:
-                self._logger.error(str(e))
-        self._logger.debug('Stop adder result')
-
+class SIResultThread(ResultThreadBase):
     def _check_data(self, card_data):
         # TODO requires more complex checking for long starts > 12 hours
-        if self.start_time and card_data['card_type'] == 'SI5':
-            start_time = self.time_to_sec(self.start_time)
-            for i in range(len(card_data['punches'])):
-                if self.time_to_sec(card_data['punches'][i][1]) < start_time:
-                    new_datetime = card_data['punches'][i][1].replace(hour=(card_data['punches'][i][1].hour + 12) % 24)
-                    card_data['punches'][i] = (card_data['punches'][i][0], new_datetime)
+        if 'card_type' in card_data:
+            start_time = self.get_system_zero_time()
+            if start_time and card_data['card_type'] == 'SI5':
+                start_time = self.time_to_sec(start_time)
+                for i in range(len(card_data['punches'])):
+                    if self.time_to_sec(card_data['punches'][i][1]) < start_time:
+                        new_datetime = card_data['punches'][i][1].replace(hour=(card_data['punches'][i][1].hour + 12) % 24)
+                        card_data['punches'][i] = (card_data['punches'][i][0], new_datetime)
 
-                # simple check for morning starts (10:00 a.m. was 22:00 in splits)
-                if self.time_to_sec(card_data['punches'][i][1]) - 12 * 3600 > start_time:
-                    new_datetime = card_data['punches'][i][1].replace(hour=card_data['punches'][i][1].hour - 12)
-                    card_data['punches'][i] = (card_data['punches'][i][0], new_datetime)
+                    # simple check for morning starts (10:00 a.m. was 22:00 in splits)
+                    if self.time_to_sec(card_data['punches'][i][1]) - 12 * 3600 > start_time:
+                        new_datetime = card_data['punches'][i][1].replace(hour=card_data['punches'][i][1].hour - 12)
+                        card_data['punches'][i] = (card_data['punches'][i][0], new_datetime)
 
         return card_data
-
-    @staticmethod
-    def _get_result(card_data):
-        result = memory.race().new_result()
-        result.card_number = int(card_data['card_number'])
-
-        for i in range(len(card_data['punches'])):
-            t = card_data['punches'][i][1]
-            if t:
-                split = memory.Split()
-                split.code = str(card_data['punches'][i][0])
-                split.time = time_to_otime(t)
-                split.days = memory.race().get_days(t)
-                result.splits.append(split)
-
-        if card_data['start']:
-            result.start_time = time_to_otime(card_data['start'])
-        if card_data['finish']:
-            result.finish_time = time_to_otime(card_data['finish'])
-
-        return result
 
     @staticmethod
     def time_to_sec(value, max_val=86400):
@@ -154,92 +90,36 @@ class ResultThread(QThread):
 
         return 0
 
+    @staticmethod
+    def get_system_zero_time():
+        start_time = memory.race().get_setting('system_zero_time', (8, 0, 0))
+        return datetime.datetime.today().replace(
+            hour=start_time[0],
+            minute=start_time[1],
+            second=start_time[2],
+            microsecond=0
+        )
+
 
 @singleton
-class SIReaderClient(object):
+class SIReaderClient(ReaderClientBase):
     def __init__(self):
-        self._queue = Queue()
-        self._stop_event = Event()
-        self._si_reader_thread = None
-        self._result_thread = None
-        self.port = None
-        self._logger = logging.root
-        self._call_back = None
-
-    def set_call(self, value):
-        if self._call_back is None:
-            self._call_back = value
-        return self
-
-    def _start_si_reader_thread(self):
-        if self._si_reader_thread is None:
-            self._si_reader_thread = SIReaderThread(
-                self.port,
-                self._queue,
-                self._stop_event,
-                self._logger,
-                debug=True
-            )
-            self._si_reader_thread.start()
-        # elif not self._si_reader_thread.is_alive():
-        elif self._si_reader_thread.isFinished():
-            self._si_reader_thread = None
-            self._start_si_reader_thread()
-
-    def _start_result_thread(self):
-        if self._result_thread is None:
-            self._result_thread = ResultThread(
-                self._queue,
-                self._stop_event,
-                self._logger,
-                self.get_start_time()
-            )
-            if self._call_back:
-                self._result_thread.data_sender.connect(self._call_back)
-            self._result_thread.start()
-        # elif not self._result_thread.is_alive():
-        elif self._result_thread.isFinished():
-            self._result_thread = None
-            self._start_result_thread()
-
-    def is_alive(self):
-        if self._si_reader_thread and self._result_thread:
-            # return self._si_reader_thread.is_alive() and self._result_thread.is_alive()
-            return not self._si_reader_thread.isFinished() and not self._result_thread.isFinished()
-
-        return False
+        super().__init__(reader_thread_class=SIReaderThread, result_thread_class=SIResultThread)
 
     def start(self):
         self.port = self.choose_port()
         if self.port:
-            self._stop_event.clear()
-            self._start_si_reader_thread()
-            self._start_result_thread()
-            self._logger.info(_('Opening port') + ' ' + self.port)
+            self._logger.info(_('Opening port {}').format(self.port))
+            super().start()
         else:
             self._logger.info(_('Cannot open port'))
-
-    def stop(self):
-        self._stop_event.set()
-        if self._si_reader_thread is not None:
-            self._si_reader_thread.quit()
-            self._si_reader_thread.wait()
-        if self._result_thread is not None:
-            self._result_thread.quit()
-            self._result_thread.wait()
-
-    def toggle(self):
-        if self.is_alive():
-            self.stop()
-            return
-        self.start()
 
     @staticmethod
     def get_ports():
         ports = []
         if platform.system() == 'Linux':
             scan_ports = [os.path.join('/dev', f) for f in os.listdir('/dev') if
-                     re.match('ttyS.*|ttyUSB.*', f)]
+                     re.match('ttyUSB.*', f)]
         elif platform.system() == 'Windows':
             scan_ports = ['COM' + str(i) for i in range(48)]
 
@@ -267,16 +147,6 @@ class SIReaderClient(object):
             self._logger.info('No ports available')
             return None
 
-    @staticmethod
-    def get_start_time():
-        start_time = memory.race().get_setting('system_zero_time', (8, 0, 0))
-        return datetime.datetime.today().replace(
-            hour=start_time[0],
-            minute=start_time[1],
-            second=start_time[2],
-            microsecond=0
-        )
-
 
 class ScanPortsThread(QThread):
     result_signal = Signal(list)
@@ -284,3 +154,4 @@ class ScanPortsThread(QThread):
     def run(self):
         result = SIReaderClient().get_ports()
         self.result_signal.emit(result)
+

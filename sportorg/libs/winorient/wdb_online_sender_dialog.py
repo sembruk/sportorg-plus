@@ -38,7 +38,7 @@ class WdbOnlineSenderDialog(QDialog):
             try:
                 self.start()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
 
         self.button_ok = QPushButton('Start')
         self.button_ok.clicked.connect(start)

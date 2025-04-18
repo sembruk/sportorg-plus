@@ -15,6 +15,7 @@ from sportorg.models.constant import get_race_courses
 from sportorg.models.memory import race, Group, Subgroup, find, Sex, Limit, RaceType
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.start.start_preparation import update_subgroups
+from sportorg.modules.live.live import live_client
 from sportorg.modules.teamwork import Teamwork
 from sportorg.utils.time import time_to_qtime, time_to_otime
 
@@ -125,6 +126,7 @@ class GroupEditDialog(QDialog):
         vbox_layout = QVBoxLayout()
         vbox_layout.addWidget(self.add_subgroup_button)
         vbox_layout.addWidget(self.delete_subgroup_button)
+        vbox_layout.addStretch()
         hbox_layout = QHBoxLayout()
         hbox_layout.addWidget(self.subgroups_table)
         hbox_layout.addLayout(vbox_layout)
@@ -137,7 +139,7 @@ class GroupEditDialog(QDialog):
             try:
                 self.apply_changes_impl()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
             self.close()
 
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -321,4 +323,5 @@ class GroupEditDialog(QDialog):
 
         ResultCalculation(race()).set_rank(group)
         update_subgroups(group)
+        live_client.send(group)
         Teamwork().send(group.to_dict())

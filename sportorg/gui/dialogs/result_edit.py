@@ -19,6 +19,7 @@ from sportorg.models.memory import race, Result, find, ResultStatus, Person, Lim
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.result.result_checker import ResultChecker, ResultCheckerException
 from sportorg.models.result.split_calculation import GroupSplits
+from sportorg.modules.live.live import live_client
 from sportorg.modules.teamwork import Teamwork
 from sportorg.utils.time import time_to_qtime, time_to_otime, hhmmss_to_time
 
@@ -92,7 +93,8 @@ class ResultEditDialog(QDialog):
         self.item_penalty_laps.setMaximum(1000000)
 
         self.item_status = QComboBox()
-        self.item_status.addItems(ResultStatus.get_titles())
+        status_titles = [s.get_title() for s in ResultStatus if s not in (ResultStatus.MISSING_PUNCH, ResultStatus.OVERTIME)]
+        self.item_status.addItems(status_titles)
 
         self.item_status_comment = AdvComboBox()
         self.item_status_comment.setMaximumWidth(300)
@@ -106,7 +108,7 @@ class ResultEditDialog(QDialog):
 
         self.layout.addRow(QLabel(_('Created at')), self.item_created_at)
         if self.current_object.is_punch():
-            self.layout.addRow(QLabel(_('Card')), self.item_card_number)
+            self.layout.addRow(QLabel(_('Card number')), self.item_card_number)
         self.layout.addRow(QLabel(_('Bib')), self.item_bib)
         self.layout.addRow(QLabel(''), self.label_person_info)
         if more24:
@@ -159,7 +161,7 @@ class ResultEditDialog(QDialog):
         try:
             self.apply_changes_impl()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
         self.close()
 
     def keyPressEvent(self, event):
@@ -222,7 +224,11 @@ class ResultEditDialog(QDialog):
 
         self.item_days.setValue(self.current_object.days)
 
-        self.item_status.setCurrentText(self.current_object.status.get_title())
+        status = self.current_object.status.get_title()
+        if self.item_status.findText(status) == -1:  # not found
+            self.item_status.addItem(status)
+
+        self.item_status.setCurrentText(status)
 
         self.item_status_comment.setCurrentText(self.current_object.status_comment)
 
@@ -232,7 +238,7 @@ class ResultEditDialog(QDialog):
         try:
             PersonEditDialog(self.current_object.person).exec_()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def apply_changes_impl(self):
         result = self.current_object
@@ -305,12 +311,22 @@ class ResultEditDialog(QDialog):
             result.clear()
             try:
                 ResultChecker.checking(result)
-                ResultChecker.calculate_penalty(result)
+                if race().is_team_race() and result.person and result.person.team:
+                    team = result.person.team
+                    if team.result:
+                        for r in team.result.members_results:
+                            if r is not result:
+                                ResultChecker.checking(r)
                 if result.person and result.person.group:
                     GroupSplits(race(), result.person.group).generate(True)
             except ResultCheckerException as e:
-                logging.error(str(e))
+                logging.exception(e)
         ResultCalculation(race()).process_results()
+        if race().is_team_race() and result.person and result.person.team:
+            live_client.send(result.person.team)
+        else:
+            live_client.send(result)
+        self.close()
         Teamwork().send(result.to_dict())
 
 

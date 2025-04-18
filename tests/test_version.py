@@ -1,28 +1,29 @@
 import pytest
 
-from sportorg.common.version import *
+from sportorg.common.version import Version
 
 
-@pytest.mark.parametrize(('version', 'expected_string'), [
-    ((1, 13, 5, 35, 'v', 'beta'), 'v1.13.5-beta.35'),
-    ((1, 13, 5, 0, 'v', 'beta'), 'v1.13.5-beta'),
-    ((1, 13, 5, 0, '', 'beta'), '1.13.5-beta'),
-    ((1, 13, 5), '1.13.5'),
-    ((1, 13, 5, 564456), '1.13.5.564456'),
+@pytest.mark.parametrize(('version1', 'version2', 'expected'), [
+    ("1.0.0", "2.0.0", -1),
+    ("2.0.0", "1.0.0", 1),
+    ("1.0.0", "1.0.0", 0),
+    ("1.10.0", "1.2.0", 1),
+    ("1.0.0-alpha", "1.0.0", -1),
+    ("1.0.0", "1.0.0-alpha", 1),
+    ("1.0.0-alpha", "1.0.0-beta", -1),
+    ("1.0.0-beta", "1.0.0-beta.2", -1),
+    ("1.0.0-beta.2", "1.0.0-beta.10", -1),
+    ("1.0.0-beta.10", "1.0.0-rc.1", -1),
 ])
-def test_version(version, expected_string):
-    result = Version(*version)
-    assert str(result), expected_string
 
-def test_version_eq():
-    version1 = Version(0, 0, 25, 44)
-    version2 = Version(0, 0, 25, 44)
-    assert version1 == version2
+def test_version(version1, version2, expected):
+    if expected == 0:
+        assert Version(version1) == Version(version2)
+    elif expected > 0:
+        assert Version(version1) > Version(version2)
+    else:
+        assert Version(version1) < Version(version2)
 
 def test_version_is_compatible():
-    version1 = Version(0, 1, 25, 44)
-    version2 = Version(0, 1, 0)
-    version3 = Version(1, 0, 25, 44)
-    assert version1.is_compatible(version2)
-    assert not version1.is_compatible(version3)
-    assert version2 <= version1 < version3
+    assert Version('1.12.0').is_compatible(Version('1.11.2-beta.0'))
+    assert not Version('1.12.0').is_compatible(Version('2.12.0-beta.0'))

@@ -1,7 +1,7 @@
 import math
 import logging
 
-from sportorg.models.memory import Course, Group, Qualification, ResultStatus
+from sportorg.models.memory import Course, Group, Qualification, ResultStatus, find
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.utils.time import get_speed_min_per_km
 
@@ -49,10 +49,11 @@ class PersonSplits(object):
                 prev_split = split.time
 
         prev_cp_desc = None
-        if 'start' in self.race.controls:
-            prev_cp_desc = self.race.controls['start']
+        start = find(self.race.control_points, code='start')
+        if start:
+            prev_cp_desc = start
         self.length = 0
-        while split_index < len(self.result.splits) and course_index < len(self.course.controls):
+        while split_index < len(self.result.splits):
             cur_split = self.result.splits[split_index]
 
             cur_split.index = split_index
@@ -63,15 +64,21 @@ class PersonSplits(object):
                 leg_start_time = cur_split.time
 
                 cur_split.course_index = course_index
-                cur_cp = self.course.controls[course_index]
-                if cur_cp.length > 0:
+                cur_cp = None
+                cur_split.length_leg = 0
+                cur_split.speed = 0
+                if course_index < len(self.course.controls):
+                    cur_cp = self.course.controls[course_index]
+                if cur_cp is not None and cur_cp.length > 0:
                     cur_split.length_leg = cur_cp.length
-                elif cur_split.code in self.race.controls:
-                    cp_desc = self.race.controls[cur_split.code]
-                    if prev_cp_desc is None:
+                else:
+                    cp_desc = find(self.race.control_points, code=str(cur_split.code))
+                    if cp_desc:
+                        if prev_cp_desc is None:
+                            prev_cp_desc = cp_desc
+                        cur_split.length_leg = math.sqrt((cp_desc.x - prev_cp_desc.x)**2 + (cp_desc.y - prev_cp_desc.y)**2)
                         prev_cp_desc = cp_desc
-                    cur_split.length_leg = math.sqrt((cp_desc.x - prev_cp_desc.x)**2 + (cp_desc.y - prev_cp_desc.y)**2)
-                    prev_cp_desc = cp_desc
+
                 if cur_split.length_leg:
                     cur_split.speed = get_speed_min_per_km(cur_split.leg_time, cur_split.length_leg)
                     self.length += cur_split.length_leg
@@ -84,12 +91,15 @@ class PersonSplits(object):
 
         self.last_correct_index = course_index - 1
 
+        self.result.length = 0
+        self.result.speed = 0
         if self.course.length:
             self.result.speed = get_speed_min_per_km(self.result.get_result_otime(), self.course.length)
         elif self.length > 0:
-            if 'finish' in self.race.controls and prev_cp_desc is not None:
-                finish_desc = self.race.controls['finish']
+            finish_desc = find(self.race.control_points, code='finish')
+            if finish_desc and prev_cp_desc is not None:
                 finish_leg_length = math.sqrt((finish_desc.x - prev_cp_desc.x)**2 + (finish_desc.y - prev_cp_desc.y)**2)
+                self.length += finish_leg_length
             self.result.speed = get_speed_min_per_km(self.result.get_pure_otime(), self.length)
             self.result.length = '{:.1f} км'.format(self.length/1000.0)
 

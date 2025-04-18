@@ -616,8 +616,8 @@
             var titleBlock = document.createElement('h2');
             titleBlock.id = groupName;
             var groupTitle = groupName;
-            if (course && course.controls && course.controls.length){
-                groupTitle += ', ' + course.controls.length + ' КП';
+            if (course && course.controls && course.controls_count > 0){
+                groupTitle += ', ' + course.controls_count + ' КП';
             }
             if (course && course.length){
                 groupTitle += ', ' + course.length / 1000 + ' км';

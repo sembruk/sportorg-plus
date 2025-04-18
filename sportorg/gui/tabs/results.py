@@ -42,7 +42,7 @@ class ResultsTable(TableView):
             if event.key() == QtCore.Qt.Key_Up or event.key() == QtCore.Qt.Key_Down:
                 self.entry_single_clicked(self.currentIndex())
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def entry_single_clicked(self, index):
         try:
@@ -50,7 +50,7 @@ class ResultsTable(TableView):
             if -1 < index.row() < len(race().results):
                 self.parent_widget.show_splits(index)
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def double_clicked(self, index):
         try:
@@ -61,7 +61,7 @@ class ResultsTable(TableView):
                 GlobalAccess().get_main_window().refresh()
                 # self.selectRow(index.row()+1)
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
 
 class Widget(QtWidgets.QWidget):
@@ -126,7 +126,7 @@ class Widget(QtWidgets.QWidget):
         self.result_course_group_box.setTitle(_('Course'))
         self.result_course_name_label.setText(_('Name'))
         self.result_course_length_label.setText(_('Length'))
-        self.result_card_group_box.setTitle(_('Chip'))
+        self.result_card_group_box.setTitle(_('Card'))
         self.result_card_start_label.setText(_('Start'))
         self.result_card_finish_label.setText(_('Finish'))
 

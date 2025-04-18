@@ -15,6 +15,7 @@ from sportorg.models.memory import race, Person, Sex, find, Qualification, Limit
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.start.start_preparation import update_subgroups
 from sportorg.modules.configs.configs import Config
+from sportorg.modules.live.live import live_client
 from sportorg.modules.teamwork import Teamwork
 from sportorg.utils.time import time_to_qtime, time_to_otime, qdate_to_date
 
@@ -133,7 +134,7 @@ class PersonEditDialog(QDialog):
         self.layout.addRow(self.label_start_group, self.item_start_group)
 
         self.is_ok['card'] = True
-        self.label_card = QLabel(_('Punch card #'))
+        self.label_card = QLabel(_('Card number'))
         self.item_card = QSpinBox()
         self.item_card.setMinimum(0)
         self.item_card.setMaximum(9999999)
@@ -162,7 +163,7 @@ class PersonEditDialog(QDialog):
             try:
                 self.apply_changes_impl()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
             self.close()
 
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -356,7 +357,7 @@ class PersonEditDialog(QDialog):
             if self.current_object.team:
                 self.item_team.setCurrentText(self.current_object.team.full_name)
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def apply_changes_impl(self):
         person = self.current_object
@@ -430,4 +431,5 @@ class PersonEditDialog(QDialog):
         if person.team is not None:
             person.team.update_subgroups()
         ResultCalculation(race()).process_results()
+        live_client.send(person)
         Teamwork().send(person.to_dict())

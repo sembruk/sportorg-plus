@@ -38,7 +38,7 @@ class StartHandicapDialog(QDialog):
         self.max_gap.setDisplayFormat(self.time_format)
         self.layout.addRow(self.max_gap_label, self.max_gap)
 
-        self.second_start_time_label = QLabel(_('Start time for 2 group'))
+        self.second_start_time_label = QLabel(_('Start time for 2nd group'))
         self.second_time = QTimeEdit()
         self.second_time.setDisplayFormat(self.time_format)
         self.layout.addRow(self.second_start_time_label, self.second_time)
@@ -69,7 +69,7 @@ class StartHandicapDialog(QDialog):
             try:
                 self.apply_changes_impl()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
                 logging.exception(e)
             self.close()
 

@@ -6,7 +6,6 @@
 Это можно сделать в диалоге "Настройки печати".
 
 ![Screenshot](img/78.png)
-![Screenshot](img/79.png)
 
 ---
 **Важное замечание!**
@@ -23,7 +22,9 @@
 Также можно использовать горячую клавишу **CTRL+L**.
 
 ![Screenshot](img/80.png)
+
 ![Screenshot](img/81.png)
+
 ![Screenshot](img/82.png)
 
 Дизайн шаблона можно изменять по вашему усмотрению, используя формат HTML.
@@ -43,6 +44,8 @@
 Обязательно заблаговременно проверьте, как печатаются сплиты на том принтере, который будет использоваться во время соревнований!
 
 ![Screenshot](img/printout_example_001.png)
+
 ![Screenshot](img/printout_example_002.png)
+
 ![Screenshot](img/printout_example_003.jpg)
 

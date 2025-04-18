@@ -8,7 +8,7 @@ from sportorg import config
 from sportorg.common.audio import get_sounds
 from sportorg.gui.global_access import GlobalAccess
 from sportorg.gui.utils.custom_controls import AdvComboBox
-from sportorg.language import _, get_languages
+from sportorg.language import _, get_languages, current_locale
 from sportorg.models.memory import races, Race, set_current_race_index, add_race, copy_race, get_current_race_index, \
     del_race, move_up_race, move_down_race
 from sportorg.modules.configs.configs import Config
@@ -24,15 +24,16 @@ class MainTab(Tab):
         self.widget = QWidget()
         self.layout = QFormLayout(parent)
 
-        self.label_lang = QLabel(_('Languages'))
+        self.label_lang = QLabel(_('Language'))
         self.item_lang = AdvComboBox()
         self.item_lang.addItems(get_languages())
-        self.item_lang.setCurrentText(Config().configuration.get('current_locale', 'ru_RU'))
+        self.item_lang.setCurrentText(current_locale)
         self.layout.addRow(self.label_lang, self.item_lang)
 
         self.item_auto_save = QSpinBox()
         self.item_auto_save.setMaximum(3600*24)
         self.item_auto_save.setValue(Config().configuration.get('autosave_interval'))
+        self.item_auto_save.setToolTip(_('Autosave disabled if value is 0'))
         self.layout.addRow(_('Auto save') + ' (sec)', self.item_auto_save)
 
         self.item_show_toolbar = QCheckBox(_('Show toolbar'))
@@ -48,8 +49,13 @@ class MainTab(Tab):
         self.layout.addRow(self.item_use_birthday)
 
         self.item_check_updates = QCheckBox(_('Check updates'))
-        self.item_check_updates.setChecked(Config().configuration.get('check_updates'))
-        # self.layout.addRow(self.item_check_updates)
+        self.item_check_updates.setChecked(Config().configuration.get('check_updates', True))
+        self.layout.addRow(self.item_check_updates)
+
+        self.item_try_restore_backup = QCheckBox(_('Try restore card data from backup'))
+        self.item_try_restore_backup.setChecked(Config().configuration.get('try_restore_backup', False))
+        self.item_try_restore_backup.setToolTip(_('Try restore card data from backup file in "log" directory if last session was interrupted'))
+        self.layout.addRow(self.item_try_restore_backup)
 
         self.widget.setLayout(self.layout)
 
@@ -59,6 +65,7 @@ class MainTab(Tab):
         Config().configuration.set('open_recent_file', self.item_open_recent_file.isChecked())
         Config().configuration.set('use_birthday', self.item_use_birthday.isChecked())
         Config().configuration.set('check_updates', self.item_check_updates.isChecked())
+        Config().configuration.set('try_restore_backup', self.item_try_restore_backup.isChecked())
 
         if Config().configuration.get('show_toolbar') != self.item_show_toolbar.isChecked():
             mw = GlobalAccess().get_main_window()

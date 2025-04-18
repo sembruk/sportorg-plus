@@ -1,10 +1,36 @@
 # SportOrgPlus Changelog
 
+## v1.5.1 - 2025-04-09
+
+* Fixed rogaining penalty calculation at card reading
+* Fixed coordinate import from GPX and IOF XML at Windows
+* Improved timekeeping properties dialog behavior
+* Improved Orgeo CSV import
+* Updated English interface
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.5.0...v1.5.1)
+
+## v1.5.0 - 2025-01-20
+
+* Added tab with control points coordinates and scores
+* Implemented import of control points coordinates from IOF XML v3, GPX and CSV files
+* Fixed import of courses from OCAD v8 txt files
+* Added ability to add and remove participants through the dialog for editing the team
+* Added check for updates every week at startup
+* Implemented restoration of data read from cards after the program's premature termination (experimental function)
+* Updated splits templates
+* English interface language by default, if the system language differs from Russian
+* Fixed known bugs
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.4.2...v1.5.0)
+
 ## v1.4.2 - 2024-08-21
 
 * Add support for closing split edit and result edit dialogs with Ctrl+Enter and Escape
 * Now, when opening the timekeeping settings and the Bluetooth turned on the program does not freeze
 * Added CTRL+I combination for quick creation of SPORTident result
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.4.1...v1.4.2)
 
 ## v1.4.1 - 2024-03-19
 

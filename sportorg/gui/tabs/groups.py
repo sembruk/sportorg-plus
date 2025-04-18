@@ -35,7 +35,7 @@ class Widget(QtWidgets.QWidget):
                     dialog.exec_()
                     GlobalAccess().get_main_window().refresh()
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
 
         self.group_table.activated.connect(group_double_clicked)
         self.group_layout.addWidget(self.group_table)

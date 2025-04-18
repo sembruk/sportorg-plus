@@ -24,7 +24,9 @@ class ResultChecker:
 
         if race().get_setting('result_processing_mode', 'time') == 'scores':
             result.check(course)
-            result.scores, result.penalty_points = self.calculate_scores_rogaining(result)
+            scores = self.calculate_rogaine_scores(result)
+            result.penalty_points = self.calculate_rogaine_penalty(result, scores)
+            result.scores = scores - result.penalty_points
             return True
 
         if race().get_setting('marked_route_dont_dsq', False):
@@ -49,7 +51,10 @@ class ResultChecker:
         o = cls(result.person)
         if result.status in [ResultStatus.OK, ResultStatus.MISSING_PUNCH, ResultStatus.OVERTIME]:
             result.status = ResultStatus.OK
-            if not o.check_result(result):
+
+            check_flag = o.check_result(result)
+            ResultChecker.calculate_penalty(result)
+            if not check_flag:
                 result.status = ResultStatus.MISSING_PUNCH
                 if not result.status_comment:
                     result.status_comment = StatusComments().remove_hint(StatusComments().get())
@@ -92,24 +97,40 @@ class ResultChecker:
         if not course:
             return
 
-        controls = course.get_unrolled_controls()
-
         if race().get_setting('marked_route_dont_dsq', False):
             # free order, don't penalty for extra cp
-            penalty = ResultChecker.penalty_calculation_free_order(result.splits, controls)
+            penalty = ResultChecker.penalty_calculation_free_order(result.splits, course.controls)
         else:
             # marked route with penalty
-            penalty = ResultChecker.penalty_calculation(result.splits, controls, check_existence=True)
+            penalty = ResultChecker.penalty_calculation(result.splits, course.controls, check_existence=True)
 
         if race().get_setting('marked_route_max_penalty_by_cp', False):
             # limit the penalty by quantity of controls
-            penalty = min(len(controls), penalty)
+            penalty = min(len(course.controls), penalty)
+
+        result.penalty_laps = 0
+        result.penalty_time = OTime()
 
         if mode == 'laps':
             result.penalty_laps = penalty
         elif mode == 'time':
             time_for_one_penalty = OTime(msec=race().get_setting('marked_route_penalty_time', 60000))
             result.penalty_time = time_for_one_penalty * penalty
+
+    @staticmethod
+    def get_marked_route_incorrect_list(controls):
+        ret = []
+        for i in controls:
+            code_str = str(i.code)
+            if code_str and '(' in code_str:
+                correct = code_str.split('(')[0].strip()
+                if correct.isdigit():
+                    for cp in code_str.split('(')[1].split(','):
+                        cp = cp.strip(')').strip()
+                        if cp != correct and cp.isdigit():
+                            if cp not in ret:
+                                ret.append(cp)
+        return ret
 
     @staticmethod
     def penalty_calculation(splits, controls, check_existence=False):
@@ -143,21 +164,34 @@ class ResultChecker:
         user_array = [i.code for i in splits]
         origin_array = [i.get_number_code() for i in controls]
         res = 0
+
+        # In theory can return less penalty for uncleaned card / может дать 0 штрафа при мусоре в чипе
         if check_existence and len(user_array) < len(origin_array):
             # add 1 penalty score for missing points
             res = len(origin_array) - len(user_array)
 
-        for i in origin_array:
-            # remove correct points (only one object per loop)
+        incorrect_array = ResultChecker.get_marked_route_incorrect_list(controls)
 
-            if i == '0' and len(user_array):
-                del user_array[0]
+        if len(incorrect_array) > 0:
+            # marked route with choice, controls like 31(31,131), penalty only wrong choice (once),
+            # ignoring controls from another courses, previous punches on uncleared card, duplicates
+            # this mode allows combination of marked route and classic course, but please use different controls
+            for i in incorrect_array:
+                if i in user_array:
+                    res += 1
+        else:
+            # classic penalty model - count correct control punch only once, others are recognized as incorrect
+            # used for orientathlon, corridor training with choice
+            for i in origin_array:
+                # remove correct points (only one object per loop)
+                if i == '0' and len(user_array):
+                    del user_array[0]
 
-            elif i in user_array:
-                user_array.remove(i)
+                elif i in user_array:
+                    user_array.remove(i)
 
-        # now user_array contains only incorrect and duplicated values
-        res += len(user_array)
+            # now user_array contains only incorrect and duplicated values
+            res += len(user_array)
 
         return res
 
@@ -186,23 +220,22 @@ class ResultChecker:
         for i in splits:
             if not i.has_penalty:
                 correct_count += 1
-
-        return len(controls) - correct_count
+        return max(len(controls) - correct_count, 0)
 
     @staticmethod
     def get_control_score(code):
         obj = race()
-        control = find(obj.controls, code=str(code))
-        if control and control.score:
-            return control.score
-
         if obj.get_setting('result_processing_score_mode', 'fixed') == 'fixed':
             return obj.get_setting('result_processing_fixed_score_value', 1.0)  # fixed score per control
-        else:
-            return int(code) // 10  # score = code / 10
+
+        control = find(obj.control_points, code=str(code))
+        if control and control.score:
+            return int(control.score)
+
+        return int(code)//10  # score = code / 10
 
     @staticmethod
-    def calculate_scores_rogaining(result):
+    def calculate_rogaine_scores(result):
         user_array = []
         points = 0
         for cur_split in result.splits:
@@ -211,6 +244,10 @@ class ResultChecker:
                 if code not in user_array:
                     user_array.append(code)
                     points += ResultChecker.get_control_score(code)
+        return points
+
+    @staticmethod
+    def calculate_rogaine_penalty(result, score):
         penalty_points = 0
         if result.person and result.person.group:
             user_time = result.get_result_otime()
@@ -221,10 +258,7 @@ class ResultChecker:
                 minutes_diff = (seconds_diff + 59) // 60  # note, 1:01 = 2 minutes
                 penalty_step = race().get_setting('result_processing_scores_minute_penalty', 1.0)
                 penalty_points = minutes_diff*penalty_step
-                points -= penalty_points
-        if points < 0:
-            points = 0
-        return points, penalty_points
+        return min(penalty_points, score)
 
     @staticmethod
     def fix_mix_groups():

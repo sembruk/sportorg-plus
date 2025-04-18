@@ -85,31 +85,32 @@ def import_from_iof(file):
     return '\n'.join(ret)
 
 
-def import_from_course_data(courses) -> None:
+def import_from_course_data(data) -> None:
     obj = race()
-    for course in courses:
-        if find(obj.courses, name=course['name']) is None:
-            c = create(
-                Course,
-                name=course['name'],
-                length=course['length'],
-                climb=course['climb'],
-            )
-            controls = []
-            i = 1
-            for control in course['controls']:
-                if control['type'] == 'Control':
-                    controls.append(
-                        create(
-                            CourseControl,
-                            code=control['control'],
-                            order=i,
-                            length=control['leg_length'],
+    if 'courses' in data:
+        for course in data['courses']:
+            if find(obj.courses, name=course['name']) is None:
+                c = create(
+                    Course,
+                    name=course['name'],
+                    length=course['length'],
+                    climb=course['climb'],
+                )
+                controls = []
+                i = 1
+                for control in course['controls']:
+                    if control['type'] == 'Control':
+                        controls.append(
+                            create(
+                                CourseControl,
+                                code=control['control'],
+                                order=i,
+                                length=control['leg_length'],
+                            )
                         )
-                    )
-                    i += 1
-            c.controls = controls
-            obj.courses.append(c)
+                        i += 1
+                c.controls = controls
+                obj.courses.append(c)
 
 
 def create_person(person_entry):

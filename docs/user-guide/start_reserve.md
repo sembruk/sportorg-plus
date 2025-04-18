@@ -20,8 +20,12 @@
 При одновременном использовании двух опций вставки (проценты и точное количество) ищется и используется максимальное значение.
 
 ![Screenshot](img/34.png)
+
 ![Screenshot](img/35.png)
+
 ![Screenshot](img/36.png)
+
 ![Screenshot](img/37.png)
+
 ![Screenshot](img/38.png)
 

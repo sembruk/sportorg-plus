@@ -88,7 +88,7 @@ class AbstractSportOrgMemoryModel(QAbstractTableModel):
                 answer = self.cache[row][column]
                 return answer
             except Exception as e:
-                logging.error(str(e))
+                logging.exception(e)
         return
 
     def clear_filter(self, remove_condition=True):
@@ -189,28 +189,27 @@ class AbstractSportOrgMemoryModel(QAbstractTableModel):
 
         self.search_offset = -1
 
+    def sort_key(self, obj, column):
+        item = self.get_item(obj, column)
+        return item is None, str(type(item)), item
+
     def sort(self, p_int, order=None):
         """Sort table by given column number.
         """
-        def sort_key(x):
-            item = self.get_item(x, p_int)
-            return item is None, str(type(item)), item
         try:
             self.layoutAboutToBeChanged.emit()
 
             source_array = self.get_source_array()
 
             if len(source_array):
-                source_array = sorted(source_array, key=sort_key)
-                if order == Qt.DescendingOrder:
-                    source_array = source_array[::-1]
+                source_array = sorted(source_array, key=lambda x: self.sort_key(x, p_int), reverse=order == Qt.DescendingOrder)
 
                 self.set_source_array(source_array)
 
                 self.init_cache()
             self.layoutChanged.emit()
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
 
     def update_one_object(self, part, index):
         self.values[index] = self.get_values_from_object(part)
@@ -258,6 +257,7 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         new_person.bib = 0
         new_person.card_number = 0
         self.race.persons.insert(position, new_person)
+        self.race.update_team_person_counters()
 
     def get_values_from_object(self, obj):
         ret = []
@@ -303,7 +303,7 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         if self.race.is_team_race():
             ret.append(person.subgroups_str())
         ret.append(person.result_count)
-        ret.append(_('Rented card') if is_rented_card else _('Rented stub'))
+        ret.append(_('Rented card') if is_rented_card else _('Own card'))
         ret.append(str(person.world_code) if person.world_code else '')
         ret.append(str(person.national_code) if person.national_code else '')
 
@@ -373,7 +373,7 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
             if person.team:
                 team = person.team.full_name
 
-            rented_card = _('Rented card') if is_rented_card else _('Rented stub')
+            rented_card = _('Rented card') if is_rented_card else _('Own card')
 
         start = ''
         if i.get_start_time():
@@ -465,7 +465,7 @@ class GroupMemoryModel(AbstractSportOrgMemoryModel):
     def get_values_from_object(self, group):
         course = group.course
 
-        control_count = len(course.get_unrolled_controls()) if course else 0
+        control_count = course.get_controls_count_str() if course else 0
 
         return [
             group.name,
@@ -515,13 +515,14 @@ class CourseMemoryModel(AbstractSportOrgMemoryModel):
         new_course.id = uuid.uuid4()
         new_course.name = new_course.name + '_'
         new_course.controls = deepcopy(course.controls)
+        new_course._controls = deepcopy(course._controls)
         self.race.courses.insert(position, new_course)
 
     def get_values_from_object(self, course):
         return [
             course.name,
             course.length,
-            len(course.get_unrolled_controls()),
+            course.get_controls_count_str(),
             course.climb,
             ' '.join(course.get_code_list()),
         ]
@@ -538,7 +539,7 @@ class TeamMemoryModel(AbstractSportOrgMemoryModel):
         super().__init__()
 
     def get_headers(self):
-        return [_('Name'), _('Number'), _('Group'), _('Code'), _('Country'), _('Region'), _('Contact')]
+        return [_('Name'), _('Number'), _('Group'), _('Count'), _('Code'), _('Country'), _('Region'), _('Contact')]
 
     def init_cache(self):
         self.cache.clear()
@@ -556,12 +557,14 @@ class TeamMemoryModel(AbstractSportOrgMemoryModel):
         new_team.name = new_team.name + '_'
         new_team.number = 0
         self.race.teams.insert(position, new_team)
+        self.race.update_team_person_counters()
 
     def get_values_from_object(self, team):
         return [
             team.name,
             team.number,
             team.group.name if team.group else '',
+            team.count_person,
             team.code,
             team.country,
             team.region,
@@ -573,3 +576,55 @@ class TeamMemoryModel(AbstractSportOrgMemoryModel):
 
     def set_source_array(self, array):
         self.race.teams = array
+
+
+class ControlPointMemoryModel(AbstractSportOrgMemoryModel):
+    def __init__(self):
+        super().__init__()
+
+    def get_headers(self):
+        return [_('Code'), _('Score'), _('X, meters'), _('Y, meters')]
+
+    def init_cache(self):
+        self.cache.clear()
+        for i in range(len(self.race.control_points)):
+            self.cache.append(self.get_data(i))
+
+    def get_data(self, position):
+        ret = self.get_values_from_object(self.race.control_points[position])
+        return ret
+
+    def duplicate(self, position):
+        cp = self.race.control_points[position]
+        new_cp = copy(cp)
+        new_cp.code = new_cp.code + '_'
+        self.race.control_points.insert(position, new_cp)
+
+    def get_values_from_object(self, control):
+        return [
+            control.code,
+            control.score,
+            control.x,
+            control.y
+        ]
+
+    def get_source_array(self):
+        return self.race.control_points
+
+    def set_source_array(self, array):
+        self.race.control_points = array
+
+    def sort_key(self, obj, column):
+        item = self.get_item(obj, column)
+
+        if item == 'start':
+            return (0,)  # Lowest possible rank
+        elif item == 'finish':
+            return (3,)  # Highest possible rank
+
+        try:
+            num = int(item)
+            return (1, num)
+        except (ValueError, TypeError):
+            return (2, str(item))
+
