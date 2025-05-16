@@ -59,14 +59,15 @@ class ResultChecker:
                 if not result.status_comment:
                     result.status_comment = StatusComments().remove_hint(StatusComments().get())
             elif result.person.group and result.person.group.max_time.to_msec():
-                # BNO2021
-                result_time = result.get_result_otime() - result.get_penalty_time()
+                result_time = result.get_result_otime() + result.get_credit_time() - result.get_penalty_time()
+                if result.person and result.person.bib == 133:
+                    print(result_time, result.get_result_otime(), result.get_credit_time(), result.get_penalty_time())
                 if result_time > result.person.group.max_time:
                     if race().get_setting('result_processing_mode', 'time') == 'time':
                         result.status = ResultStatus.OVERTIME
                     elif race().get_setting('result_processing_mode', 'time') == 'scores':
                         max_delay_ms = race().get_setting('result_processing_scores_max_delay', 30)*60000
-                        if result.get_result_otime().to_msec() > result.person.group.max_time.to_msec() + max_delay_ms: 
+                        if result_time.to_msec() > result.person.group.max_time.to_msec() + max_delay_ms: 
                             result.status = ResultStatus.OVERTIME
 
         return o
