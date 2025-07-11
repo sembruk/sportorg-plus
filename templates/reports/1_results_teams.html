@@ -55,7 +55,7 @@
             result: result.result,
             time: result.finish_msec > result.start_msec ? toHHMMSS(result.finish_msec - result.start_msec) : toHHMMSS(result.finish_msec + 86400000 - result.start_msec),
             result_msec: result.result_msec,
-            result_team_time: toHHMMSS(result.result_team_msec),
+            result_team_time: toHHMMSS(result.result_team_msec, true),
             diff: race.settings.result_processing_mode === 'scores' ? result.diff_scores : toHHMMSS(result.diff),
             place: result.place,
             status: result.status,

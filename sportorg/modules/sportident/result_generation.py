@@ -27,7 +27,7 @@ class ResultSportidentGeneration:
         if self._result and self._result.finish_time is None:
             if self.finish_source == 'station':
                 if self.missed_finish == 'readout':
-                    self._result.finish_time = OTime.now()
+                    self._result.finish_time = OTime.now(start_datetime=race().data.get_start_datetime())
                 elif self.missed_finish == 'zero':
                     self._result.finish_time = OTime(msec=0)
                 elif self.missed_finish == 'dsq':

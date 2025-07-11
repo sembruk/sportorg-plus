@@ -17,8 +17,8 @@ from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.start.start_preparation import update_subgroups
 from sportorg.modules.live.live import live_client
 from sportorg.modules.teamwork import Teamwork
-from sportorg.utils.time import time_to_qtime, time_to_otime
-from sportorg.common.extendedtimeedit import ExtendedTimeEdit
+from sportorg.utils.time import time_to_qtime, time_to_otime, time_to_sec
+from sportorg.common.extendedtimeedit import DurationEdit
 
 
 class GroupEditDialog(QDialog):
@@ -84,7 +84,7 @@ class GroupEditDialog(QDialog):
         self.item_start_time.setDisplayFormat(self.time_format)
         self.layout.addRow(label_start_time, self.item_start_time)
 
-        self.item_max_time = ExtendedTimeEdit()
+        self.item_max_time = DurationEdit()
         self.layout.addRow(_('Max time'), self.item_max_time)
 
         self.item_corridor = QSpinBox()
@@ -226,7 +226,7 @@ class GroupEditDialog(QDialog):
         if self.current_object.start_time:
             self.item_start_time.setTime(time_to_qtime(self.current_object.start_time))
         if self.current_object.max_time:
-            self.item_max_time.setTime(time_to_qtime(self.current_object.max_time))
+            self.item_max_time.setSeconds(time_to_sec(self.current_object.max_time, max_val=None))
         if self.current_object.start_interval:
             self.item_start_interval.setTime(time_to_qtime(self.current_object.start_interval))
         if self.current_object.start_corridor:
@@ -296,7 +296,7 @@ class GroupEditDialog(QDialog):
         if group.start_time != start_time:
             group.start_time = start_time
 
-        time = time_to_otime(self.item_max_time.time())
+        time = time_to_otime(self.item_max_time.seconds())
 
         if group.max_time != time:
             group.max_time = time

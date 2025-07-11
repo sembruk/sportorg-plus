@@ -22,15 +22,19 @@ def timeit(method):
     return timed
 
 
-def time_to_otime(t):
+def time_to_otime(t, start_datetime=None):
     if isinstance(t, datetime.datetime):
-        return OTime(0, t.hour, t.minute, t.second, round(t.microsecond/1000))
+        days = (t - start_datetime).days if start_datetime else 0
+        return OTime(days, t.hour, t.minute, t.second, round(t.microsecond/1000))
     if isinstance(t, QTime):
         return OTime(0, t.hour(), t.minute(), t.second(), t.msec())
     if isinstance(t, datetime.timedelta):
         return time_to_otime(datetime.datetime(2000, 1, 1, 0, 0, 0) + t)
     if isinstance(t, OTime):
         return t
+    if isinstance(t, int):
+        # Convet seconds to otime
+        return OTime(t//86400, t%86400//3600, t%3600//60, t%60)
     return OTime()
 
 

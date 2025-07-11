@@ -21,7 +21,8 @@ from sportorg.models.result.result_checker import ResultChecker, ResultCheckerEx
 from sportorg.models.result.split_calculation import GroupSplits
 from sportorg.modules.live.live import live_client
 from sportorg.modules.teamwork import Teamwork
-from sportorg.utils.time import time_to_qtime, time_to_otime, hhmmss_to_time
+from sportorg.utils.time import time_to_qtime, time_to_otime, hhmmss_to_time, time_to_sec
+from sportorg.common.extendedtimeedit import DurationEdit
 
 
 class ResultEditDialog(QDialog):
@@ -67,8 +68,7 @@ class ResultEditDialog(QDialog):
         self.item_days = QSpinBox()
         self.item_days.setMaximum(365)
 
-        self.item_finish = QTimeEdit()
-        self.item_finish.setDisplayFormat(self.time_format)
+        self.item_finish = DurationEdit()
 
         self.item_start = QTimeEdit()
         self.item_start.setDisplayFormat(self.time_format)
@@ -200,7 +200,7 @@ class ResultEditDialog(QDialog):
         if self.current_object.created_at:
             self.item_created_at.setTime(time_to_qtime(datetime.fromtimestamp(self.current_object.created_at)))
         if self.current_object.finish_time:
-            self.item_finish.setTime(time_to_qtime(self.current_object.finish_time))
+            self.item_finish.setSeconds(time_to_sec(self.current_object.finish_time, max_val=None))
         #if race().get_setting('system_start_source', 'protocol') == 'group':
         #    if self.current_object.person.group and self.current_object.person.group.start_time:
         #        self.item_start.setTime(time_to_qtime(self.current_object.person.group.start_time))
@@ -256,7 +256,7 @@ class ResultEditDialog(QDialog):
                         break
             result.splits = new_splits
 
-        time_ = time_to_otime(self.item_finish.time())
+        time_ = time_to_otime(self.item_finish.seconds())
         if result.finish_time != time_:
             result.finish_time = time_
 

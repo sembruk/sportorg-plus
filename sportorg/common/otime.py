@@ -78,9 +78,10 @@ class OTime:
         return self.__str__()
 
     @classmethod
-    def now(cls):
+    def now(cls, start_datetime=None):
         now = datetime.datetime.now()
-        return OTime(0, now.hour, now.minute, now.second, round(now.microsecond / 1000))
+        day = (now - start_datetime).days if start_datetime else 0
+        return OTime(day, now.hour, now.minute, now.second, round(now.microsecond / 1000))
 
     def replace(self, day=None, hour=None, minute=None, sec=None, msec=None):
         return OTime(

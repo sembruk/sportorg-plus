@@ -1275,6 +1275,9 @@ class Person(Model):
     @staticmethod
     def get_age_by_birthdate(birth_date):
         start = race().data.get_start_datetime()
+        use_birthday = Config().configuration.get('use_birthday', False)
+        if not use_birthday:
+            return start.year - birth_date.year
         return start.year - birth_date.year - ((start.month, start.day) < (birth_date.month, birth_date.day))
 
     @property
@@ -2339,6 +2342,7 @@ class TeamResult(object):
     def __init__(self):
         self.members_results = []  # type: List[Result]
         self.score = 0
+        self.start_time = None
         self.finish_time = OTime()
 
     def __eq__(self, other):
@@ -2368,6 +2372,7 @@ class TeamResult(object):
     def add_result(self, result):
         """Add new result to the team"""
         self.members_results.append(result)
+        self.start_time = min(self.start_time, result.get_start_time()) if self.start_time else result.get_start_time()
         self.finish_time = max(self.finish_time, result.get_finish_time())
         if self.score == 0:
             self.score = result.scores
@@ -2378,8 +2383,7 @@ class TeamResult(object):
 
     def get_time(self):
         if len(self.members_results) > 0:
-            start_time = self.members_results[0].get_start_time()
-            return self.finish_time - start_time
+            return self.finish_time - self.start_time
         return OTime()
 
     def is_status_ok(self):
