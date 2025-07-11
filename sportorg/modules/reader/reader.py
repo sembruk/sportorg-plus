@@ -78,7 +78,7 @@ class ResultThreadBase(QThread):
                 result.splits.append(split)
 
         result.start_time = time_to_otime(card_data['start']) if 'start' in card_data else None
-        result.finish_time = time_to_otime(card_data['finish'], start_datetime=memory.race().get_start_datetime()) if 'finish' in card_data else None
+        result.finish_time = time_to_otime(card_data['finish'], start_datetime=memory.race().data.get_start_datetime()) if 'finish' in card_data else None
 
         return result
 
