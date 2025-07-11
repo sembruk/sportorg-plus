@@ -18,6 +18,7 @@ from sportorg.models.start.start_preparation import update_subgroups
 from sportorg.modules.live.live import live_client
 from sportorg.modules.teamwork import Teamwork
 from sportorg.utils.time import time_to_qtime, time_to_otime
+from sportorg.common.extendedtimeedit import ExtendedTimeEdit
 
 
 class GroupEditDialog(QDialog):
@@ -83,8 +84,7 @@ class GroupEditDialog(QDialog):
         self.item_start_time.setDisplayFormat(self.time_format)
         self.layout.addRow(label_start_time, self.item_start_time)
 
-        self.item_max_time = QTimeEdit()
-        self.item_max_time.setDisplayFormat(self.time_format)
+        self.item_max_time = ExtendedTimeEdit()
         self.layout.addRow(_('Max time'), self.item_max_time)
 
         self.item_corridor = QSpinBox()
