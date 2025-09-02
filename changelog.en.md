@@ -1,5 +1,16 @@
 # SportOrgPlus Changelog
 
+## v1.5.2 - 2025-09-02
+
+* Debug card readout with various options of finish time source
+* Checking results of all team if one of them was edited
+* Send results of all team (for team race) to Live
+* Fixed sorting in CP tab (start, controls, finish) 
+* Added merge groups action
+* Removed MISSING_PUNCH and OVERTIME status from pop-up list in result edit dialog
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.5.1...v1.5.2)
+
 ## v1.5.1 - 2025-04-09
 
 * Fixed rogaining penalty calculation at card reading
