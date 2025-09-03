@@ -172,9 +172,12 @@ class TimekeepingPropertiesDialog(QDialog):
         self.rp_fixed_scores_edit = QSpinBox()
         self.rp_fixed_scores_edit.setMaximumWidth(50)
         self.rp_scores_layout.addRow(self.rp_fixed_scores_radio, self.rp_fixed_scores_edit)
-        self.rp_scores_minute_penalty_edit = QSpinBox()
-        self.rp_scores_minute_penalty_edit.setMaximumWidth(50)
-        self.rp_scores_layout.addRow(QLabel(_('minute penalty')), self.rp_scores_minute_penalty_edit)
+        self.rp_scores_penalty_edit = QSpinBox()
+        self.rp_scores_penalty_edit.setMaximumWidth(50)
+        self.rp_scores_penalty_period_edit = QSpinBox()
+        self.rp_scores_penalty_period_edit.setMaximumWidth(50)
+        self.rp_scores_layout.addRow(QLabel(_('Penalty points per period')), self.rp_scores_penalty_edit)
+        self.rp_scores_layout.addRow(QLabel(_('Penalty period, minutes')), self.rp_scores_penalty_period_edit)
         self.rp_scores_max_delay = QSpinBox()
         self.rp_scores_max_delay.setMaximumWidth(50)
         self.rp_scores_layout.addRow(QLabel(_('Max delay, minutes')), self.rp_scores_max_delay)
@@ -386,7 +389,8 @@ class TimekeepingPropertiesDialog(QDialog):
         rp_mode = obj.get_setting('result_processing_mode', 'time')
         rp_score_mode = obj.get_setting('result_processing_score_mode', 'rogain')
         rp_fixed_scores_value = obj.get_setting('result_processing_fixed_score_value', 1)
-        rp_scores_minute_penalty = obj.get_setting('result_processing_scores_minute_penalty', 1)
+        rp_scores_penalty = obj.get_setting('result_processing_scores_penalty', 1)
+        rp_scores_penalty_period_minutes = obj.get_setting('result_processing_scores_penalty_period_minutes', 1)
         rp_scores_max_delay = obj.get_setting('result_processing_scores_max_delay', 30)
 
         if rp_mode == 'time':
@@ -401,7 +405,8 @@ class TimekeepingPropertiesDialog(QDialog):
             self.rp_fixed_scores_radio.setChecked(True)
 
         self.rp_fixed_scores_edit.setValue(rp_fixed_scores_value)
-        self.rp_scores_minute_penalty_edit.setValue(rp_scores_minute_penalty)
+        self.rp_scores_penalty_edit.setValue(rp_scores_penalty)
+        self.rp_scores_penalty_period_edit.setValue(rp_scores_penalty_period_minutes)
         self.rp_scores_max_delay.setValue(rp_scores_max_delay)
 
         # penalty calculation
@@ -536,13 +541,15 @@ class TimekeepingPropertiesDialog(QDialog):
 
         rp_fixed_scores_value = self.rp_fixed_scores_edit.value()
 
-        rp_scores_minute_penalty = self.rp_scores_minute_penalty_edit.value()
+        rp_scores_penalty = self.rp_scores_penalty_edit.value()
+        rp_scores_penalty_period_minutes = self.rp_scores_penalty_period_edit.value()
         rp_scores_max_delay = self.rp_scores_max_delay.value()
 
         obj.set_setting('result_processing_mode', rp_mode)
         obj.set_setting('result_processing_score_mode', rp_score_mode)
         obj.set_setting('result_processing_fixed_score_value', rp_fixed_scores_value)
-        obj.set_setting('result_processing_scores_minute_penalty', rp_scores_minute_penalty)
+        obj.set_setting('result_processing_scores_penalty', rp_scores_penalty)
+        obj.set_setting('result_processing_scores_penalty_period_minutes', rp_scores_penalty_period_minutes)
         obj.set_setting('result_processing_scores_max_delay', rp_scores_max_delay)
 
         # marked route

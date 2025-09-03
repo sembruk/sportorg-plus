@@ -2189,6 +2189,12 @@ msgstr "Сохранить WDB файл"
 msgid "/km"
 msgstr "/км"
 
+msgid "Penalty points per period"
+msgstr "Штрафные очки за период"
+
+msgid "Penalty period, minutes"
+msgstr "Период штрафа, минуты"
+
 #~ msgid "Internal printing"
 #~ msgstr "Стандартный шаблон"
 
