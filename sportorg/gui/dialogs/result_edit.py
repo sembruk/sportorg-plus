@@ -369,10 +369,13 @@ class SplitsText(SplitsObject):
                 if not row.strip():
                     continue
                 item = row.split()
-                if len(item) >= 2:
+                if len(item) >= 1:
                     split = Split()
                     split.code = item[0]
-                    split.time = hhmmss_to_time(item[1])
+                    time_str = ''
+                    if len(item) >= 2:
+                        time_str = item[1]
+                    split.time = hhmmss_to_time(time_str)
                     if self._more24 and len(item) >= 3 and item[2].isdigit():
                         split.days = int(item[2])
                     splits.append(split)
