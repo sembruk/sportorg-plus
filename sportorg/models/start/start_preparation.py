@@ -273,6 +273,8 @@ class StartNumberManager(object):
                     max_assigned_num = max(max_assigned_num, current_person.bib)
                 else:
                     current_person.bib = 0
+                if self.race.get_setting('card_number_as_bib', False):
+                    current_person.card_number = current_person.bib
 
         if max_assigned_num > first_number:
             return max_assigned_num + 1
@@ -288,6 +290,8 @@ class StartNumberManager(object):
                     cur_number += interval
                 if isinstance(item, Person):
                     item.bib = cur_number
+                    if self.race.get_setting('card_number_as_bib', False):
+                        item.card_number = item.bib
                 elif isinstance(item, Team):
                     item.number = cur_number
                 cur_number += interval
@@ -567,5 +571,8 @@ def clone_relay_legs(min_bib, max_bib, increment):
             new_person = copy(person)
             new_person.id = uuid.uuid4()
             new_person.bib = person.bib + increment
-            new_person.card_number = 0
+            if obj.get_setting('card_number_as_bib', False):
+                new_person.card_number = new_person.bib
+            else:
+                new_person.card_number = 0
             obj.persons.append(new_person)

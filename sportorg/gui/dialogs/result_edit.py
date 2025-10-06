@@ -180,6 +180,8 @@ class ResultEditDialog(QDialog):
         bib = self.item_bib.value()
         self.label_person_info.setText('')
         if bib:
+            if race().get_setting('card_number_as_bib', False):
+                self.item_card_number.setValue(int(bib))
             person = find(race().persons, bib=bib)
             if person:
                 info = person.full_name
@@ -195,6 +197,7 @@ class ResultEditDialog(QDialog):
         if self.current_object.is_punch():
             if self.current_object.card_number:
                 self.item_card_number.setValue(int(self.current_object.card_number))
+                self.item_card_number.setEnabled(not race().get_setting('card_number_as_bib', False))
             self.splits.splits(self.current_object.splits)
             self.splits.show()
         if self.current_object.created_at:
