@@ -460,7 +460,7 @@ msgstr "URL недействителен"
 
 #: gui/dialogs/not_start_dialog.py:26
 msgid "Not started numbers"
-msgstr "Не стартовавшие участники"
+msgstr "Нестартовавшие участники"
 
 #: gui/dialogs/number_change.py:58 gui/dialogs/text_io.py:118
 msgid "Dialog"
@@ -2194,6 +2194,18 @@ msgstr "Штрафные очки за период"
 
 msgid "Penalty period, minutes"
 msgstr "Период штрафа, минуты"
+
+msgid "Status comment"
+msgstr "Комментарий"
+
+msgid "Bibs"
+msgstr "Номера"
+
+msgid "Person with bib {} not found"
+msgstr "Участник с номером {} не обнаружен"
+
+msgid "Result of {} already exists"
+msgstr "Результат {} уже существует"
 
 #~ msgid "Internal printing"
 #~ msgstr "Стандартный шаблон"

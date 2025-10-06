@@ -1753,14 +1753,14 @@ class Race(Model):
     def add_new_result(self, result):
         self.results.insert(0, result)
 
-    def add_result(self, result):
-        add = True
+    def add_result(self, result, remove_dns=False):
         for r in self.results:
             if r is result:
-                add = False
-                break
-        if add:
-            self.add_new_result(result)
+                return
+            if remove_dns and r.person == result.person and r.status == ResultStatus.DID_NOT_START:
+                self.results.remove(r)
+
+        self.add_new_result(result)
 
     def clear_results(self):
         for result in self.results:
