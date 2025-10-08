@@ -1754,6 +1754,7 @@ class Race(Model):
         self.results.insert(0, result)
 
     def add_result(self, result, remove_dns=False):
+        message = ''
         for r in self.results:
             if r is result:
                 return
