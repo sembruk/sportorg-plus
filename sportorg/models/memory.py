@@ -1758,9 +1758,11 @@ class Race(Model):
             if r is result:
                 return
             if remove_dns and r.person == result.person and r.status == ResultStatus.DID_NOT_START:
+                message = _("Remove result")+': '+str(r.person)+', '+r.status.get_title()
                 self.results.remove(r)
 
         self.add_new_result(result)
+        return message
 
     def clear_results(self):
         for result in self.results:

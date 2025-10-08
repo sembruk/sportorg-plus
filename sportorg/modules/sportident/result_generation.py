@@ -44,7 +44,9 @@ class ResultSportidentGeneration:
                         self._result.finish_time = OTime(msec=0)
 
     def _add_result_to_race(self):
-        race().add_result(self._result, remove_dns=True)
+        message = race().add_result(self._result, remove_dns=True)
+        if message:
+            logging.info(message)
 
     def _compare_result(self, result):
         eq = self._result.card_number == result.card_number

@@ -2207,6 +2207,9 @@ msgstr "Участник с номером {} не обнаружен"
 msgid "Result of {} already exists"
 msgstr "Результат {} уже существует"
 
+msgid "Remove result"
+msgstr "Удаляю результат"
+
 #~ msgid "Internal printing"
 #~ msgstr "Стандартный шаблон"
 
