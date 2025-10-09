@@ -197,7 +197,7 @@ class ResultEditDialog(QDialog):
         if self.current_object.is_punch():
             if self.current_object.card_number:
                 self.item_card_number.setValue(int(self.current_object.card_number))
-                self.item_card_number.setEnabled(not race().get_setting('card_number_as_bib', False))
+                self.item_card_number.setDisabled(race().get_setting('card_number_as_bib', False))
             self.splits.splits(self.current_object.splits)
             self.splits.show()
         if self.current_object.created_at:
