@@ -1,5 +1,23 @@
 # SportOrgPlus Changelog
 
+## v1.6.0 - 2025-10-09
+
+### Features
+
+* Rogaining penalty: it is now possible to set a penalty period (e.g., N penalty points for every M minutes of delay).
+* Allow adding controls without a timestamp in the result edit dialog.
+* Updated the NotStartDialog.
+* Updated the BibDialog.
+* Remove a result with a DNS status when adding a new result from a card.
+* Use sans-serif fonts in the templates.
+
+### Fixes
+
+* Correctly apply a new group when the TeamEditDialog is called from the PersonEditDialog.
+* Use the 'card_number_as_bib' setting during bib number assignment and in result editing.
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.5.2...v1.6.0)
+
 ## v1.5.2 - 2025-09-02
 
 * Debug card readout with various options of finish time source
