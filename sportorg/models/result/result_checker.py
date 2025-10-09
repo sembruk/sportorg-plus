@@ -254,7 +254,7 @@ class ResultChecker:
                 time_diff = user_time - max_time
                 seconds_diff = time_diff.to_sec()
                 minutes_diff = (seconds_diff + 59) // 60  # note, 1:01 = 2 minutes
-                penalty_step = race().get_setting('result_processing_scores_penalty', 1.0)
+                penalty_step = race().get_setting('result_processing_scores_penalty', 1)
                 time_step = race().get_setting('result_processing_scores_penalty_period_minutes', 1)
                 penalty_points = math.ceil(minutes_diff/time_step)*penalty_step
         return min(penalty_points, score)
