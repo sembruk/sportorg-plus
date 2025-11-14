@@ -59,32 +59,33 @@ class PersonSplits(object):
             cur_split.index = split_index
             cur_split.relative_time = cur_split.time - start_time
 
+            #if cur_split.is_correct:
+            cur_split.leg_time = cur_split.time - leg_start_time
+            leg_start_time = cur_split.time
+
+            cur_split.length_leg = 0
+            cur_split.speed = 0
+            #cur_cp = None
+            #if course_index < len(self.course.controls):
+            #    cur_cp = self.course.controls[course_index]
+            #if cur_cp is not None and cur_cp.length > 0:
+            #    cur_split.length_leg = cur_cp.length
+            #else:
+            cp_desc = find(self.race.control_points, code=str(cur_split.code))
+            if cp_desc:
+                if prev_cp_desc is None:
+                    prev_cp_desc = cp_desc
+                cur_split.length_leg = math.sqrt((cp_desc.x - prev_cp_desc.x)**2 + (cp_desc.y - prev_cp_desc.y)**2)
+                prev_cp_desc = cp_desc
+
+            if cur_split.length_leg:
+                cur_split.speed = get_speed_min_per_km(cur_split.leg_time, cur_split.length_leg)
+                self.length += cur_split.length_leg
+
+            cur_split.leg_place = 0
+
             if cur_split.is_correct:
-                cur_split.leg_time = cur_split.time - leg_start_time
-                leg_start_time = cur_split.time
-
                 cur_split.course_index = course_index
-                cur_cp = None
-                cur_split.length_leg = 0
-                cur_split.speed = 0
-                if course_index < len(self.course.controls):
-                    cur_cp = self.course.controls[course_index]
-                if cur_cp is not None and cur_cp.length > 0:
-                    cur_split.length_leg = cur_cp.length
-                else:
-                    cp_desc = find(self.race.control_points, code=str(cur_split.code))
-                    if cp_desc:
-                        if prev_cp_desc is None:
-                            prev_cp_desc = cp_desc
-                        cur_split.length_leg = math.sqrt((cp_desc.x - prev_cp_desc.x)**2 + (cp_desc.y - prev_cp_desc.y)**2)
-                        prev_cp_desc = cp_desc
-
-                if cur_split.length_leg:
-                    cur_split.speed = get_speed_min_per_km(cur_split.leg_time, cur_split.length_leg)
-                    self.length += cur_split.length_leg
-
-                cur_split.leg_place = 0
-
                 course_index += 1
 
             split_index += 1

@@ -1147,11 +1147,11 @@ class ResultSportident(Result):
 
             prev_code = cur_code
             # check bonuses
-            # CP 53 - 15 minutes
-            if int(cur_code) == 53:
+            # CP 83-87 - 8 minutes
+            if int(cur_code) in [83, 84, 85, 86, 87]:
                 if cur_code not in unique_bonuses:
                     unique_bonuses.add(cur_code)
-                    self.credit_time += OTime(minute=15)
+                    self.credit_time += OTime(minute=8)
                 continue
             elif check_only_bonus:
                 if i == len(self.splits)-1:
@@ -1309,9 +1309,9 @@ class Person(Model):
             return self.birth_date.year
         return 0
 
-    #@property
-    #def year_of_birth(self):
-    #    return self.get_year()
+    @property
+    def year_of_birth(self):
+        return self.get_year()
 
     def set_year(self, year):
         """Change only year of birth_date"""
