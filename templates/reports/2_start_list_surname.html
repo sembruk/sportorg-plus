@@ -61,7 +61,7 @@
                     card_number: person.card_number,
                     team_number: person.team && person.team.number || 0,
                     team_id: person.team_id || '',
-                    year: person.birth_date ? (new Date(person.birth_date)).getFullYear() : '',
+                    year: person.year && person.year > 0 ? person.year : '',
                     start: isMassStart ? toHHMMSS(person.group.start_time) : toHHMMSS(person.start_time),
                     start_time: person.start_time,
                     group: person.group.name,
@@ -88,10 +88,10 @@
 
     var Fields = {
         fields: [
-            {key: 'team_number', title: '№ ком-ды', size: 6},
+            {key: 'card_number', title: '№ чипа', size: 6},
             {key: 'name', title: 'Имя', size: 30},
             {key: 'surname', title: 'Фамилия', size: 30},
-            {key: 'age', title: '', size: 4},
+            {key: 'year', title: '', size: 4},
             {key: 'team', title: 'Команда', size: 20},
             {key: 'bib', title: 'Номер', size: 6},
             {key: 'card_number', title: 'Чип', size: 11, active: false},
