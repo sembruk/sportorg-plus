@@ -1,4 +1,5 @@
 import logging
+import math
 
 from sportorg.common.otime import OTime
 from sportorg.models.constant import StatusComments
@@ -15,9 +16,7 @@ class ResultChecker:
         self.person = person
 
     def check_result(self, result):
-        if self.person is None:
-            return True
-        if self.person.group is None:
+        if self.person is None or self.person.group is None:
             return True
 
         course = race().find_course(result)
@@ -54,6 +53,7 @@ class ResultChecker:
 
             check_flag = o.check_result(result)
             ResultChecker.calculate_penalty(result)
+            ResultChecker.calculate_credit_time(result)
             if not check_flag:
                 result.status = ResultStatus.MISSING_PUNCH
                 if not result.status_comment:
@@ -88,9 +88,7 @@ class ResultChecker:
 
         person = result.person
 
-        if person is None:
-            return
-        if person.group is None:
+        if person is None or person.group is None:
             return
 
         course = race().find_course(result)
@@ -116,6 +114,27 @@ class ResultChecker:
         elif mode == 'time':
             time_for_one_penalty = OTime(msec=race().get_setting('marked_route_penalty_time', 60000))
             result.penalty_time = time_for_one_penalty * penalty
+
+    @staticmethod
+    def calculate_credit_time(result):
+        credit_time_clear = False
+        course = race().find_course(result)
+        if not course:
+            return
+        for control in course.controls:
+            if control.cutoff:
+                for i, split in enumerate(result.splits):
+                    if split.is_correct and split.code == control.code:
+                        if i < len(result.splits) - 1:
+                            # Find next correct punch
+                            for s in result.splits[i + 1:]:
+                                if s.is_correct:
+                                    if not credit_time_clear:
+                                        credit_time_clear = True
+                                        result.credit_time = OTime()
+                                    result.credit_time += s.time - split.time
+                                    break
+
 
     @staticmethod
     def get_marked_route_incorrect_list(controls):
@@ -256,8 +275,9 @@ class ResultChecker:
                 time_diff = user_time - max_time
                 seconds_diff = time_diff.to_sec()
                 minutes_diff = (seconds_diff + 59) // 60  # note, 1:01 = 2 minutes
-                penalty_step = race().get_setting('result_processing_scores_minute_penalty', 1.0)
-                penalty_points = minutes_diff*penalty_step
+                penalty_step = race().get_setting('result_processing_scores_penalty', 1)
+                time_step = race().get_setting('result_processing_scores_penalty_period_minutes', 1)
+                penalty_points = math.ceil(minutes_diff/time_step)*penalty_step
         return min(penalty_points, score)
 
     @staticmethod

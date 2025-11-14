@@ -21,7 +21,8 @@ from sportorg.models.result.result_checker import ResultChecker, ResultCheckerEx
 from sportorg.models.result.split_calculation import GroupSplits
 from sportorg.modules.live.live import live_client
 from sportorg.modules.teamwork import Teamwork
-from sportorg.utils.time import time_to_qtime, time_to_otime, hhmmss_to_time
+from sportorg.utils.time import time_to_qtime, time_to_otime, hhmmss_to_time, time_to_sec
+from sportorg.common.extendedtimeedit import DurationEdit
 
 
 class ResultEditDialog(QDialog):
@@ -64,14 +65,9 @@ class ResultEditDialog(QDialog):
 
         self.label_person_info = QLabel('')
 
-        self.item_days = QSpinBox()
-        self.item_days.setMaximum(365)
+        self.item_finish = DurationEdit()
 
-        self.item_finish = QTimeEdit()
-        self.item_finish.setDisplayFormat(self.time_format)
-
-        self.item_start = QTimeEdit()
-        self.item_start.setDisplayFormat(self.time_format)
+        self.item_start = DurationEdit()
 
         self.item_time = QTimeEdit()
         self.item_time.setDisplayFormat(self.time_format)
@@ -80,11 +76,9 @@ class ResultEditDialog(QDialog):
         self.item_result = QLineEdit()
         self.item_result.setEnabled(False)
 
-        self.item_credit = QTimeEdit()
-        self.item_credit.setDisplayFormat(self.time_format)
+        self.item_credit = DurationEdit()
 
-        self.item_penalty = QTimeEdit()
-        self.item_penalty.setDisplayFormat(self.time_format)
+        self.item_penalty = DurationEdit()
 
         self.item_penalty_points = QSpinBox()
         self.item_penalty_points.setEnabled(False)
@@ -103,16 +97,13 @@ class ResultEditDialog(QDialog):
         for i, k in enumerate(StatusComments().get_all()):
             self.item_status_comment.setItemData(i, k, Qt.ToolTipRole)
 
-        more24 = race().get_setting('time_format_24', 'less24') == 'more24'
-        self.splits = SplitsText(more24=more24)
+        self.splits = SplitsText()
 
         self.layout.addRow(QLabel(_('Created at')), self.item_created_at)
         if self.current_object.is_punch():
             self.layout.addRow(QLabel(_('Card number')), self.item_card_number)
         self.layout.addRow(QLabel(_('Bib')), self.item_bib)
         self.layout.addRow(QLabel(''), self.label_person_info)
-        if more24:
-            self.layout.addRow(QLabel(_('Days')), self.item_days)
         self.layout.addRow(QLabel(_('Start')), self.item_start)
         self.layout.addRow(QLabel(_('Finish')), self.item_finish)
         if race().get_setting('result_processing_mode', 'time') == 'scores':
@@ -180,6 +171,8 @@ class ResultEditDialog(QDialog):
         bib = self.item_bib.value()
         self.label_person_info.setText('')
         if bib:
+            if race().get_setting('card_number_as_bib', False):
+                self.item_card_number.setValue(int(bib))
             person = find(race().persons, bib=bib)
             if person:
                 info = person.full_name
@@ -195,12 +188,13 @@ class ResultEditDialog(QDialog):
         if self.current_object.is_punch():
             if self.current_object.card_number:
                 self.item_card_number.setValue(int(self.current_object.card_number))
+                self.item_card_number.setDisabled(race().get_setting('card_number_as_bib', False))
             self.splits.splits(self.current_object.splits)
             self.splits.show()
         if self.current_object.created_at:
             self.item_created_at.setTime(time_to_qtime(datetime.fromtimestamp(self.current_object.created_at)))
         if self.current_object.finish_time:
-            self.item_finish.setTime(time_to_qtime(self.current_object.finish_time))
+            self.item_finish.setSeconds(self.current_object.finish_time.to_sec())
         #if race().get_setting('system_start_source', 'protocol') == 'group':
         #    if self.current_object.person.group and self.current_object.person.group.start_time:
         #        self.item_start.setTime(time_to_qtime(self.current_object.person.group.start_time))
@@ -208,21 +202,19 @@ class ResultEditDialog(QDialog):
         #    self.item_start.setTime(time_to_qtime(self.current_object.start_time))
         #elif self.current_object.person.start_time:
         #    self.item_start.setTime(time_to_qtime(self.current_object.person.start_time))
-        self.item_start.setTime(time_to_qtime(self.current_object.get_start_time()))
+        self.item_start.setSeconds(self.current_object.get_start_time().to_sec())
         self.item_time.setTime(time_to_qtime(self.current_object.get_result_otime()))
         if self.current_object.finish_time:
             self.item_result.setText(str(self.current_object.get_result()))
         if self.current_object.credit_time:
-            self.item_credit.setTime(time_to_qtime(self.current_object.credit_time))
+            self.item_credit.setSeconds(self.current_object.credit_time.to_sec())
         if self.current_object.penalty_time:
-            self.item_penalty.setTime(time_to_qtime(self.current_object.penalty_time))
+            self.item_penalty.setSeconds(self.current_object.penalty_time.to_sec())
         if self.current_object.penalty_points:
             self.item_penalty_points.setValue(self.current_object.penalty_points)
         if self.current_object.penalty_laps:
             self.item_penalty_laps.setValue(self.current_object.penalty_laps)
         self.item_bib.setValue(self.current_object.get_bib())
-
-        self.item_days.setValue(self.current_object.days)
 
         status = self.current_object.status.get_title()
         if self.item_status.findText(status) == -1:  # not found
@@ -256,19 +248,19 @@ class ResultEditDialog(QDialog):
                         break
             result.splits = new_splits
 
-        time_ = time_to_otime(self.item_finish.time())
+        time_ = time_to_otime(self.item_finish.seconds())
         if result.finish_time != time_:
             result.finish_time = time_
 
-        time_ = time_to_otime(self.item_start.time())
+        time_ = time_to_otime(self.item_start.seconds())
         if self.item_start.isEnabled() and result.start_time != time_:
             result.start_time = time_
 
-        time_ = time_to_otime(self.item_credit.time())
+        time_ = time_to_otime(self.item_credit.seconds())
         if result.credit_time != time_:
             result.credit_time = time_
 
-        time_ = time_to_otime(self.item_penalty.time())
+        time_ = time_to_otime(self.item_penalty.seconds())
         if result.penalty_time != time_:
             result.penalty_time = time_
 
@@ -297,9 +289,6 @@ class ResultEditDialog(QDialog):
             result.bib = new_bib
 
             GlobalAccess().get_main_window().get_result_table().model().init_cache()
-
-        if self.item_days.value() != result.days:
-            result.days = self.item_days.value()
 
         result.status = ResultStatus.get_by_name(self.item_status.currentText())
 
@@ -346,9 +335,8 @@ class SplitsObject:
 
 
 class SplitsText(SplitsObject):
-    def __init__(self, splits=None, more24=False):
+    def __init__(self, splits=None):
         self._splits = splits
-        self._more24 = more24
         self._box = QGroupBox(_('Splits'))
         self._layout = QFormLayout()
         self._text = QTextEdit()
@@ -369,12 +357,16 @@ class SplitsText(SplitsObject):
                 if not row.strip():
                     continue
                 item = row.split()
-                if len(item) >= 2:
+                if len(item) >= 1:
                     split = Split()
                     split.code = item[0]
-                    split.time = hhmmss_to_time(item[1])
-                    if self._more24 and len(item) >= 3 and item[2].isdigit():
-                        split.days = int(item[2])
+                    time_str = ''
+                    #day = 0
+                    if len(item) >= 2:
+                        time_str = item[1]
+                        #if self._more24 and len(item) >= 3 and item[2].isdigit():
+                        #    day = int(item[2])
+                    split.time = hhmmss_to_time(time_str)
                     splits.append(split)
                 else:
                     logging.error('In "{}" no code and no time'.format(row))
@@ -388,10 +380,7 @@ class SplitsText(SplitsObject):
         text = ''
         time_accuracy = race().get_setting('time_accuracy', 0)
         for split in splits:
-            if self._more24:
-                text += '{} {} {}\n'.format(split.code, split.time.to_str(time_accuracy), split.days)
-            else:
-                text += '{} {}\n'.format(split.code, split.time.to_str(time_accuracy))
+            text += '{} {}\n'.format(split.code, split.time.to_str(time_accuracy, show_day=True))
 
         self._text.setText(text)
 

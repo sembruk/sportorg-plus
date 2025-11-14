@@ -53,7 +53,7 @@ class ResultSportidentGeneration:
         if self._result and self._result.finish_time is None:
             if self.finish_source == 'station':
                 if self.missed_finish == 'readout':
-                    self._result.finish_time = OTime.now()
+                    self._result.finish_time = OTime.now(start_datetime=race().data.get_start_datetime())
                 elif self.missed_finish == 'zero':
                     self._result.finish_time = OTime(msec=0)
                 elif self.missed_finish == 'dsq':
@@ -70,7 +70,9 @@ class ResultSportidentGeneration:
                         self._result.finish_time = OTime(msec=0)
 
     def _add_result_to_race(self):
-        race().add_result(self._result)
+        message = race().add_result(self._result, remove_dns=True)
+        if message:
+            logging.info(message)
 
     def _compare_result(self, result):
         eq = self._result.card_number == result.card_number

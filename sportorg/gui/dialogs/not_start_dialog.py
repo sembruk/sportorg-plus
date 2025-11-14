@@ -30,15 +30,17 @@ class NotStartDialog(QDialog):
 
         self.layout = QFormLayout(self)
 
+        self.label_controls = QLabel(_('Bibs'))
+        self.item_numbers = QTextEdit()
+        self.item_numbers.setPlaceholderText(_('1 4 15 25\n58 32\n33\n34\n...\n150\n'))
+
+        self.layout.addRow(self.label_controls, self.item_numbers)
+
+        self.label_status_comment = QLabel(_('Status comment'))
         self.item_status_comment = AdvComboBox()
         self.item_status_comment.addItems(StatusComments().get_all())
 
-        self.layout.addRow(self.item_status_comment)
-
-        self.label_controls = QLabel('\n\n1 4 15 25\n58 32\n33\n34\n...\n150')
-        self.item_numbers = QTextEdit()
-
-        self.layout.addRow(self.label_controls, self.item_numbers)
+        self.layout.addRow(self.label_status_comment, self.item_status_comment)
 
         def cancel_changes():
             self.person = None
@@ -78,6 +80,10 @@ class NotStartDialog(QDialog):
             if number not in old_numbers:
                 person = find(obj.persons, bib=number)
                 if person:
+                    old_result = find(obj.results, person=person)
+                    if old_result:
+                        logging.info(_('Result of {} already exists').format(person))
+                        continue
                     result = race().new_result(ResultManual)
                     result.person = person
                     result.status = ResultStatus.DID_NOT_START
@@ -86,6 +92,6 @@ class NotStartDialog(QDialog):
                     Teamwork().send(result.to_dict())
                     obj.add_new_result(result)
                 else:
-                    logging.info('{} not found'.format(number))
+                    logging.info(_('Person with bib {} not found').format(number))
                 old_numbers.append(number)
         ResultCalculation(race()).process_results()

@@ -117,7 +117,7 @@ class CourseEditDialog(QDialog):
         if self.current_object._controls:
             self.item_control_qty.setValue(len(self.current_object._controls))
         for c in self.current_object._controls:
-            self.item_controls.append('{} {}'.format(c.code, c.length if c.length else ''))
+            self.item_controls.append('{}{}{}'.format(c.code, ' ' + str(c.length) if c.length else '', ' ' + _('cutoff') if c.cutoff else ''))
 
     def apply_changes_impl(self):
         course = self.current_object
@@ -141,12 +141,18 @@ class CourseEditDialog(QDialog):
             if i is None or len(i) == 0:
                 continue
             control.code = i.split()[0]
-            if len(i.split()) > 1:
+            l = i.split()
+            if len(l) > 1:
                 try:
-                    control.length = int(i.split()[1])
+                    control.length = int(l[1])
                 except Exception as e:
-                    logging.exception(e)
-                    control.length = 0
+                    try:
+                        control.cutoff = (l[1] == _('cutoff') or l[1] == _('ct'))
+                        if len(l) > 2:
+                            control.length = int(l[2])
+                    except Exception as e:
+                        logging.exception(e)
+                        control.length = 0
             controls.append(control)
         course.controls = controls
 

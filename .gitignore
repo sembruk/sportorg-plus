@@ -139,5 +139,7 @@ cython_debug/
 data
 poetry.lock
 
+log/
+
 # Vim files
 *.swp

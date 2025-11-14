@@ -1,7 +1,10 @@
 import sys
 import os
+import PySide2
+import shutil
 from cx_Freeze import setup, Executable
 from sportorg import config
+
 
 base = None
 if sys.platform == 'win32':
@@ -19,6 +22,16 @@ include_files = [
     config.base_dir('changelog.en.md'),
     config.base_dir('changelog.ru.md'),
     config.base_dir('configs'), 
+]
+
+pyside2_dir = os.path.dirname(PySide2.__file__)
+qt_plugins_dir = os.path.join(pyside2_dir, 'plugins')
+platforms_dir = os.path.join(qt_plugins_dir, 'platforms')
+imageformats_dir = os.path.join(qt_plugins_dir, 'imageformats')
+
+include_files += [
+    (platforms_dir, 'platforms'),
+    (imageformats_dir, 'imageformats')
 ]
 
 includes = ['atexit', 'codecs']

@@ -5,6 +5,7 @@ from PySide2.QtWidgets import QFormLayout, QLabel, QDialog, QDialogButtonBox, QL
 
 from sportorg import config
 from sportorg.gui.global_access import GlobalAccess
+from sportorg.gui.utils.custom_controls import AdvComboBox
 from sportorg.language import _
 from sportorg.models import memory
 
@@ -21,7 +22,7 @@ class BibDialog(QDialog):
         return super().exec_()
 
     def init_ui(self):
-        self.setWindowTitle(_('Bib or Name'))
+        self.setWindowTitle(_('Find person'))
         self.setWindowIcon(QIcon(config.ICON))
         self.setSizeGripEnabled(False)
         self.setModal(True)
@@ -32,11 +33,12 @@ class BibDialog(QDialog):
             self.label_text = QLabel(self.text)
             self.layout.addRow(self.label_text)
 
-        self.label_bib_or_name = QLabel(_('Bib or Name'))
-        self.item_bib_or_name = QLineEdit()
-        self.item_bib_or_name.selectAll()
-        self.item_bib_or_name.textChanged.connect(self.show_person_info)
-        self.layout.addRow(self.label_bib_or_name, self.item_bib_or_name)
+        self.label_person = QLabel(_('Person'))
+        self.item_person = AdvComboBox()
+        self.add_persons()
+        self.item_person.setCurrentText('')
+        self.item_person.currentTextChanged.connect(self.show_person_info)
+        self.layout.addRow(self.label_person, self.item_person)
 
         self.label_person_info = QLabel('')
         self.layout.addRow(self.label_person_info)
@@ -62,28 +64,32 @@ class BibDialog(QDialog):
 
         self.show()
 
-    def show_person_info(self):
-        bib_or_name = self.item_bib_or_name.text()  # type: str
-        self.label_person_info.setText('')
-        person = None
-        if bib_or_name:
-            if bib_or_name.isdigit():
-                person = memory.find(memory.race().persons, bib=int(bib_or_name))
-            else:
-                for p in memory.race().persons:
-                    if bib_or_name.lower() in p.full_name.lower():
-                        person = p
-                        break
+    def add_persons(self):
+        person_list = []
+        for person in memory.race().persons:
+            person_list.append(('{} {} ({})'.format(person.full_name, person.get_year(), person.bib), person))
+        person_list.sort(key=lambda x: x[0])
+        for p in person_list:
+            self.item_person.addItem(p[0], p[1])
 
-            if person:
-                info = person.full_name
-                if person.group:
-                    info = '{}\n{}: {}'.format(info, _('Group'), person.group.name)
-                if person.card_number:
-                    info = '{}\n{}: {}'.format(info, _('Card'), person.card_number)
-                self.label_person_info.setText(info)
-            else:
-                self.label_person_info.setText(_('not found'))
+    def show_person_info(self, text):
+        if not text:
+            return
+
+        index = self.item_person.findText(text)
+        person = None
+        if index != 1:
+            person = self.item_person.itemData(index)
+
+        if person:
+            info = person.full_name
+            if person.group:
+                info = '{}\n{}: {}'.format(info, _('Group'), person.group.name)
+            if person.card_number:
+                info = '{}\n{}: {}'.format(info, _('Card'), person.card_number)
+            self.label_person_info.setText(info)
+        else:
+            self.label_person_info.setText(_('not found'))
         self.tmp_person = person
 
     def get_person(self):

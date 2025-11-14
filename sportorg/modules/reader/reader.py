@@ -64,6 +64,10 @@ class ResultThreadBase(QThread):
         return card_data
 
     @staticmethod
+    def _datetime_to_otime(dt):
+        return time_to_otime(dt, memory.race().get_days(dt))
+
+    @staticmethod
     def _get_result(card_data):
         result = memory.race().new_result()
         result.card_number = int(card_data['card_number'])
@@ -73,12 +77,12 @@ class ResultThreadBase(QThread):
             if t:
                 split = memory.Split()
                 split.code = str(card_data['punches'][i][0])
-                split.time = time_to_otime(t)
-                split.days = memory.race().get_days(t)
+                split.time = ResultThreadBase._datetime_to_otime(t)
+                #split.days = memory.race().get_days(t)
                 result.splits.append(split)
 
-        result.start_time = time_to_otime(card_data['start']) if 'start' in card_data else None
-        result.finish_time = time_to_otime(card_data['finish']) if 'finish' in card_data else None
+        result.start_time = ResultThreadBase._datetime_to_otime(card_data['start']) if 'start' in card_data else None
+        result.finish_time = ResultThreadBase._datetime_to_otime(card_data['finish']) if 'finish' in card_data else None
 
         return result
 

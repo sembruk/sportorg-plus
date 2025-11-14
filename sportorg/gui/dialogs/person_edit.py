@@ -356,6 +356,7 @@ class PersonEditDialog(QDialog):
             TeamEditDialog(self.current_object.team).exec_()
             if self.current_object.team:
                 self.item_team.setCurrentText(self.current_object.team.full_name)
+            self.item_group.setCurrentText(self.current_object.group.name)
         except Exception as e:
             logging.exception(e)
 

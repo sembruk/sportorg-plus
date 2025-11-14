@@ -134,6 +134,7 @@ class CourseControl(Model):
         self.code = ''
         self.length = 0
         self.order = 0
+        self.cutoff = False
 
     def __str__(self):
         return '{} {}'.format(self.code, self.length)
@@ -173,11 +174,14 @@ class CourseControl(Model):
             'object': self.__class__.__name__,
             'code': self.code,
             'length': self.length,
+            'cutoff': self.cutoff
         }
 
     def update_data(self, data):
         self.code = str(data['code'])
         self.length = int(data['length'])
+        if 'cutoff' in data:
+            self.cutoff = bool(data['cutoff'])
 
 
 class ControlPoint(Model):
@@ -529,7 +533,6 @@ class Split(Model):
         self.index = 0
         self.course_index = -1
         self.code = ''
-        self.days = 0
         self._time = OTime()  # type: OTime
         self.leg_time = OTime()  # type: OTime
         self.relative_time = OTime()  # type: OTime
@@ -560,7 +563,6 @@ class Split(Model):
     def to_dict(self):
         return {
             'object': self.__class__.__name__,
-            'days': self.days,
             'code': self.code,
             'time': self.time.to_msec() if self.time else None,
 
@@ -579,8 +581,6 @@ class Split(Model):
         self.code = str(data['code'])
         if data['time']:
             self._time = OTime(msec=data['time'])
-        if 'days' in data:
-            self.days = int(data['days'])
 
 
 class Result:
@@ -588,7 +588,6 @@ class Result:
         if type(self) == Result:
             raise Exception("<Result> is abstracted")
         self.id = uuid.uuid4()
-        self.days = 0
         self.bib = 0
         self.start_time = None  # type: OTime
         self.finish_time = OTime.now()  # type: OTime
@@ -686,7 +685,6 @@ class Result:
             'bib': self.bib,
             'system_type': self.system_type.value,
             'person_id': str(self.person.id) if self.person else None,
-            'days': self.days,
             'start_time': self.start_time.to_msec() if self.start_time else None,
             'finish_time': self.finish_time.to_msec() if self.finish_time else None,
             'diff': self.diff.to_msec() if self.diff else None,
@@ -738,8 +736,6 @@ class Result:
             self.penalty_points = int(data['penalty_points'])
         if 'status_comment' in data:
             self.status_comment = data['status_comment']
-        if 'days' in data:
-            self.days = int(data['days'])
         if 'created_at' in data:
             self.created_at = float(data['created_at'])
         else:
@@ -841,6 +837,8 @@ class Result:
         ret_ms = self.get_finish_time().to_msec(time_accuracy) - self.get_start_time().to_msec(time_accuracy)
         ret_ms += self.get_penalty_time().to_msec(time_accuracy)
         ret_ms -= self.get_credit_time().to_msec(time_accuracy)
+        if ret_ms < 0:
+            ret_ms = 0
         return OTime(msec=ret_ms)
 
     def get_pure_otime(self):
@@ -1329,6 +1327,9 @@ class Person(Model):
     @staticmethod
     def get_age_by_birthdate(birth_date):
         start = race().data.get_start_datetime()
+        use_birthday = Config().configuration.get('use_birthday', False)
+        if not use_birthday:
+            return start.year - birth_date.year
         return start.year - birth_date.year - ((start.month, start.day) < (birth_date.month, birth_date.day))
 
     @property
@@ -1711,7 +1712,6 @@ class Race(Model):
         if obj is None:
             obj = ResultSportident
         new_result = obj()
-        new_result.days = self.get_days()
         return new_result
 
     def add_new_person(self, append_to_race=False):
@@ -1807,14 +1807,17 @@ class Race(Model):
     def add_new_result(self, result):
         self.results.insert(0, result)
 
-    def add_result(self, result):
-        add = True
+    def add_result(self, result, remove_dns=False):
+        message = ''
         for r in self.results:
             if r is result:
-                add = False
-                break
-        if add:
-            self.add_new_result(result)
+                return
+            if remove_dns and r.person == result.person and r.status == ResultStatus.DID_NOT_START:
+                message = _("Remove result")+': '+str(r.person)+', '+r.status.get_title()
+                self.results.remove(r)
+
+        self.add_new_result(result)
+        return message
 
     def clear_results(self):
         for result in self.results:
@@ -2393,6 +2396,7 @@ class TeamResult(object):
     def __init__(self):
         self.members_results = []  # type: List[Result]
         self.score = 0
+        self.start_time = None
         self.finish_time = OTime()
 
     def __eq__(self, other):
@@ -2422,6 +2426,7 @@ class TeamResult(object):
     def add_result(self, result):
         """Add new result to the team"""
         self.members_results.append(result)
+        self.start_time = min(self.start_time, result.get_start_time()) if self.start_time else result.get_start_time()
         self.finish_time = max(self.finish_time, result.get_finish_time())
         if self.score == 0:
             self.score = result.scores
@@ -2429,6 +2434,18 @@ class TeamResult(object):
             self.score = min(self.score, result.scores)
         for i in range(len(self.members_results)):
             self.members_results[i].scores = self.score
+
+    def get_penalty_time(self):
+        penalty_time = OTime()
+        for r in self.members_results:
+            penalty_time = max(penalty_time, r.get_penalty_time())
+        return penalty_time
+
+    def get_credit_time(self):
+        credit_time = None
+        for r in self.members_results:
+            credit_time = min(credit_time, r.get_credit_time()) if credit_time else r.get_credit_time()
+        return credit_time if credit_time else OTime()
 
     def get_time(self):
         ret = OTime()

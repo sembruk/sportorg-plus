@@ -171,8 +171,8 @@ class Widget(QtWidgets.QWidget):
 
             s = str_fmt.format(
                 index=index,
-                code=('(' + str(split.code) + ')   ')[:5],
-                time=split.time.to_str(time_accuracy),
+                code=('(' + str(split.code) + ')')[:5],
+                time=split.time.to_str(time_accuracy, show_day=True),
                 diff=split.leg_time.to_str(time_accuracy),
                 leg_place=split.leg_place,
                 speed=split.speed,
@@ -188,8 +188,8 @@ class Widget(QtWidgets.QWidget):
             self.result_card_details.append(s)
             code = split.code
 
-        self.result_card_finish_edit.setText(time_to_hhmmss(result.get_finish_time()))
-        self.result_card_start_edit.setText(time_to_hhmmss(result.get_start_time()))
+        self.result_card_finish_edit.setText(result.get_finish_time().to_str(show_day=True))
+        self.result_card_start_edit.setText(result.get_start_time().to_str(show_day=True))
 
         split_codes = []
         for split in result.splits:

@@ -78,9 +78,10 @@ class OTime:
         return self.__str__()
 
     @classmethod
-    def now(cls):
+    def now(cls, start_datetime=None):
         now = datetime.datetime.now()
-        return OTime(0, now.hour, now.minute, now.second, round(now.microsecond / 1000))
+        day = (now - start_datetime).days if start_datetime else 0
+        return OTime(day, now.hour, now.minute, now.second, round(now.microsecond / 1000))
 
     def replace(self, day=None, hour=None, minute=None, sec=None, msec=None):
         return OTime(
@@ -129,18 +130,17 @@ class OTime:
     def if_none(val, default=None):
         return default if val is None else val
 
-    def to_str(self, time_accuracy=0):
-        hour = self.hour + self.day*24
-        if time_accuracy == 0:
-            return '{}:{}:{}'.format(
-                hour if hour > 9 else '0' + str(hour),
-                self.minute if self.minute > 9 else '0' + str(self.minute),
-                self.sec if self.sec > 9 else '0' + str(self.sec)
-            )
+    def to_str(self, time_accuracy=0, show_day=False):
+        day_str = ''
+        hour = self.hour
+        if show_day and self.day > 0:
+            day_str = '+' + str(self.day)
         else:
-            return '{}:{}:{}.{}'.format(
-                ('0' + str(self.hour))[-2:],
-                ('0' + str(self.minute))[-2:],
-                ('0' + str(self.sec))[-2:],
-                ('00' + str(self.msec))[-3:][:time_accuracy]
-            )
+            hour += self.day*24
+        
+        if time_accuracy == 0:
+            return f"{hour:02}:{self.minute:02}:{self.sec:02}{day_str}"
+        else:
+            msec_str = f"{self.msec:03}"[:time_accuracy]
+            return f"{hour:02}:{self.minute:02}:{self.sec:02}.{msec_str}{day_str}"
+

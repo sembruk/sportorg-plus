@@ -22,15 +22,18 @@ def timeit(method):
     return timed
 
 
-def time_to_otime(t):
+def time_to_otime(t, day=0):
     if isinstance(t, datetime.datetime):
-        return OTime(0, t.hour, t.minute, t.second, round(t.microsecond/1000))
+        return OTime(day, t.hour, t.minute, t.second, round(t.microsecond/1000))
     if isinstance(t, QTime):
-        return OTime(0, t.hour(), t.minute(), t.second(), t.msec())
+        return OTime(day, t.hour(), t.minute(), t.second(), t.msec())
     if isinstance(t, datetime.timedelta):
-        return time_to_otime(datetime.datetime(2000, 1, 1, 0, 0, 0) + t)
+        return time_to_otime(datetime.datetime(2000, 1, 1 + day, 0, 0, 0) + t)
     if isinstance(t, OTime):
         return t
+    if isinstance(t, int):
+        # Convet seconds to otime
+        return OTime(t//86400, t%86400//3600, t%3600//60, t%60)
     return OTime()
 
 
@@ -48,7 +51,7 @@ def time_to_datetime(t):
     if isinstance(t, datetime.datetime):
         return t
     otime = time_to_otime(t)
-    return datetime.datetime(2000, 1, 1, otime.hour, otime.minute, otime.sec, otime.msec * 1000)
+    return datetime.datetime(2000, 1, 1 + otime.day, otime.hour, otime.minute, otime.sec, otime.msec * 1000)
 
 
 def time_to_qtime(t):
@@ -79,17 +82,26 @@ def time_to_int(value):
 
 
 def time_to_mmss(value):
-    time_ = time_to_datetime(value)
-    return str(time_.strftime("%M:%S"))
+    dt = time_to_datetime(value)
+    return str(dt.strftime("%M:%S"))
 
 
 def time_to_hhmmss(value):
-    time_ = time_to_datetime(value)
-    return time_.strftime("%H:%M:%S")
+    dt = time_to_datetime(value)
+    day = dt.day - 1
+    day_str = ''
+    if day > 0:
+        day_str = '+' + str(day)
+    return dt.strftime("%H:%M:%S") + day_str
 
 
 def hhmmss_to_time(value):
-    arr = str(value).split(' ')[-1].split(':')
+    day = 0
+    arr = str(value).split('+')
+    if len(arr) > 1 and arr[1].isdigit():
+        day = int(arr[1])
+
+    arr = arr[0].split(':')
     if len(arr) == 3:
         msec = 0
         secs = arr[2].split('.')
@@ -100,7 +112,7 @@ def hhmmss_to_time(value):
                 msec *= 100
             elif len(secs[1]) == 2:
                 msec *= 10
-        return OTime(0, int(arr[0]), int(arr[1]), sec, msec)
+        return OTime(day, int(arr[0]), int(arr[1]), sec, msec)
     return OTime()
 
 

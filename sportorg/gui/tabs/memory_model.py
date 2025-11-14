@@ -11,7 +11,7 @@ from typing import List
 from sportorg.language import _
 from sportorg.models.constant import RentCards
 from sportorg.models.memory import race
-from sportorg.utils.time import time_to_hhmmss
+from sportorg.utils.time import time_to_hhmmss, time_to_otime
 from sportorg.modules.configs.configs import Config
 
 
@@ -378,17 +378,19 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
         start = ''
         if i.get_start_time():
             time_accuracy = self.race.get_setting('time_accuracy', 0)
-            start = i.get_start_time().to_str(time_accuracy)
+            start = i.get_start_time().to_str(time_accuracy, show_day=True)
 
         finish = ''
         if i.get_finish_time():
             time_accuracy = self.race.get_setting('time_accuracy', 0)
-            finish = i.get_finish_time().to_str(time_accuracy)
+            finish = i.get_finish_time().to_str(time_accuracy, show_day=True)
 
         penalty = time_to_hhmmss(i.get_penalty_time())
         if self.race.get_setting('result_processing_mode', 'time') == 'scores':
             penalty = i.penalty_points
 
+        created_at = datetime.fromtimestamp(i.created_at)
+        created_at_str = time_to_hhmmss(time_to_otime(created_at, self.race.get_days(created_at)))
         if self.race.get_setting('marked_route_mode', 'off') == 'off':
             return [
                 last_name,
@@ -404,7 +406,7 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
                 penalty,
                 i.get_place(),
                 str(i.system_type),
-                time_to_hhmmss(datetime.fromtimestamp(i.created_at)),
+                created_at_str,
                 rented_card
             ]
         return [
@@ -418,12 +420,12 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
             finish,
             i.get_result(),
             i.status.get_title(),
-            time_to_hhmmss(i.get_credit_time()),
+            i.get_credit_time().to_str(),
             penalty,
             i.penalty_laps,
             i.get_place(),
             str(i.system_type),
-            time_to_hhmmss(datetime.fromtimestamp(i.created_at)),
+            created_at_str,
             rented_card
         ]
 
@@ -479,8 +481,8 @@ class GroupMemoryModel(AbstractSportOrgMemoryModel):
             group.sex.get_title(),
             group.min_age if self.race.is_team_race() else group.min_year,
             group.max_age if self.race.is_team_race() else group.max_year,
-            time_to_hhmmss(group.start_time),
-            time_to_hhmmss(group.max_time),
+            group.start_time.to_str() if group.start_time else '',
+            group.max_time.to_str(),
             group.start_interval,
             group.start_corridor,
             group.order_in_corridor,
