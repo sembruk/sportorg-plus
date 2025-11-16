@@ -668,7 +668,7 @@ class Result:
             if self.splits[i].code != other.splits[i].code:
                 return False
             abs_diff = abs(self.splits[i].time.to_sec() - other.splits[i].time.to_sec())
-            if abs_diff > max_gap.to_sec() and OTime.get_msec(day=1)//1000 - abs_diff > max_gap.to_sec():
+            if self.splits[i].code != '85' and abs_diff > max_gap.to_sec() and OTime.get_msec(day=1)//1000 - abs_diff > max_gap.to_sec():
                 return False
          
         return True

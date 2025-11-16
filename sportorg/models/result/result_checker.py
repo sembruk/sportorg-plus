@@ -285,7 +285,7 @@ class ResultChecker:
         logging.debug('Fix mixed groups')
         for result in race().results:
             p = result.person
-            if p.group.sex != Sex.MF and p.group.sex != p.sex:
+            if p and p.group and p.group.sex != Sex.MF and p.group.sex != p.sex:
                 old_group_name = p.group.name
                 new_group_name = old_group_name.replace('-М', '-МЖ').replace('-Ж', '-МЖ')
                 print('Change group for', p.name, p.surname, 'from', old_group_name, 'to', new_group_name)
