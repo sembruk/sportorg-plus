@@ -254,9 +254,21 @@ class ResultChecker:
     def calculate_rogaine_scores(result):
         user_array = []
         points = 0
+        prev_control = None
+        prev_prev_control = None
         for cur_split in result.splits:
             if cur_split.is_correct:
                 code = str(cur_split.code)
+                if prev_control is None:
+                    prev_control = code
+                if prev_prev_control is None:
+                    prev_prev_control = code
+                cp_str = f'{prev_prev_control}-{prev_control}-{code}'
+                prev_prev_control = prev_control
+                prev_control = code
+                if cp_str == '65-31-63' or cp_str == '63-31-65':
+                    points += 25
+
                 if code not in user_array:
                     user_array.append(code)
                     points += ResultChecker.get_control_score(code)
