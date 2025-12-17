@@ -143,14 +143,18 @@ class HuichangEmulator(Thread):
                 data = ser.read(ser.in_waiting)
                 print('<='+' '.join(format(x, '02x') for x in data))
 
-                if data[:4] == b'\xaa\xbb\xff\x28':
-                    # Switch Huichang master station to Online mode
+                if data[:3] == b'\xaa\xbb\xff':
+                    if data[3] == 0x28:
+                        print("Switching Huichang master station to Online/Offline mode")
+                        pass
+                    elif data[3] == 0x0a:
+                        print("Time sync")
+                        connected = True
                     # Send Ok
-                    msg = b"\xaa\xbb\xff\x28\x02\xcc\x6d"
+                    msg = b"\xaa\xbb\xff" + bytes([data[3]]) + b"\x02\xcc\x6d"
                     ser.write(msg)
                     #print('=>'+' '.join(format(x, '02x') for x in msg))
                     time.sleep(0.01)
-                    connected = True
         ser.close()
 
 

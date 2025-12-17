@@ -38,6 +38,8 @@ class Huichang(object):
         self._serial = None
         self._log_info = print
         self._log_debug = lambda s: None
+        self._connected = False
+
         if debug:
             self._log_debug = print
         if logger:
@@ -49,7 +51,8 @@ class Huichang(object):
         if port:
             self._connect_master_station(port)
             self.switch_to_online_mode()
-            self.time_sync()
+            if self._connected:
+                self.time_sync()
 
 
     def __del__(self):
@@ -58,7 +61,9 @@ class Huichang(object):
 
     def disconnect(self):
         if self._serial is not None:
-            self.switch_to_offline_mode()
+            if self._serial.is_open and self._connected:
+                self.switch_to_offline_mode()
+            self._connected = False
             self._log_info("Disconnect master station")
             self._serial.close()
 
@@ -191,9 +196,10 @@ class Huichang(object):
         return cmd_code, payload
 
     def _process_response(self, cmd_code, data):
-        if cmd_code == Huichang.CMD_SET_MASTER_MODE and len(data) == 1:
+        if cmd_code in [Huichang.CMD_SET_MASTER_MODE, Huichang.CMD_TIME_SYNC] and len(data) == 1:
             if data == b'\xcc':
                 self._log_debug("Success")
+                self._connected = True
             elif data == b'\xee':
                 raise HuichangException("Device returned error")
         elif cmd_code in [Huichang.CMD_CARD_DATA, Huichang.CMD_CONTACT_CARD_DATA]:
