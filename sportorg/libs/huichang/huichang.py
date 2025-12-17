@@ -26,6 +26,7 @@ class Huichang(object):
     
     START_SEQUENCE = b'\xaa\xbb\xff'
 
+    CMD_TIME_SYNC = b'\x0a'
     CMD_CARD_DATA = b'\x20'
     CMD_SET_MASTER_MODE = b'\x28'
     CMD_CONTACT_CARD_DATA = b'\x60'
@@ -48,6 +49,7 @@ class Huichang(object):
         if port:
             self._connect_master_station(port)
             self.switch_to_online_mode()
+            self.time_sync()
 
 
     def __del__(self):
@@ -56,6 +58,7 @@ class Huichang(object):
 
     def disconnect(self):
         if self._serial is not None:
+            self.switch_to_offline_mode()
             self._log_info("Disconnect master station")
             self._serial.close()
 
@@ -80,14 +83,36 @@ class Huichang(object):
 
         return None
 
+
     def switch_to_online_mode(self):
+        self._set_master_mode(online=True)
+
+
+    def switch_to_offline_mode(self):
+        self._set_master_mode(online=False)
+
+
+    def _set_master_mode(self, online):
         time = datetime.now()
         params = b''
         params += bytes([time.hour])
         params += bytes([time.minute])
         params += bytes([time.second])
-        params += b'\x02'  # online mode
+        if online:
+            params += b'\x02'
+        else:
+            params += b'\x01'
         self.send_command(self.CMD_SET_MASTER_MODE, params)
+
+
+    def time_sync(self):
+        time = datetime.now()
+        params = b''
+        params += bytes([time.hour])
+        params += bytes([time.minute])
+        params += bytes([time.second])
+        self.send_command(self.CMD_TIME_SYNC, params)
+
 
     def _connect_master_station(self, port):
         try:
