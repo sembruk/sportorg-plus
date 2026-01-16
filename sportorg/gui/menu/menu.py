@@ -352,6 +352,11 @@ def menu_list():
                     'action': 'SPORTidentReadoutAction'
                 },
                 {
+                    'title': _('Huichang management'),
+                    'action': 'HuichangManagementAction',
+                    'id': 'huichang_management'
+                },
+                {
                     'title': _('Teamwork'),
                     'icon': config.icon_dir('network.svg'),
                     'actions': [

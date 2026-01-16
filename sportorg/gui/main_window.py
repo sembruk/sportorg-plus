@@ -127,6 +127,8 @@ class MainWindow(QMainWindow):
     def interval(self):
         punch_system = race().get_punch_system()
         client = SIReaderClient
+        huichang_management_action = self.action_by_id['huichang_management']
+        huichang_management_action.setEnabled(punch_system == SystemType.HUICHANG)
         if punch_system == SystemType.SFR:
             client = SFRReaderClient
         elif punch_system == SystemType.SPORTIDUINO:

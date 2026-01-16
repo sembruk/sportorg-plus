@@ -34,6 +34,7 @@ from sportorg.gui.dialogs.teamwork_properties import TeamworkPropertiesDialog
 from sportorg.gui.dialogs.telegram_dialog import TelegramDialog
 from sportorg.gui.dialogs.text_io import TextExchangeDialog
 from sportorg.gui.dialogs.timekeeping_properties import TimekeepingPropertiesDialog
+from sportorg.gui.dialogs.huichang_management_dialog import HuichangManagementDialog
 from sportorg.gui.menu.action import Action
 from sportorg.gui.utils.custom_controls import messageBoxQuestion
 from sportorg.libs.winorient.wdb import write_wdb
@@ -721,3 +722,10 @@ class RentCardsAction(Action, metaclass=ActionFactory):
     def execute(self):
         RentCardsDialog().exec_()
         self.app.refresh()
+
+
+class HuichangManagementAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        print('huichang management')
+        HuichangManagementDialog().exec_()
+
