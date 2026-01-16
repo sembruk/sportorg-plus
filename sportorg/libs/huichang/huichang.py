@@ -29,6 +29,7 @@ class Huichang(object):
     CMD_TIME_SYNC = b'\x0a'
     CMD_CARD_DATA = b'\x20'
     CMD_SET_MASTER_MODE = b'\x28'
+    CMD_SET_CP_NUMBER = b'\x29'
     CMD_CONTACT_CARD_DATA = b'\x60'
     CMD_WRITE_FINGER_NAME = b'\x64'
     CMD_READ_FINGER_NAME = b'\x65'
@@ -51,12 +52,15 @@ class Huichang(object):
         if port:
             self._connect_master_station(port)
             self.switch_to_online_mode()
-            if self._connected:
-                self.time_sync()
 
 
     def __del__(self):
         self.disconnect()
+
+
+    @property
+    def connected(self):
+        return self._connected
 
 
     def disconnect(self):
@@ -117,6 +121,16 @@ class Huichang(object):
         params += bytes([time.minute])
         params += bytes([time.second])
         self.send_command(self.CMD_TIME_SYNC, params)
+
+
+    def set_cp_number(self, cp_number):
+        time = datetime.now()
+        params = b''
+        params += bytes([time.hour])
+        params += bytes([time.minute])
+        params += bytes([time.second])
+        params += bytes([cp_number])
+        self.send_command(self.CMD_SET_CP_NUMBER, params)
 
 
     def _connect_master_station(self, port):

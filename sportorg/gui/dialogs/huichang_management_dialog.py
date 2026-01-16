@@ -1,4 +1,5 @@
 import logging
+import functools
 
 from PySide2.QtWidgets import (
     QDialog,
@@ -7,46 +8,134 @@ from PySide2.QtWidgets import (
     QGroupBox,
     QPushButton,
     QSpinBox,
-    QLabel
+    QLabel,
+    QStyle
 )
 
+from PySide2 import QtCore
+
+from sportorg.libs.huichang.huichang import Huichang, HuichangException
+from sportorg.modules.sportident.sireader import ScanPortsThread
 from sportorg.gui.global_access import GlobalAccess
+from sportorg.gui.utils.custom_controls import AdvComboBox
 from sportorg.language import _
 
+scan_ports_string = _('Scanning ports...')
+no_ports_string = _('No ports found')
 
 class HuichangManagementDialog(QDialog):
     def __init__(self):
         super().__init__(GlobalAccess().get_main_window())
+        self.scan_ports_thread = ScanPortsThread()
+        self._huichang = None
 
     def exec_(self):
         self.init_ui()
         return super().exec_()
 
+    def closeEvent(self, event):
+        self.scan_ports_thread.exit()
+        self._disconnect()
+
     def init_ui(self):
         logging.debug('Init huichang management dialog')
         self.setWindowTitle(_('Huichang Management'))
-        self.setMinimumSize(400, 300)
         self.layout = QVBoxLayout(self)
 
-        self.timeGroupBox = QGroupBox(_('Time Calibration'))
-        self.timeLayout = QVBoxLayout(self.timeGroupBox)
+        self.label_port = QLabel(_('Port'))
+        self.item_port = AdvComboBox()
+        self.scan_port_button = QPushButton()
+        pixmapi = QStyle.SP_BrowserReload
+        icon = self.style().standardIcon(pixmapi)
+        self.scan_port_button.setIcon(icon)
+        self.scan_port_button.clicked.connect(self.scan_ports)
 
-        self.timeSyncButton = QPushButton(_('Time Sync'))
-        self.timeLayout.addWidget(self.timeSyncButton)
+        self.port_layout = QHBoxLayout()
+        self.port_layout.addWidget(self.label_port)
+        self.port_layout.addWidget(self.item_port)
+        self.port_layout.addWidget(self.scan_port_button)
+        self.layout.addLayout(self.port_layout)
 
-        self.layout.addWidget(self.timeGroupBox)
+        self.scan_ports()
 
-        self.stationNumberGroupBox = QGroupBox(_('Station Number'))
-        self.stationNumberLayout = QHBoxLayout(self.stationNumberGroupBox)
+        self.time_group_box = QGroupBox(_('Time Calibration'))
+        self.time_layout = QVBoxLayout(self.time_group_box)
 
-        self.stationSpin = QSpinBox()
-        self.stationSpin.setRange(1, 255)
-        self.stationSpin.setValue(31)
-        self.stationNumberApplyButton = QPushButton(_('Apply'))
-        self.stationNumberLayout.addWidget(self.stationSpin)
-        self.stationNumberLayout.addWidget(self.stationNumberApplyButton)
+        self.time_sync_button = QPushButton(_('Time Sync'))
+        self.time_sync_button.clicked.connect(self.time_sync)
+        self.time_layout.addWidget(self.time_sync_button)
 
-        self.layout.addWidget(self.stationNumberGroupBox)
+        self.layout.addWidget(self.time_group_box)
+
+        self.station_number_group_box = QGroupBox(_('Station Number'))
+        self.station_number_layout = QHBoxLayout(self.station_number_group_box)
+
+        self.station_spin = QSpinBox()
+        self.station_spin.setRange(1, 255)
+        self.station_spin.setValue(31)
+        self.station_number_apply_button = QPushButton(_('Apply'))
+        self.station_number_apply_button.clicked.connect(self.station_number_apply)
+        self.station_number_layout.addWidget(self.station_spin)
+        self.station_number_layout.addWidget(self.station_number_apply_button)
+
+        self.layout.addWidget(self.station_number_group_box)
 
         self.show()
+
+    def scan_ports(self):
+        self.item_port.clear()
+        self.item_port.addItem(scan_ports_string)
+        self.item_port.setCurrentIndex(0)
+        self.scan_ports_thread.result_signal.connect(self.on_result_ready)
+        self.scan_ports_thread.start()
+
+    def on_result_ready(self, result):
+        self.item_port.removeItem(0)
+        self.item_port.addItems(result)
+        # if result is empty
+        if not result:
+            self.item_port.setCurrentText(no_ports_string)
+
+    def _connect(self):
+        port = self.item_port.currentText()
+        if port not in [scan_ports_string, no_ports_string]:
+            try:
+                self._huichang = Huichang(port=port, logger=logging.root)
+            except HuichangException:
+                logging.error('Could not connect to Huichang')
+        return self._huichang
+
+    def _disconnect(self):
+        if self._huichang is not None:
+            self._huichang.disconnect()
+            self._huichang = None
+
+    def connect_station(func):
+        @functools.wraps(func)
+        def wrapper(self, *args, **kwargs):
+            hc = self._connect()
+            if hc:
+                func(self, *args, **kwargs)
+            self._disconnect()
+        return wrapper
+
+    def block_gui(func):
+        @functools.wraps(func)
+        def wrapper(self, *args, **kwargs):
+            self.setCursor(QtCore.Qt.WaitCursor)
+            try:
+                return func(self, *args, **kwargs)
+            finally:
+                self.unsetCursor()
+        return wrapper
+
+    @block_gui
+    @connect_station
+    def time_sync(self):
+        self._huichang.time_sync()
+
+    @block_gui
+    @connect_station
+    def station_number_apply(self):
+        self._huichang.set_station_number(self.station_spin.value())
 

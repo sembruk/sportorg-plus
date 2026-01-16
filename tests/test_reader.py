@@ -146,9 +146,6 @@ class HuichangEmulator(Thread):
                 if data[:3] == b'\xaa\xbb\xff':
                     if data[3] == 0x28:
                         print("Switching Huichang master station to Online/Offline mode")
-                        pass
-                    elif data[3] == 0x0a:
-                        print("Time sync")
                         connected = True
                     # Send Ok
                     msg = b"\xaa\xbb\xff" + bytes([data[3]]) + b"\x02\xcc\x6d"
