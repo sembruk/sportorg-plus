@@ -2,6 +2,7 @@ import re
 import datetime
 import time
 import uuid
+import logging
 from abc import abstractmethod
 from datetime import date
 from enum import IntEnum, Enum
@@ -221,6 +222,8 @@ class Course(Model):
         self.climb = 0
         self._controls = []  # type: List[CourseControl]
         self.unrolled_controls = []  # unrolled copy of _controls
+        self.user_function_string = None
+        self._user_function = None
 
         self.count_person = 0
         self.count_group = 0
@@ -276,7 +279,8 @@ class Course(Model):
             'name': self.name,
             'length': self.length,
             'climb': self.climb,
-            'corridor': self.corridor
+            'corridor': self.corridor,
+            'user_function_string': self.user_function_string
         }
 
     def update_data(self, data):
@@ -291,6 +295,8 @@ class Course(Model):
             control.update_data(item)
             self._controls.append(control)
         self.unrolled_controls = self.get_unrolled_controls()
+        if 'user_function_string' in data:
+            self.user_function_string = data['user_function_string']
 
     def get_unrolled_controls(self):
         # return unrolled controls list, e.g. '*(31-45)[3]' -> '*(31-45) *(31-45) *(31-45)'
@@ -316,6 +322,20 @@ class Course(Model):
             if '[]' in control.code:
                 count_str = '≥' + count_str
         return count_str
+
+    @staticmethod
+    def build_user_function(code):
+        namespace = {}
+
+        func_code = "def user_function(result, course):\n"
+
+        for line in code.splitlines():
+            func_code += "    " + line + '\n'
+
+        exec(func_code, namespace)
+
+        return namespace['user_function']
+
 
 class Subgroup(Model):
     def __init__(self):
@@ -1091,7 +1111,7 @@ class ResultSportident(Result):
         return False
 
 
-    def check(self, course=None):
+    def check_by_course(self, course=None):
         if not course:
             return super().check()
         count_controls = len(course.controls)
@@ -1135,6 +1155,28 @@ class ResultSportident(Result):
             return True
 
         return False
+
+    def check_by_user_function(self, course=None):
+        if not course:
+            return True
+
+        if course.user_function_string:
+            if not course._user_function:
+                code = course.user_function_string
+                course._user_function = course.build_user_function(code)
+            try:
+                course._user_function(self, course)
+            except Exception as e:
+                logging.error(_('User function error for course "{}":').format(course.name))
+                logging.exception(e)
+                return False
+
+        return True
+
+    def check(self, course=None):
+        status1 = self.check_by_course(course)
+        status2 = self.check_by_user_function(course)
+        return status1 and status2
 
     def merge_with(self, new_result):
         # Merge with new result (merge splits, backup old finish/start, use new finish/start as finish/start)

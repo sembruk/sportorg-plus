@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SportOrg\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-15 17:09+0300\n"
-"PO-Revision-Date: 2025-12-15 17:11+0300\n"
+"POT-Creation-Date: 2026-03-13 18:09+0300\n"
+"PO-Revision-Date: 2026-03-13 18:12+0300\n"
 "Last-Translator: SportOrg\n"
 "Language-Team: SportOrg\n"
 "Language: ru_RU\n"
@@ -39,14 +39,14 @@ msgid "Person"
 msgstr "Участник"
 
 #: gui/dialogs/bib_dialog.py:58 gui/dialogs/control_point_edit.py:67
-#: gui/dialogs/course_edit.py:69 gui/dialogs/entry_mass_edit.py:172
-#: gui/dialogs/event_properties.py:102 gui/dialogs/filter_dialog.py:133
+#: gui/dialogs/course_edit.py:77 gui/dialogs/entry_mass_edit.py:172
+#: gui/dialogs/event_properties.py:104 gui/dialogs/filter_dialog.py:133
 #: gui/dialogs/group_edit.py:135 gui/dialogs/group_ranking.py:52
 #: gui/dialogs/live_dialog.py:119 gui/dialogs/not_start_dialog.py:58
 #: gui/dialogs/person_edit.py:177 gui/dialogs/print_properties.py:104
 #: gui/dialogs/relay_clone_dialog.py:49 gui/dialogs/relay_number_dialog.py:49
 #: gui/dialogs/rent_cards_dialog.py:46 gui/dialogs/report_dialog.py:94
-#: gui/dialogs/result_edit.py:143 gui/dialogs/scores_dialog.py:60
+#: gui/dialogs/result_edit.py:142 gui/dialogs/scores_dialog.py:60
 #: gui/dialogs/search_dialog.py:69 gui/dialogs/settings.py:241
 #: gui/dialogs/sportorg_import_dialog.py:68
 #: gui/dialogs/start_handicap_dialog.py:78
@@ -57,14 +57,14 @@ msgid "OK"
 msgstr "ОК"
 
 #: gui/dialogs/bib_dialog.py:61 gui/dialogs/control_point_edit.py:70
-#: gui/dialogs/course_edit.py:72 gui/dialogs/cp_delete.py:66
-#: gui/dialogs/entry_mass_edit.py:173 gui/dialogs/event_properties.py:105
+#: gui/dialogs/course_edit.py:80 gui/dialogs/cp_delete.py:66
+#: gui/dialogs/entry_mass_edit.py:173 gui/dialogs/event_properties.py:107
 #: gui/dialogs/filter_dialog.py:134 gui/dialogs/group_edit.py:138
 #: gui/dialogs/group_ranking.py:55 gui/dialogs/live_dialog.py:122
 #: gui/dialogs/not_start_dialog.py:61 gui/dialogs/person_edit.py:180
 #: gui/dialogs/print_properties.py:107 gui/dialogs/relay_clone_dialog.py:52
 #: gui/dialogs/relay_number_dialog.py:52 gui/dialogs/rent_cards_dialog.py:49
-#: gui/dialogs/report_dialog.py:97 gui/dialogs/result_edit.py:146
+#: gui/dialogs/report_dialog.py:97 gui/dialogs/result_edit.py:145
 #: gui/dialogs/scores_dialog.py:63 gui/dialogs/search_dialog.py:70
 #: gui/dialogs/settings.py:244 gui/dialogs/sportorg_import_dialog.py:71
 #: gui/dialogs/start_handicap_dialog.py:81
@@ -78,7 +78,7 @@ msgstr "Отмена"
 #: gui/dialogs/bib_dialog.py:87 gui/dialogs/entry_mass_edit.py:163
 #: gui/dialogs/filter_dialog.py:96 gui/dialogs/person_edit.py:94
 #: gui/dialogs/person_edit.py:256 gui/dialogs/person_edit.py:285
-#: gui/dialogs/result_edit.py:184 gui/dialogs/team_edit.py:55
+#: gui/dialogs/result_edit.py:183 gui/dialogs/team_edit.py:55
 #: gui/dialogs/text_io.py:14 gui/dialogs/text_io.py:291
 #: gui/dialogs/text_io.py:341 gui/tabs/memory_model.py:239
 #: gui/tabs/memory_model.py:338 gui/tabs/memory_model.py:341
@@ -86,12 +86,12 @@ msgstr "Отмена"
 msgid "Group"
 msgstr "Группа"
 
-#: gui/dialogs/bib_dialog.py:89 gui/dialogs/result_edit.py:186
+#: gui/dialogs/bib_dialog.py:89 gui/dialogs/result_edit.py:185
 #: gui/tabs/results.py:129 modules/printing/printout_split.py:85
 msgid "Card"
 msgstr "Чип"
 
-#: gui/dialogs/bib_dialog.py:92 gui/dialogs/result_edit.py:189
+#: gui/dialogs/bib_dialog.py:92 gui/dialogs/result_edit.py:188
 msgid "not found"
 msgstr "не найдено"
 
@@ -144,6 +144,17 @@ msgstr "Количество КП"
 msgid "Controls"
 msgstr "Контрольные пункты"
 
+#: gui/dialogs/course_edit.py:67
+msgid "User function for checking results"
+msgstr "Пользовательская функция для проверки результатов"
+
+#: gui/dialogs/course_edit.py:70
+msgid ""
+"# Write function body here using Python\n"
+"# Arguments: result, course\n"
+"# Leave function body empty if you don't need additional checks"
+msgstr ""
+
 #: gui/dialogs/cp_delete.py:25 gui/menu/menu.py:332
 msgid "Delete CP"
 msgstr "Удалить КП"
@@ -161,7 +172,7 @@ msgstr "Дистанции"
 msgid "Race Results"
 msgstr "Результаты"
 
-#: gui/dialogs/cp_delete.py:63 models/memory.py:114
+#: gui/dialogs/cp_delete.py:63 models/memory.py:115
 msgid "Ok"
 msgstr "Оk"
 
@@ -240,27 +251,27 @@ msgstr "Дата начала"
 msgid "End date"
 msgstr "Дата завершения"
 
-#: gui/dialogs/event_properties.py:60
+#: gui/dialogs/event_properties.py:61
 msgid "Location"
 msgstr "Место проведения"
 
-#: gui/dialogs/event_properties.py:64
+#: gui/dialogs/event_properties.py:65
 msgid "Event type"
 msgstr "Тип соревнований"
 
-#: gui/dialogs/event_properties.py:69
+#: gui/dialogs/event_properties.py:71
 msgid "Relay legs"
 msgstr "Количество этапов"
 
-#: gui/dialogs/event_properties.py:78
+#: gui/dialogs/event_properties.py:80
 msgid "Chief referee"
 msgstr "Главный судья"
 
-#: gui/dialogs/event_properties.py:82
+#: gui/dialogs/event_properties.py:84
 msgid "Secretary"
 msgstr "Главный секретарь"
 
-#: gui/dialogs/event_properties.py:86 gui/dialogs/live_dialog.py:50
+#: gui/dialogs/event_properties.py:88 gui/dialogs/live_dialog.py:50
 msgid "URL"
 msgstr "URL"
 
@@ -513,7 +524,7 @@ msgstr "Удалять исходный номер"
 msgid "Replace source with reserve"
 msgstr "Создать резервного участника для исходного номера"
 
-#: gui/dialogs/person_edit.py:45 gui/dialogs/result_edit.py:150
+#: gui/dialogs/person_edit.py:45 gui/dialogs/result_edit.py:149
 msgid "Entry properties"
 msgstr "Редактирование спортсмена"
 
@@ -779,7 +790,7 @@ msgstr "Штраф, круги"
 msgid "Status"
 msgstr "Статус"
 
-#: gui/dialogs/result_edit.py:352
+#: gui/dialogs/result_edit.py:351
 msgid "Splits"
 msgstr "Сплиты"
 
@@ -1473,13 +1484,13 @@ msgstr "Панель инструментов"
 msgid "Competitors"
 msgstr "Участники"
 
-#: gui/main_window.py:407 gui/menu/menu.py:189 modules/orgeo/orgeo.py:188
-#: modules/winorient/winorient.py:56
+#: gui/main_window.py:407 gui/menu/menu.py:189 modules/orgeo/orgeo.py:197
+#: modules/winorient/winorient.py:53
 msgid "Groups"
 msgstr "Группы"
 
-#: gui/main_window.py:409 gui/menu/menu.py:199 modules/orgeo/orgeo.py:189
-#: modules/winorient/winorient.py:58
+#: gui/main_window.py:409 gui/menu/menu.py:199 modules/orgeo/orgeo.py:198
+#: modules/winorient/winorient.py:55
 msgid "Teams"
 msgstr "Команды"
 
@@ -1928,7 +1939,7 @@ msgstr "В/К"
 msgid "Own card"
 msgstr "Свой чип"
 
-#: gui/tabs/memory_model.py:318 models/memory.py:878
+#: gui/tabs/memory_model.py:318 models/memory.py:905
 msgid "o/c"
 msgstr "в/к"
 
@@ -1989,115 +2000,119 @@ msgstr "Длина"
 msgid "SPORTident readout"
 msgstr "Чтение SPORTident"
 
-#: models/memory.py:103
+#: models/memory.py:104
 msgid "Mf"
 msgstr "МЖ"
 
-#: models/memory.py:104
+#: models/memory.py:105
 msgid "M"
 msgstr "М"
 
-#: models/memory.py:105
+#: models/memory.py:106
 msgid "F"
 msgstr "Ж"
 
-#: models/memory.py:106
+#: models/memory.py:107
 msgid "Individual race"
 msgstr "Индивидуальная гонка"
 
-#: models/memory.py:107
+#: models/memory.py:108
 msgid "Mass start"
 msgstr "Масс-старт"
 
-#: models/memory.py:108
+#: models/memory.py:109
 msgid "Pursuit"
 msgstr "Гонка преследования"
 
-#: models/memory.py:109
+#: models/memory.py:110
 msgid "Relay"
 msgstr "Эстафета"
 
-#: models/memory.py:110
+#: models/memory.py:111
 msgid "One man relay"
 msgstr "Эстафета одного участника"
 
-#: models/memory.py:111
+#: models/memory.py:112
 msgid "Sprint relay"
 msgstr "Смешанная эстафета"
 
-#: models/memory.py:112
+#: models/memory.py:113
 msgid "Team race"
 msgstr "Командная гонка"
 
-#: models/memory.py:113
+#: models/memory.py:114
 msgid "None"
 msgstr "-"
 
-#: models/memory.py:115
+#: models/memory.py:116
 msgid "Finished"
 msgstr "Финишировал"
 
-#: models/memory.py:116
+#: models/memory.py:117
 msgid "Disqualified"
 msgstr "ДИСКВ."
 
-#: models/memory.py:117
+#: models/memory.py:118
 msgid "Missing punch"
 msgstr "Непр. отметка"
 
-#: models/memory.py:118
+#: models/memory.py:119
 msgid "Did not finish"
 msgstr "СОШЕЛ"
 
-#: models/memory.py:119
+#: models/memory.py:120
 msgid "Active"
 msgstr "Активный"
 
-#: models/memory.py:120
+#: models/memory.py:121
 msgid "Inactive"
 msgstr "Неактивный"
 
-#: models/memory.py:121
+#: models/memory.py:122
 msgid "Overtime"
 msgstr "ПРЕВЫШЕНО КВ"
 
-#: models/memory.py:122
+#: models/memory.py:123
 msgid "Sporting withdrawal"
 msgstr "Проведена жеребьевка"
 
-#: models/memory.py:123
+#: models/memory.py:124
 msgid "Not competing"
 msgstr "Вне конкурса"
 
-#: models/memory.py:124
+#: models/memory.py:125
 msgid "Moved"
 msgstr "Перемещен"
 
-#: models/memory.py:125
+#: models/memory.py:126
 msgid "Moved up"
 msgstr "Перемещен наверх"
 
-#: models/memory.py:126
+#: models/memory.py:127
 msgid "Did not start"
 msgstr "НЕ СТАРТ."
 
-#: models/memory.py:127
+#: models/memory.py:128
 msgid "Did not enter"
 msgstr "Не заявлен"
 
-#: models/memory.py:128
+#: models/memory.py:129
 msgid "Cancelled"
 msgstr "Заявка отменена"
 
-#: models/memory.py:129
+#: models/memory.py:130
 msgid "Restored"
 msgstr "Восстановлен"
 
-#: models/memory.py:750 models/memory.py:770 models/memory.py:800
+#: models/memory.py:777 models/memory.py:797 models/memory.py:827
 msgid "points"
 msgstr "очк."
 
-#: models/memory.py:1767
+#: models/memory.py:1180
+msgid "User function error for course \"{}\":"
+msgstr "Ошибка в пользовательской функции для дистанции \"{}\":"
+
+#: models/memory.py:1817
 msgid "Remove result"
 msgstr "Удаляю результат"
 
@@ -2119,17 +2134,17 @@ msgstr "Не удалось разобрать файл IOF XML"
 msgid "Controls not found in IOF XML file"
 msgstr "КП не найдены в файле IOF XML"
 
-#: modules/iof/iof_xml.py:194 modules/orgeo/orgeo.py:195
-#: modules/winorient/winorient.py:64
+#: modules/iof/iof_xml.py:201 modules/orgeo/orgeo.py:204
+#: modules/winorient/winorient.py:61
 msgid "Duplicate card numbers (card numbers are reset)"
 msgstr "Дублирующиеся чипы (номера чипов обнулены)"
 
-#: modules/iof/iof_xml.py:207 modules/orgeo/orgeo.py:205
-#: modules/winorient/winorient.py:74
+#: modules/iof/iof_xml.py:214 modules/orgeo/orgeo.py:214
+#: modules/winorient/winorient.py:71
 msgid "Duplicate names"
 msgstr "Повторяющиеся имена"
 
-#: modules/iof/iof_xml.py:220 modules/orgeo/orgeo.py:216
+#: modules/iof/iof_xml.py:227 modules/orgeo/orgeo.py:225
 msgid ""
 "Duplicate names or card numbers detected.\n"
 "See Log tab"
@@ -2137,11 +2152,11 @@ msgstr ""
 "Обнаружены повторяющиеся имена или номера чипов.\n"
 "См. Логи."
 
-#: modules/orgeo/orgeo.py:186 modules/winorient/winorient.py:53
+#: modules/orgeo/orgeo.py:195 modules/winorient/winorient.py:50
 msgid "Import result"
 msgstr "Результат импорта"
 
-#: modules/orgeo/orgeo.py:187 modules/winorient/winorient.py:54
+#: modules/orgeo/orgeo.py:196 modules/winorient/winorient.py:51
 msgid "Persons"
 msgstr "Люди"
 
