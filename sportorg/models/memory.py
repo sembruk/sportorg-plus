@@ -2423,7 +2423,12 @@ class TeamResult(object):
             self.score = result.scores
         else:
             self.score = min(self.score, result.scores)
+        team_status = self.members_results[0].status
+        if team_status.value > result.status.value:
+            result.status = team_status
         for i in range(len(self.members_results)):
+            if result.status != team_status:
+                self.members_results[i].status = result.status
             self.members_results[i].scores = self.score
 
     def get_penalty_time(self):

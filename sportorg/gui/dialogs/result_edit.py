@@ -316,6 +316,7 @@ class ResultEditDialog(QDialog):
                     if team.result:
                         for r in team.result.members_results:
                             if r is not result:
+                                r.status = result.status
                                 ResultChecker.checking(r)
                 if result.person and result.person.group:
                     GroupSplits(race(), result.person.group).generate(True)
