@@ -41,6 +41,7 @@ class OrgeoCSVReader:
                 'Команда': 'team_name',
                 'Код': 'code',
                 'Регион': 'district',
+                'Страна': 'country',
                 'Квал.': 'qual_str',
                 'Дата рожд.': 'date_of_birth',
                 'Год': 'date_of_birth',
@@ -166,6 +167,8 @@ def import_csv(source):
                 person_team.code = str(person_dict['code']) if 'code' in person_dict else ''
                 if 'district' in person_dict:
                     person_team.region = person_dict['district']
+                if 'country' in person_dict:
+                    person_team.country = person_dict['country']
 
                 if obj.is_team_race():
                     if person_team.group is None:

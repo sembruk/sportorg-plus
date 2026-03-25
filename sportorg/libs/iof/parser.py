@@ -149,6 +149,7 @@ def entry_list(tree, ns):
                 organization = {
                     'id': org_el.find('iof:Id', ns).text,
                     'name': org_el.find('iof:Name', ns).text,
+                    'country': org_el.find('iof:Country', ns).attrib.get('code'),
                 }
                 role_el = org_el.find('iof:Role', ns)
                 if role_el:
