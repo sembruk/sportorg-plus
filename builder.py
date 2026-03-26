@@ -10,6 +10,17 @@ base = None
 if sys.platform == 'win32':
     base = 'Win32GUI'
 
+def create_readme():
+    readme_path = config.base_dir('readme.txt')
+    with open(readme_path, 'w', encoding='utf-8') as f:
+        f.write("""В этом каталоге находятся исходные файлы программы.
+Если вносите изменения в исходный файл (файлы), то для применения изменений в программе необходимо скопировать нужный файл (файлы) *.py
+в каталог lib/sportorg по соответствующему вложенному пути с заменой файла (файлов) *.pyc.
+""")
+    return readme_path
+
+readme_path = create_readme()
+
 include_files = [
     config.LOCALE_DIR,
     config.TEMPLATE_DIR,
@@ -22,6 +33,7 @@ include_files = [
     config.base_dir('changelog.en.md'),
     config.base_dir('changelog.ru.md'),
     config.base_dir('configs'), 
+    (readme_path, 'sportorg/readme.txt'),
 ]
 
 pyside2_dir = os.path.dirname(PySide2.__file__)
