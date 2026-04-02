@@ -38,7 +38,6 @@ class HuichangManagementDialog(QDialog):
         self._disconnect()
 
     def init_ui(self):
-        logging.debug('Init huichang management dialog')
         self.setWindowTitle(_('Huichang Management'))
         self.layout = QVBoxLayout(self)
 
@@ -48,6 +47,7 @@ class HuichangManagementDialog(QDialog):
         pixmapi = QStyle.SP_BrowserReload
         icon = self.style().standardIcon(pixmapi)
         self.scan_port_button.setIcon(icon)
+        self.scan_port_button.setToolTip(_('Update list of available ports'))
         self.scan_port_button.clicked.connect(self.scan_ports)
 
         self.port_layout = QHBoxLayout()
@@ -63,6 +63,7 @@ class HuichangManagementDialog(QDialog):
 
         self.time_sync_button = QPushButton(_('Time Sync'))
         self.time_sync_button.clicked.connect(self.time_sync)
+        self.time_sync_button.setToolTip(_('Send current system time to the connected station'))
         self.time_layout.addWidget(self.time_sync_button)
 
         self.layout.addWidget(self.time_group_box)
@@ -74,6 +75,7 @@ class HuichangManagementDialog(QDialog):
         self.station_spin.setRange(1, 255)
         self.station_spin.setValue(31)
         self.station_number_apply_button = QPushButton(_('Apply'))
+        self.station_number_apply_button.setToolTip(_('Set new number for the connected station'))
         self.station_number_apply_button.clicked.connect(self.station_number_apply)
         self.station_number_layout.addWidget(self.station_spin)
         self.station_number_layout.addWidget(self.station_number_apply_button)
@@ -97,12 +99,15 @@ class HuichangManagementDialog(QDialog):
             self.item_port.setCurrentText(no_ports_string)
 
     def _connect(self):
+        self._huichang = None
         port = self.item_port.currentText()
-        if port not in [scan_ports_string, no_ports_string]:
-            try:
-                self._huichang = Huichang(port=port, logger=logging.root)
-            except HuichangException:
-                logging.error('Could not connect to Huichang')
+        if port in [scan_ports_string, no_ports_string]:
+            logging.info(_('First select a valid port'))
+            return None
+        try:
+            self._huichang = Huichang(port=port, logger=logging.root)
+        except HuichangException:
+            logging.error(_('Could not connect to Huichang station'))
         return self._huichang
 
     def _disconnect(self):

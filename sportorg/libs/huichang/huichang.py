@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#    Copyright 2025 Semyon Yakimov <sdyakimov@gmail.com>
+#    Copyright 2025,2026 Semyon Yakimov <sdyakimov@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ from datetime import datetime, time
 from serial import Serial
 from serial.serialutil import SerialException
 
+from sportorg.language import _
 
 class Huichang(object):
     
@@ -49,9 +50,10 @@ class Huichang(object):
             if callable(logger.info):
                 self._log_info = logger.info
 
-        if port:
-            self._connect_master_station(port)
-            self.switch_to_online_mode()
+        if not port:
+            raise HuichangException(_("No port specified"))
+        self._connect_master_station(port)
+        self.switch_to_online_mode()
 
 
     def __del__(self):
@@ -68,7 +70,7 @@ class Huichang(object):
             if self._serial.is_open and self._connected:
                 self.switch_to_offline_mode()
             self._connected = False
-            self._log_info("Disconnect master station")
+            self._log_info(_("Disconnect from Huichang station"))
             self._serial.close()
 
 
@@ -76,7 +78,7 @@ class Huichang(object):
         if params is None:
             params = b''
         if self._serial is None:
-            raise HuichangException("Not connected to master station")
+            raise HuichangException(_("Not connected to Huichang station"))
 
         datalen = len(params) + 1
         crc = self.crc8(params)
@@ -135,10 +137,10 @@ class Huichang(object):
 
     def _connect_master_station(self, port):
         try:
-            self._log_info("Open port {}".format(port))
+            self._log_info(_("Open port {}").format(port))
             self._serial = Serial(port, baudrate=9600, timeout=3)
         except (SerialException, OSError):
-            raise HuichangException(("Could not open port {}").format(port))
+            raise HuichangException(_("Could not open port {}").format(port))
 
     def read_and_parse_response(self, timeout):
         resp_code, data = self._read_response(timeout)
@@ -149,13 +151,11 @@ class Huichang(object):
             return self.read_and_parse_response(timeout=0.5)
         except HuichangTimeout:
             pass
-        except HuichangException as msg:
-            self._log_debug(f"Warning: {msg}")
         return None
 
     def _read_response(self, timeout=None):
         if self._serial is None:
-            raise HuichangException("Not connected to master station")
+            raise HuichangException(_("Not connected to master station"))
         serial = self._serial
 
         if timeout is not None:
@@ -167,7 +167,7 @@ class Huichang(object):
             while True:
                 byte = serial.read()
                 if byte == b"":
-                    raise HuichangTimeout("No response")
+                    raise HuichangTimeout(_("No response from Huichang station"))
                 elif (byte == bytes([Huichang.START_SEQUENCE[0]])
                         and serial.read() == bytes([Huichang.START_SEQUENCE[1]])
                         and serial.read() == bytes([Huichang.START_SEQUENCE[2]])):
@@ -282,5 +282,8 @@ class HuichangTimeout(HuichangException):
 if __name__ == "__main__":
     hc = Huichang("/dev/ttyACM0", debug=True)
     while True:
-        hc.wait_card_data()
+        try:
+            hc.wait_card_data()
+        except HuichangException as msg:
+            print(f"Warning: {msg}")
 

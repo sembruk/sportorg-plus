@@ -726,6 +726,5 @@ class RentCardsAction(Action, metaclass=ActionFactory):
 
 class HuichangManagementAction(Action, metaclass=ActionFactory):
     def execute(self):
-        print('huichang management')
         HuichangManagementDialog().exec_()
 
