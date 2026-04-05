@@ -125,7 +125,7 @@ class Huichang(object):
         self.send_command(self.CMD_TIME_SYNC, params)
 
 
-    def set_cp_number(self, cp_number):
+    def set_station_number(self, cp_number):
         time = datetime.now()
         params = b''
         params += bytes([time.hour])
