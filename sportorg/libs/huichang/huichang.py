@@ -172,6 +172,21 @@ class Huichang(object):
                         and serial.read() == bytes([Huichang.START_SEQUENCE[1]])
                         and serial.read() == bytes([Huichang.START_SEQUENCE[2]])):
                     break
+                elif (byte == b'\x1b'
+                        and serial.read() == b'\x40'
+                        and serial.read() == b'\x20'
+                        and serial.read() == b'\x0d'
+                        and serial.read() == b'\x0a'):
+                    # Station send internal punching data to print
+                    self._log_info(_("Internal station data:"))
+                    s = ''
+                    while True:
+                        byte = serial.read()
+                        if byte == b"":
+                            break
+                        s += byte.decode()
+                    self._log_info(s)
+                    return None, None
                 self._log_debug("Skipping byte: 0x {}".format(" ".join(f"{b:02x}" for b in byte)))
 
             cmd_code = serial.read()

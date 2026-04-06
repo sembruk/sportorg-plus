@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SportOrg\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-07 16:55+0300\n"
-"PO-Revision-Date: 2026-04-07 16:56+0300\n"
+"POT-Creation-Date: 2026-04-06 19:09+0300\n"
+"PO-Revision-Date: 2026-04-07 17:00+0300\n"
 "Last-Translator: SportOrg\n"
 "Language-Team: SportOrg\n"
 "Language: ru_RU\n"
@@ -421,57 +421,85 @@ msgstr "Вперёд"
 msgid "Close"
 msgstr "Закрыть"
 
-#: gui/dialogs/huichang_management_dialog.py:23
+#: gui/dialogs/huichang_management_dialog.py:26
 #: gui/dialogs/timekeeping_properties.py:17
 msgid "Scanning ports..."
 msgstr "Сканирование портов..."
 
-#: gui/dialogs/huichang_management_dialog.py:24
+#: gui/dialogs/huichang_management_dialog.py:27
 msgid "No ports found"
 msgstr "не найдено"
 
-#: gui/dialogs/huichang_management_dialog.py:41
+#: gui/dialogs/huichang_management_dialog.py:44
 msgid "Huichang Management"
 msgstr "Настройка Huichang"
 
-#: gui/dialogs/huichang_management_dialog.py:44
+#: gui/dialogs/huichang_management_dialog.py:47
 #: gui/dialogs/teamwork_properties.py:48
 msgid "Port"
 msgstr "Порт"
 
-#: gui/dialogs/huichang_management_dialog.py:50
+#: gui/dialogs/huichang_management_dialog.py:53
 msgid "Update list of available ports"
 msgstr "Обновить список доступных портов"
 
-#: gui/dialogs/huichang_management_dialog.py:61
+#: gui/dialogs/huichang_management_dialog.py:64
 msgid "Time Calibration"
 msgstr "Калибровка времени"
 
-#: gui/dialogs/huichang_management_dialog.py:64
+#: gui/dialogs/huichang_management_dialog.py:67
 msgid "Time Sync"
 msgstr "Синхронизировать"
 
-#: gui/dialogs/huichang_management_dialog.py:66
+#: gui/dialogs/huichang_management_dialog.py:69
 msgid "Send current system time to the connected station"
 msgstr "Отправить текущее системное время на подключённую станцию"
 
-#: gui/dialogs/huichang_management_dialog.py:71
+#: gui/dialogs/huichang_management_dialog.py:74
 msgid "Station Number"
 msgstr "Номер станции"
 
 #: gui/dialogs/huichang_management_dialog.py:77
+msgid "Clear (6)"
+msgstr "Очистка (6)"
+
+#: gui/dialogs/huichang_management_dialog.py:78
+msgid "Superstart (11)"
+msgstr "Суперстарт (11)"
+
+#: gui/dialogs/huichang_management_dialog.py:79
+msgid "Start (16)"
+msgstr "Старт (16)"
+
+#: gui/dialogs/huichang_management_dialog.py:80
+msgid "Finish (21)"
+msgstr "Финиш (21)"
+
+#: gui/dialogs/huichang_management_dialog.py:81
+msgid "Check (27)"
+msgstr "Проверка (27)"
+
+#: gui/dialogs/huichang_management_dialog.py:82
+msgid "Master (250)"
+msgstr "Мастер (250)"
+
+#: gui/dialogs/huichang_management_dialog.py:83
+msgid "Other (26-254)"
+msgstr "Другой (26-254)"
+
+#: gui/dialogs/huichang_management_dialog.py:91
 msgid "Apply"
 msgstr "Применить"
 
-#: gui/dialogs/huichang_management_dialog.py:78
+#: gui/dialogs/huichang_management_dialog.py:92
 msgid "Set new number for the connected station"
 msgstr "Задать новый номер подключённой станции"
 
-#: gui/dialogs/huichang_management_dialog.py:105
+#: gui/dialogs/huichang_management_dialog.py:127
 msgid "First select a valid port"
 msgstr "Сначала выберите действительный порт"
 
-#: gui/dialogs/huichang_management_dialog.py:110
+#: gui/dialogs/huichang_management_dialog.py:132
 msgid "Could not connect to Huichang station"
 msgstr "Не получается подключиться к станции Huichang"
 
@@ -2060,7 +2088,10 @@ msgstr "Станция считывания не подключена"
 msgid "No response from Huichang station"
 msgstr "Нет ответа от станции Huichang"
 
-#: models/memory.py:104
+msgid "Internal station data:"
+msgstr "Данные об отметках со станции:"
+
+#: models/memory.py:103
 msgid "Mf"
 msgstr "МЖ"
 
@@ -2348,9 +2379,6 @@ msgstr "/км"
 
 #~ msgid "ct"
 #~ msgstr "отс"
-
-#~ msgid "Internal printing"
-#~ msgstr "Стандартный шаблон"
 
 #~ msgid "LiveClient disabled"
 #~ msgstr "Онлайн выключен"
