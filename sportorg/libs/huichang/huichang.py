@@ -182,7 +182,7 @@ class Huichang(object):
                     s = ''
                     while True:
                         byte = serial.read()
-                        if byte == b"":
+                        if byte == b"" or byte == b'\x1b':
                             break
                         s += byte.decode()
                     self._log_info(s)

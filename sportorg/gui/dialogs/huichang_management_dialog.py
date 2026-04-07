@@ -105,6 +105,7 @@ class HuichangManagementDialog(QDialog):
         self.show()
 
     def scan_ports(self):
+        self.current_port = self.item_port.currentText()
         self.item_port.clear()
         self.item_port.addItem(scan_ports_string)
         self.item_port.setCurrentIndex(0)
@@ -112,10 +113,12 @@ class HuichangManagementDialog(QDialog):
         self.scan_ports_thread.start()
 
     def on_result_ready(self, result):
-        self.item_port.removeItem(0)
+        self.item_port.clear()
         self.item_port.addItems(result)
-        # if result is empty
-        if not result:
+        if result:
+            if self.current_port in result:
+                self.item_port.setCurrentText(self.current_port)
+        else:
             self.item_port.setCurrentText(no_ports_string)
 
     def _connect(self):
