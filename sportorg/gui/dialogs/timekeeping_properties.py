@@ -51,7 +51,6 @@ class TimekeepingPropertiesDialog(QDialog):
 
         self.label_si_port = QLabel(_('Available Ports'))
         self.item_si_port = AdvComboBox()
-        self.scan_ports()
         self.tk_layout.addRow(self.label_si_port, self.item_si_port)
 
         self.punch_system_box = QGroupBox(_('Punch system'))
@@ -314,18 +313,23 @@ class TimekeepingPropertiesDialog(QDialog):
         vertical_layout.addWidget(button_box)
 
         self.set_values_from_model()
+        self.scan_ports()
 
         self.show()
 
     def scan_ports(self):
+        self.current_port = self.item_si_port.currentText()
+        self.item_si_port.clear()
         self.item_si_port.addItem(scan_ports_string)
         self.item_si_port.setCurrentIndex(0)
         self.thread.result_signal.connect(self.on_result_ready)
         self.thread.start()
 
     def on_result_ready(self, result):
-        self.item_si_port.removeItem(0)
+        self.item_si_port.clear()
         self.item_si_port.addItems(result)
+        if result and self.current_port in result:
+            self.item_si_port.setCurrentText(self.current_port)
 
     def on_assignment_mode(self):
         mode = self.assignment_mode.isChecked()
