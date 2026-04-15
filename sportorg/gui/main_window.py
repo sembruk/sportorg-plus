@@ -669,7 +669,7 @@ class MainWindow(QMainWindow):
         try:
             race().update_data(command.data)
             logging.info(repr(command.data))
-            if 'object' in command.data and command.data['object'] in ['ResultManual', 'ResultSportident', 'ResultSFR', 'ResultSportiduino']:
+            if 'object' in command.data and command.data['object'] in ['ResultManual', 'ResultSportident', 'ResultSFR', 'ResultSportiduino', 'ResultHuichang']:
                 ResultCalculation(race()).process_results()
             Broker().produce('teamwork_recieving', command.data)
             self.refresh()
