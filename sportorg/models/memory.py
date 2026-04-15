@@ -770,7 +770,7 @@ class Result:
             ret += str(self.scores) + ' ' + _('points') + ' '
 
         time_accuracy = race().get_setting('time_accuracy', 0)
-        if self.person.group.is_team_race():
+        if race().is_team_race():
             ret += self.get_result_otime_team().to_str(time_accuracy)
         else:
             ret += self.get_result_otime().to_str(time_accuracy)
