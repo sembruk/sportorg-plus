@@ -237,8 +237,8 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         use_birthday = Config().configuration.get('use_birthday', False)
         headers = [_('Last name'), _('First name'), _('Sex'), _('Age') if use_birthday else _('Year title'),
                    _('Qualification title'), _('Group'), _('Team'),
-                   _('Bib'), _('Start'), _('Card title'),
-                   _('Comment'), _('Result count title'), _('Rented card'),
+                   _('Bib'), _('Start'), _('Card title'), _('Comment'),
+                   _('Result count title'), _('Rented card'), _('Paid title'),
                    _('World code title'), _('National code title'),
                    _('Out of competition title')]
 
@@ -310,6 +310,7 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
             ret.append(person.subgroups_str())
         ret.append(person.result_count)
         ret.append(_('Rented card') if is_rented_card else _('Own card'))
+        ret.append(_('Paid') if person.is_paid else '')
         ret.append(str(person.world_code) if person.world_code else '')
         ret.append(str(person.national_code) if person.national_code else '')
 

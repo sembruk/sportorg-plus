@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SportOrg\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-06 19:09+0300\n"
-"PO-Revision-Date: 2026-04-07 17:00+0300\n"
+"POT-Creation-Date: 2026-04-16 17:28+0300\n"
+"PO-Revision-Date: 2026-04-16 17:29+0300\n"
 "Last-Translator: SportOrg\n"
 "Language-Team: SportOrg\n"
 "Language: ru_RU\n"
@@ -52,7 +52,7 @@ msgstr "Участник"
 #: gui/dialogs/start_handicap_dialog.py:78
 #: gui/dialogs/start_time_change_dialog.py:52 gui/dialogs/team_edit.py:110
 #: gui/dialogs/teamwork_properties.py:67 gui/dialogs/telegram_dialog.py:70
-#: gui/dialogs/text_io.py:100 gui/dialogs/timekeeping_properties.py:306
+#: gui/dialogs/text_io.py:100 gui/dialogs/timekeeping_properties.py:305
 msgid "OK"
 msgstr "ОК"
 
@@ -70,7 +70,7 @@ msgstr "ОК"
 #: gui/dialogs/start_handicap_dialog.py:81
 #: gui/dialogs/start_time_change_dialog.py:55 gui/dialogs/team_edit.py:113
 #: gui/dialogs/teamwork_properties.py:70 gui/dialogs/telegram_dialog.py:73
-#: gui/dialogs/text_io.py:103 gui/dialogs/timekeeping_properties.py:309
+#: gui/dialogs/text_io.py:103 gui/dialogs/timekeeping_properties.py:308
 #: gui/utils/custom_controls.py:88
 msgid "Cancel"
 msgstr "Отмена"
@@ -81,8 +81,8 @@ msgstr "Отмена"
 #: gui/dialogs/result_edit.py:183 gui/dialogs/team_edit.py:55
 #: gui/dialogs/text_io.py:14 gui/dialogs/text_io.py:291
 #: gui/dialogs/text_io.py:341 gui/tabs/memory_model.py:239
-#: gui/tabs/memory_model.py:338 gui/tabs/memory_model.py:341
-#: gui/tabs/memory_model.py:576 modules/printing/printout_split.py:81
+#: gui/tabs/memory_model.py:339 gui/tabs/memory_model.py:342
+#: gui/tabs/memory_model.py:577 modules/printing/printout_split.py:81
 msgid "Group"
 msgstr "Группа"
 
@@ -100,19 +100,19 @@ msgid "Control point properties"
 msgstr "Свойства контрольного пункта"
 
 #: gui/dialogs/control_point_edit.py:32 gui/dialogs/team_edit.py:60
-#: gui/tabs/memory_model.py:576 gui/tabs/memory_model.py:620
+#: gui/tabs/memory_model.py:577 gui/tabs/memory_model.py:621
 msgid "Code"
 msgstr "Код"
 
-#: gui/dialogs/control_point_edit.py:37 gui/tabs/memory_model.py:620
+#: gui/dialogs/control_point_edit.py:37 gui/tabs/memory_model.py:621
 msgid "Score"
 msgstr "Очки"
 
-#: gui/dialogs/control_point_edit.py:43 gui/tabs/memory_model.py:620
+#: gui/dialogs/control_point_edit.py:43 gui/tabs/memory_model.py:621
 msgid "X, meters"
 msgstr "X, метры"
 
-#: gui/dialogs/control_point_edit.py:49 gui/tabs/memory_model.py:620
+#: gui/dialogs/control_point_edit.py:49 gui/tabs/memory_model.py:621
 msgid "Y, meters"
 msgstr "Y, метры"
 
@@ -122,8 +122,8 @@ msgstr "Свойства дистанции"
 
 #: gui/dialogs/course_edit.py:38 gui/dialogs/group_edit.py:46
 #: gui/dialogs/sportorg_import_dialog.py:40 gui/dialogs/team_edit.py:43
-#: gui/tabs/memory_model.py:476 gui/tabs/memory_model.py:535
-#: gui/tabs/memory_model.py:576 gui/tabs/results.py:127
+#: gui/tabs/memory_model.py:477 gui/tabs/memory_model.py:536
+#: gui/tabs/memory_model.py:577 gui/tabs/results.py:127
 msgid "Name"
 msgstr "Название"
 
@@ -140,7 +140,7 @@ msgid "Point count"
 msgstr "Количество КП"
 
 #: gui/dialogs/course_edit.py:62 gui/main_window.py:412 gui/menu/menu.py:204
-#: gui/tabs/memory_model.py:535
+#: gui/tabs/memory_model.py:536
 msgid "Controls"
 msgstr "Контрольные пункты"
 
@@ -198,8 +198,8 @@ msgstr "Диалог массового редактирования"
 #: gui/dialogs/entry_mass_edit.py:164 gui/dialogs/filter_dialog.py:98
 #: gui/dialogs/person_edit.py:99 gui/dialogs/text_io.py:14
 #: gui/dialogs/text_io.py:294 gui/dialogs/text_io.py:345
-#: gui/tabs/memory_model.py:239 gui/tabs/memory_model.py:338
-#: gui/tabs/memory_model.py:341 modules/printing/printout_split.py:83
+#: gui/tabs/memory_model.py:239 gui/tabs/memory_model.py:339
+#: gui/tabs/memory_model.py:342 modules/printing/printout_split.py:83
 msgid "Team"
 msgstr "Команда"
 
@@ -211,7 +211,7 @@ msgstr "Забег"
 #: gui/dialogs/entry_mass_edit.py:166 gui/dialogs/person_edit.py:160
 #: gui/dialogs/result_edit.py:129 gui/dialogs/text_io.py:14
 #: gui/dialogs/text_io.py:301 gui/dialogs/text_io.py:357
-#: gui/tabs/memory_model.py:241
+#: gui/tabs/memory_model.py:240
 msgid "Comment"
 msgstr "Комментарий"
 
@@ -300,7 +300,7 @@ msgstr "Максимальное количество строк"
 msgid "Group properties"
 msgstr "Свойства группы"
 
-#: gui/dialogs/group_edit.py:49 gui/tabs/memory_model.py:476
+#: gui/dialogs/group_edit.py:49 gui/tabs/memory_model.py:477
 msgid "Full name"
 msgstr "Полное наименование"
 
@@ -313,21 +313,21 @@ msgid "Is any course"
 msgstr "Любая дистанция"
 
 #: gui/dialogs/group_edit.py:61 gui/dialogs/person_edit.py:75
-#: gui/tabs/memory_model.py:238 gui/tabs/memory_model.py:477
+#: gui/tabs/memory_model.py:238 gui/tabs/memory_model.py:478
 msgid "Sex"
 msgstr "Пол"
 
-#: gui/dialogs/group_edit.py:66 gui/tabs/memory_model.py:478
+#: gui/dialogs/group_edit.py:66 gui/tabs/memory_model.py:479
 msgid "Min age"
 msgstr "Минимальный возраст"
 
-#: gui/dialogs/group_edit.py:67 gui/tabs/memory_model.py:479
+#: gui/dialogs/group_edit.py:67 gui/tabs/memory_model.py:480
 msgid "Max age"
 msgstr "Максимальный возраст"
 
 #: gui/dialogs/group_edit.py:69 gui/dialogs/person_edit.py:125
 #: gui/dialogs/start_handicap_dialog.py:31 gui/dialogs/start_preparation.py:206
-#: gui/dialogs/timekeeping_properties.py:136 gui/tabs/memory_model.py:480
+#: gui/dialogs/timekeeping_properties.py:135 gui/tabs/memory_model.py:481
 msgid "Start time"
 msgstr "Время старта"
 
@@ -335,7 +335,7 @@ msgstr "Время старта"
 msgid "Start time for mass start (rogaining)"
 msgstr "Время старта для масс старта (рогейн)"
 
-#: gui/dialogs/group_edit.py:76 gui/tabs/memory_model.py:480
+#: gui/dialogs/group_edit.py:76 gui/tabs/memory_model.py:481
 msgid "Max time"
 msgstr "Контрольное время"
 
@@ -355,8 +355,8 @@ msgstr "Стартовый интервал"
 msgid "Start fee"
 msgstr "Стартовый взнос"
 
-#: gui/dialogs/group_edit.py:95 gui/tabs/memory_model.py:340
-#: gui/tabs/memory_model.py:343 gui/tabs/memory_model.py:476
+#: gui/dialogs/group_edit.py:95 gui/tabs/memory_model.py:341
+#: gui/tabs/memory_model.py:344 gui/tabs/memory_model.py:477
 msgid "Type"
 msgstr "Тип"
 
@@ -421,85 +421,85 @@ msgstr "Вперёд"
 msgid "Close"
 msgstr "Закрыть"
 
-#: gui/dialogs/huichang_management_dialog.py:26
+#: gui/dialogs/huichang_management_dialog.py:24
 #: gui/dialogs/timekeeping_properties.py:17
 msgid "Scanning ports..."
 msgstr "Сканирование портов..."
 
-#: gui/dialogs/huichang_management_dialog.py:27
+#: gui/dialogs/huichang_management_dialog.py:25
 msgid "No ports found"
 msgstr "не найдено"
 
-#: gui/dialogs/huichang_management_dialog.py:44
+#: gui/dialogs/huichang_management_dialog.py:42
 msgid "Huichang Management"
 msgstr "Настройка Huichang"
 
-#: gui/dialogs/huichang_management_dialog.py:47
+#: gui/dialogs/huichang_management_dialog.py:45
 #: gui/dialogs/teamwork_properties.py:48
 msgid "Port"
 msgstr "Порт"
 
-#: gui/dialogs/huichang_management_dialog.py:53
+#: gui/dialogs/huichang_management_dialog.py:51
 msgid "Update list of available ports"
 msgstr "Обновить список доступных портов"
 
-#: gui/dialogs/huichang_management_dialog.py:64
+#: gui/dialogs/huichang_management_dialog.py:62
 msgid "Time Calibration"
 msgstr "Калибровка времени"
 
-#: gui/dialogs/huichang_management_dialog.py:67
+#: gui/dialogs/huichang_management_dialog.py:65
 msgid "Time Sync"
 msgstr "Синхронизировать"
 
-#: gui/dialogs/huichang_management_dialog.py:69
+#: gui/dialogs/huichang_management_dialog.py:67
 msgid "Send current system time to the connected station"
 msgstr "Отправить текущее системное время на подключённую станцию"
 
-#: gui/dialogs/huichang_management_dialog.py:74
+#: gui/dialogs/huichang_management_dialog.py:72
 msgid "Station Number"
 msgstr "Номер станции"
 
-#: gui/dialogs/huichang_management_dialog.py:77
+#: gui/dialogs/huichang_management_dialog.py:75
 msgid "Clear (6)"
 msgstr "Очистка (6)"
 
-#: gui/dialogs/huichang_management_dialog.py:78
+#: gui/dialogs/huichang_management_dialog.py:76
 msgid "Superstart (11)"
 msgstr "Суперстарт (11)"
 
-#: gui/dialogs/huichang_management_dialog.py:79
+#: gui/dialogs/huichang_management_dialog.py:77
 msgid "Start (16)"
 msgstr "Старт (16)"
 
-#: gui/dialogs/huichang_management_dialog.py:80
+#: gui/dialogs/huichang_management_dialog.py:78
 msgid "Finish (21)"
 msgstr "Финиш (21)"
 
-#: gui/dialogs/huichang_management_dialog.py:81
+#: gui/dialogs/huichang_management_dialog.py:79
 msgid "Check (27)"
 msgstr "Проверка (27)"
 
-#: gui/dialogs/huichang_management_dialog.py:82
+#: gui/dialogs/huichang_management_dialog.py:80
 msgid "Master (250)"
 msgstr "Мастер (250)"
 
-#: gui/dialogs/huichang_management_dialog.py:83
+#: gui/dialogs/huichang_management_dialog.py:81
 msgid "Other (26-254)"
 msgstr "Другой (26-254)"
 
-#: gui/dialogs/huichang_management_dialog.py:91
+#: gui/dialogs/huichang_management_dialog.py:89
 msgid "Apply"
 msgstr "Применить"
 
-#: gui/dialogs/huichang_management_dialog.py:92
+#: gui/dialogs/huichang_management_dialog.py:90
 msgid "Set new number for the connected station"
 msgstr "Задать новый номер подключённой станции"
 
-#: gui/dialogs/huichang_management_dialog.py:127
+#: gui/dialogs/huichang_management_dialog.py:128
 msgid "First select a valid port"
 msgstr "Сначала выберите действительный порт"
 
-#: gui/dialogs/huichang_management_dialog.py:132
+#: gui/dialogs/huichang_management_dialog.py:133
 msgid "Could not connect to Huichang station"
 msgstr "Не получается подключиться к станции Huichang"
 
@@ -611,14 +611,14 @@ msgid "Entry properties"
 msgstr "Редактирование спортсмена"
 
 #: gui/dialogs/person_edit.py:51 gui/dialogs/team_edit.py:81
-#: gui/tabs/memory_model.py:238 gui/tabs/memory_model.py:338
-#: gui/tabs/memory_model.py:341
+#: gui/tabs/memory_model.py:238 gui/tabs/memory_model.py:339
+#: gui/tabs/memory_model.py:342
 msgid "Last name"
 msgstr "Фамилия"
 
 #: gui/dialogs/person_edit.py:55 gui/dialogs/team_edit.py:81
-#: gui/tabs/memory_model.py:238 gui/tabs/memory_model.py:338
-#: gui/tabs/memory_model.py:341
+#: gui/tabs/memory_model.py:238 gui/tabs/memory_model.py:339
+#: gui/tabs/memory_model.py:342
 msgid "First name"
 msgstr "Имя"
 
@@ -643,8 +643,8 @@ msgstr "Квалификация"
 #: gui/dialogs/result_edit.py:114 gui/dialogs/team_edit.py:81
 #: gui/dialogs/text_io.py:14 gui/dialogs/text_io.py:121
 #: gui/dialogs/text_io.py:299 gui/dialogs/text_io.py:353
-#: gui/tabs/memory_model.py:240 gui/tabs/memory_model.py:338
-#: gui/tabs/memory_model.py:341 modules/printing/printout_split.py:84
+#: gui/tabs/memory_model.py:240 gui/tabs/memory_model.py:339
+#: gui/tabs/memory_model.py:342 modules/printing/printout_split.py:84
 msgid "Bib"
 msgstr "Номер"
 
@@ -815,8 +815,8 @@ msgstr "Файл CSV (*.csv)"
 #: gui/dialogs/result_edit.py:47 gui/dialogs/result_edit.py:127
 #: gui/dialogs/text_io.py:13 gui/dialogs/text_io.py:18
 #: gui/dialogs/text_io.py:268 gui/dialogs/text_io.py:325
-#: gui/dialogs/timekeeping_properties.py:288 gui/tabs/memory_model.py:339
-#: gui/tabs/memory_model.py:342 modules/printing/printout_split.py:124
+#: gui/dialogs/timekeeping_properties.py:287 gui/tabs/memory_model.py:340
+#: gui/tabs/memory_model.py:343 modules/printing/printout_split.py:124
 #: modules/printing/printout_split.py:126
 msgid "Result"
 msgstr "Результат"
@@ -827,33 +827,33 @@ msgstr "Создан"
 
 #: gui/dialogs/result_edit.py:117 gui/dialogs/text_io.py:13
 #: gui/dialogs/text_io.py:258 gui/dialogs/text_io.py:308
-#: gui/tabs/memory_model.py:240 gui/tabs/memory_model.py:339
-#: gui/tabs/memory_model.py:342 gui/tabs/results.py:130
+#: gui/tabs/memory_model.py:240 gui/tabs/memory_model.py:340
+#: gui/tabs/memory_model.py:343 gui/tabs/results.py:130
 #: modules/printing/printout_split.py:86
 msgid "Start"
 msgstr "Старт"
 
 #: gui/dialogs/result_edit.py:118 gui/dialogs/text_io.py:13
 #: gui/dialogs/text_io.py:158 gui/dialogs/text_io.py:264
-#: gui/dialogs/text_io.py:315 gui/tabs/memory_model.py:339
-#: gui/tabs/memory_model.py:342 gui/tabs/results.py:131
+#: gui/dialogs/text_io.py:315 gui/tabs/memory_model.py:340
+#: gui/tabs/memory_model.py:343 gui/tabs/results.py:131
 #: modules/printing/printout_split.py:117
 msgid "Finish"
 msgstr "Финиш"
 
-#: gui/dialogs/result_edit.py:120 gui/dialogs/timekeeping_properties.py:291
+#: gui/dialogs/result_edit.py:120 gui/dialogs/timekeeping_properties.py:290
 msgid "Time"
 msgstr "Время"
 
 #: gui/dialogs/result_edit.py:121 gui/dialogs/text_io.py:13
 #: gui/dialogs/text_io.py:272 gui/dialogs/text_io.py:327
-#: gui/dialogs/timekeeping_properties.py:268
-#: gui/dialogs/timekeeping_properties.py:292 gui/tabs/memory_model.py:342
+#: gui/dialogs/timekeeping_properties.py:267
+#: gui/dialogs/timekeeping_properties.py:291 gui/tabs/memory_model.py:343
 msgid "Credit"
 msgstr "Отсечка"
 
-#: gui/dialogs/result_edit.py:122 gui/dialogs/timekeeping_properties.py:290
-#: gui/tabs/memory_model.py:339 gui/tabs/memory_model.py:342
+#: gui/dialogs/result_edit.py:122 gui/dialogs/timekeeping_properties.py:289
+#: gui/tabs/memory_model.py:340 gui/tabs/memory_model.py:343
 #: modules/printing/printout_split.py:121
 msgid "Penalty"
 msgstr "Штраф"
@@ -867,8 +867,8 @@ msgstr "Штрафные очки"
 msgid "Penalty legs"
 msgstr "Штраф, круги"
 
-#: gui/dialogs/result_edit.py:128 gui/tabs/memory_model.py:339
-#: gui/tabs/memory_model.py:342
+#: gui/dialogs/result_edit.py:128 gui/tabs/memory_model.py:340
+#: gui/tabs/memory_model.py:343
 msgid "Status"
 msgstr "Статус"
 
@@ -1146,19 +1146,19 @@ msgstr "Смещение времени старта"
 msgid "Reduce"
 msgstr "Отнять"
 
-#: gui/dialogs/team_edit.py:48 gui/tabs/memory_model.py:576
+#: gui/dialogs/team_edit.py:48 gui/tabs/memory_model.py:577
 msgid "Number"
 msgstr "Номер"
 
-#: gui/dialogs/team_edit.py:64 gui/tabs/memory_model.py:576
+#: gui/dialogs/team_edit.py:64 gui/tabs/memory_model.py:577
 msgid "Country"
 msgstr "Страна"
 
-#: gui/dialogs/team_edit.py:69 gui/tabs/memory_model.py:576
+#: gui/dialogs/team_edit.py:69 gui/tabs/memory_model.py:577
 msgid "Region"
 msgstr "Субъект РФ"
 
-#: gui/dialogs/team_edit.py:74 gui/tabs/memory_model.py:576
+#: gui/dialogs/team_edit.py:74 gui/tabs/memory_model.py:577
 msgid "Contact"
 msgstr "Контактные данные"
 
@@ -1284,200 +1284,200 @@ msgstr "Начало соревнований"
 msgid "Available Ports"
 msgstr "Доступные порты"
 
-#: gui/dialogs/timekeeping_properties.py:57
+#: gui/dialogs/timekeeping_properties.py:56
 msgid "Punch system"
 msgstr "Система отметки"
 
-#: gui/dialogs/timekeeping_properties.py:71
+#: gui/dialogs/timekeeping_properties.py:70
 msgid "Assigning a card when reading"
 msgstr "Присвоение чипов при чтении"
 
-#: gui/dialogs/timekeeping_properties.py:73
+#: gui/dialogs/timekeeping_properties.py:72
 msgid "Off"
 msgstr "Отключено"
 
-#: gui/dialogs/timekeeping_properties.py:75
+#: gui/dialogs/timekeeping_properties.py:74
 msgid "Only unknown cards"
 msgstr "Только неизвестные чипы"
 
-#: gui/dialogs/timekeeping_properties.py:77
+#: gui/dialogs/timekeeping_properties.py:76
 msgid "Always"
 msgstr "Всегда"
 
-#: gui/dialogs/timekeeping_properties.py:79
+#: gui/dialogs/timekeeping_properties.py:78
 msgid "Athlete auto create"
 msgstr "Создавать новых спортсменов"
 
-#: gui/dialogs/timekeeping_properties.py:84
+#: gui/dialogs/timekeeping_properties.py:83
 msgid "Several readout of card"
 msgstr "Повторное чтение чипов"
 
-#: gui/dialogs/timekeeping_properties.py:86
+#: gui/dialogs/timekeeping_properties.py:85
 msgid "Several results"
 msgstr "Новый результат"
 
-#: gui/dialogs/timekeeping_properties.py:88
+#: gui/dialogs/timekeeping_properties.py:87
 msgid "Ask for a bib when re-reading the card"
 msgstr "Спрашивать номер при повторном считывании чипа"
 
-#: gui/dialogs/timekeeping_properties.py:90
+#: gui/dialogs/timekeeping_properties.py:89
 msgid "Find next relay leg"
 msgstr "Поиск следующего эстафетного этапа"
 
-#: gui/dialogs/timekeeping_properties.py:92
+#: gui/dialogs/timekeeping_properties.py:91
 msgid "Merge punches"
 msgstr "Объединение отметок"
 
-#: gui/dialogs/timekeeping_properties.py:97
+#: gui/dialogs/timekeeping_properties.py:96
 msgid "Assignment mode"
 msgstr "Режим присвоения"
 
-#: gui/dialogs/timekeeping_properties.py:101
+#: gui/dialogs/timekeeping_properties.py:100
 msgid "Card No == Bib"
 msgstr "№ чипа = номер участника"
 
-#: gui/dialogs/timekeeping_properties.py:109
+#: gui/dialogs/timekeeping_properties.py:108
 msgid "by time"
 msgstr "по времени"
 
-#: gui/dialogs/timekeeping_properties.py:112
+#: gui/dialogs/timekeeping_properties.py:111
 msgid "by scores"
 msgstr "по баллам"
 
-#: gui/dialogs/timekeeping_properties.py:118
+#: gui/dialogs/timekeeping_properties.py:117
 msgid "rogaine scores"
 msgstr "рогейн (45КП = 4балла, 78КП = 7баллов)"
 
-#: gui/dialogs/timekeeping_properties.py:120
+#: gui/dialogs/timekeeping_properties.py:119
 msgid "fixed scores"
 msgstr "фиксированные баллы за КП"
 
-#: gui/dialogs/timekeeping_properties.py:128
+#: gui/dialogs/timekeeping_properties.py:127
 msgid "Penalty points per period"
 msgstr "Штрафные очки за период"
 
-#: gui/dialogs/timekeeping_properties.py:129
+#: gui/dialogs/timekeeping_properties.py:128
 msgid "Penalty period, minutes"
 msgstr "Период штрафа, минуты"
 
-#: gui/dialogs/timekeeping_properties.py:132
+#: gui/dialogs/timekeeping_properties.py:131
 msgid "Max delay, minutes"
 msgstr "Максимальное опоздание, минут"
 
-#: gui/dialogs/timekeeping_properties.py:138
+#: gui/dialogs/timekeeping_properties.py:137
 msgid "From protocol"
 msgstr "Из протокола"
 
-#: gui/dialogs/timekeeping_properties.py:140
+#: gui/dialogs/timekeeping_properties.py:139
 msgid "Start station"
 msgstr "Стартовая станция"
 
-#: gui/dialogs/timekeeping_properties.py:142
-#: gui/dialogs/timekeeping_properties.py:171
+#: gui/dialogs/timekeeping_properties.py:141
+#: gui/dialogs/timekeeping_properties.py:170
 msgid "Control point"
 msgstr "Контрольный пункт"
 
-#: gui/dialogs/timekeeping_properties.py:149
+#: gui/dialogs/timekeeping_properties.py:148
 msgid "By groups (mass start)"
 msgstr "По группам (масс старт)"
 
-#: gui/dialogs/timekeeping_properties.py:153
+#: gui/dialogs/timekeeping_properties.py:152
 msgid "Start gate"
 msgstr "Стартовая калитка"
 
-#: gui/dialogs/timekeeping_properties.py:161
+#: gui/dialogs/timekeeping_properties.py:160
 msgid "Finish time"
 msgstr "Финишное время"
 
-#: gui/dialogs/timekeeping_properties.py:167
+#: gui/dialogs/timekeeping_properties.py:166
 msgid "Finish station"
 msgstr "Финишная станция"
 
-#: gui/dialogs/timekeeping_properties.py:182
+#: gui/dialogs/timekeeping_properties.py:181
 msgid "Light beam"
 msgstr "Луч"
 
-#: gui/dialogs/timekeeping_properties.py:189
+#: gui/dialogs/timekeeping_properties.py:188
 msgid "Missed finish"
 msgstr "Нет отметки на финише"
 
-#: gui/dialogs/timekeeping_properties.py:191
+#: gui/dialogs/timekeeping_properties.py:190
 msgid "Readout time"
 msgstr "Время считывания"
 
-#: gui/dialogs/timekeeping_properties.py:195
+#: gui/dialogs/timekeeping_properties.py:194
 msgid "DSQ"
 msgstr "ДИСКВ."
 
-#: gui/dialogs/timekeeping_properties.py:197
+#: gui/dialogs/timekeeping_properties.py:196
 msgid "Last control + penalty"
 msgstr "Время последнего КП + штраф"
 
-#: gui/dialogs/timekeeping_properties.py:208
+#: gui/dialogs/timekeeping_properties.py:207
 msgid "no penalty"
 msgstr "штраф не начисляется"
 
-#: gui/dialogs/timekeeping_properties.py:210
+#: gui/dialogs/timekeeping_properties.py:209
 msgid "penalty time"
 msgstr "штрафное время"
 
-#: gui/dialogs/timekeeping_properties.py:214
+#: gui/dialogs/timekeeping_properties.py:213
 msgid "penalty laps"
 msgstr "штрафные круги"
 
-#: gui/dialogs/timekeeping_properties.py:216
+#: gui/dialogs/timekeeping_properties.py:215
 msgid "counting lap"
 msgstr "оценочный круг"
 
-#: gui/dialogs/timekeeping_properties.py:219
+#: gui/dialogs/timekeeping_properties.py:218
 msgid "lap station"
 msgstr "станция на штрафном круге"
 
-#: gui/dialogs/timekeeping_properties.py:224
+#: gui/dialogs/timekeeping_properties.py:223
 msgid "Don't disqualify for missed punches"
 msgstr "Не снимать участников за пропущенные КП"
 
-#: gui/dialogs/timekeeping_properties.py:226
+#: gui/dialogs/timekeeping_properties.py:225
 msgid "Max penalty = quantity of cp"
 msgstr "Максимальный штраф = количество КП"
 
-#: gui/dialogs/timekeeping_properties.py:240
+#: gui/dialogs/timekeeping_properties.py:239
 msgid "scores off"
 msgstr "очки не рассчитываются"
 
-#: gui/dialogs/timekeeping_properties.py:241
+#: gui/dialogs/timekeeping_properties.py:240
 msgid "scores array"
 msgstr "список значений"
 
-#: gui/dialogs/timekeeping_properties.py:243
+#: gui/dialogs/timekeeping_properties.py:242
 msgid "scores formula"
 msgstr "расчет очков по формуле"
 
-#: gui/dialogs/timekeeping_properties.py:245
+#: gui/dialogs/timekeeping_properties.py:244
 msgid "scores formula hint"
 msgstr ""
 "Составьте произвольную формулу. Поддерживаются переменные: \n"
 " leader - результат победителя группы; \n"
 " time - результат участника"
 
-#: gui/dialogs/timekeeping_properties.py:258
+#: gui/dialogs/timekeeping_properties.py:257
 msgid "Accuracy, digits after dot"
 msgstr "Учитывать доли сек. знаков"
 
+#: gui/dialogs/timekeeping_properties.py:270
 #: gui/dialogs/timekeeping_properties.py:271
-#: gui/dialogs/timekeeping_properties.py:272
 msgid "no credit time"
 msgstr "Без отсечки"
 
-#: gui/dialogs/timekeeping_properties.py:275
+#: gui/dialogs/timekeeping_properties.py:274
 msgid "credit time control point"
 msgstr "Номер станции отсечки"
 
-#: gui/dialogs/timekeeping_properties.py:287
+#: gui/dialogs/timekeeping_properties.py:286
 msgid "Cards"
 msgstr "Чипы"
 
-#: gui/dialogs/timekeeping_properties.py:289
+#: gui/dialogs/timekeeping_properties.py:288
 msgid "Scores"
 msgstr "Очки"
 
@@ -1968,8 +1968,8 @@ msgstr "Онлайн"
 msgid "Qualification title"
 msgstr "Квал."
 
-#: gui/tabs/memory_model.py:240 gui/tabs/memory_model.py:338
-#: gui/tabs/memory_model.py:341
+#: gui/tabs/memory_model.py:240 gui/tabs/memory_model.py:339
+#: gui/tabs/memory_model.py:342
 msgid "Card title"
 msgstr "№ чипа"
 
@@ -1978,10 +1978,14 @@ msgid "Result count title"
 msgstr "Финиш"
 
 #: gui/tabs/memory_model.py:241 gui/tabs/memory_model.py:312
-#: gui/tabs/memory_model.py:340 gui/tabs/memory_model.py:343
-#: gui/tabs/memory_model.py:386
+#: gui/tabs/memory_model.py:341 gui/tabs/memory_model.py:344
+#: gui/tabs/memory_model.py:387
 msgid "Rented card"
 msgstr "Аренда чипа"
+
+#: gui/tabs/memory_model.py:241
+msgid "Paid title"
+msgstr "Оплата"
 
 #: gui/tabs/memory_model.py:242
 msgid "World code title"
@@ -1995,60 +1999,64 @@ msgstr "Нац. код"
 msgid "Out of competition title"
 msgstr "В/К"
 
-#: gui/tabs/memory_model.py:312 gui/tabs/memory_model.py:386
+#: gui/tabs/memory_model.py:312 gui/tabs/memory_model.py:387
 msgid "Own card"
 msgstr "Свой чип"
 
-#: gui/tabs/memory_model.py:318 models/memory.py:898
+#: gui/tabs/memory_model.py:313
+msgid "Paid"
+msgstr "Оплачено"
+
+#: gui/tabs/memory_model.py:319 models/memory.py:898
 msgid "o/c"
 msgstr "в/к"
 
-#: gui/tabs/memory_model.py:340 gui/tabs/memory_model.py:343
+#: gui/tabs/memory_model.py:341 gui/tabs/memory_model.py:344
 #: modules/printing/printout_split.py:133
 msgid "Place"
 msgstr "Место"
 
-#: gui/tabs/memory_model.py:340 gui/tabs/memory_model.py:343
+#: gui/tabs/memory_model.py:341 gui/tabs/memory_model.py:344
 msgid "Readout"
 msgstr "Cчит-е"
 
-#: gui/tabs/memory_model.py:342
+#: gui/tabs/memory_model.py:343
 msgid "Penalty legs title"
 msgstr "Штр.круги"
 
-#: gui/tabs/memory_model.py:476
+#: gui/tabs/memory_model.py:477
 msgid "Course name"
 msgstr "Дистанция"
 
-#: gui/tabs/memory_model.py:476
+#: gui/tabs/memory_model.py:477
 msgid "Start fee title"
 msgstr "Взнос"
 
-#: gui/tabs/memory_model.py:476 gui/tabs/memory_model.py:535
+#: gui/tabs/memory_model.py:477 gui/tabs/memory_model.py:536
 msgid "Length title"
 msgstr "Длина,м"
 
-#: gui/tabs/memory_model.py:477 gui/tabs/memory_model.py:535
+#: gui/tabs/memory_model.py:478 gui/tabs/memory_model.py:536
 msgid "Point count title"
 msgstr "КП"
 
-#: gui/tabs/memory_model.py:477 gui/tabs/memory_model.py:535
+#: gui/tabs/memory_model.py:478 gui/tabs/memory_model.py:536
 msgid "Climb title"
 msgstr "Набор,м"
 
-#: gui/tabs/memory_model.py:480
+#: gui/tabs/memory_model.py:481
 msgid "Start interval title"
 msgstr "Интервал"
 
-#: gui/tabs/memory_model.py:480
+#: gui/tabs/memory_model.py:481
 msgid "Start corridor title"
 msgstr "Коридор"
 
-#: gui/tabs/memory_model.py:481
+#: gui/tabs/memory_model.py:482
 msgid "Order in corridor title"
 msgstr "Порядок в кор."
 
-#: gui/tabs/memory_model.py:576
+#: gui/tabs/memory_model.py:577
 msgid "Count"
 msgstr "Кол."
 
@@ -2088,10 +2096,11 @@ msgstr "Станция считывания не подключена"
 msgid "No response from Huichang station"
 msgstr "Нет ответа от станции Huichang"
 
+#: libs/huichang/huichang.py:181
 msgid "Internal station data:"
 msgstr "Данные об отметках со станции:"
 
-#: models/memory.py:103
+#: models/memory.py:104
 msgid "Mf"
 msgstr "МЖ"
 

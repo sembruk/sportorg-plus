@@ -55,7 +55,8 @@ class OrgeoCSVReader:
                 'Номер заявки': 'claim_id',
                 'Номер команды': 'claim_id',
                 'Время подачи': 'claim_time',
-                'Статус': 'status'
+                'Статус': 'status',
+                'Информация об оплате': 'pay_info',
             }
             first_row = next(spam_reader, None)
             col_index = 0
@@ -190,6 +191,9 @@ def import_csv(source):
             person.comment = person_dict['status'] + ' '
         if 'comment' in person_dict:
             person.comment += person_dict['comment']
+        if 'pay_info' in person_dict:
+            if person_dict['pay_info']:
+                person.is_paid = True
 
         obj.persons.append(person)
 
