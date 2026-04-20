@@ -53,7 +53,8 @@ def time_to_datetime(t):
     if isinstance(t, datetime.datetime):
         return t
     otime = time_to_otime(t)
-    return datetime.datetime(2000, 1, 1 + otime.day, otime.hour, otime.minute, otime.sec, otime.msec * 1000)
+    base = datetime.datetime(2000, 1, 1, otime.hour, otime.minute, otime.sec, otime.msec * 1000)
+    return base + datetime.timedelta(days=otime.day)
 
 
 def time_to_qtime(t):
