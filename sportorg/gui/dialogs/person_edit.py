@@ -333,7 +333,7 @@ class PersonEditDialog(QDialog):
 
     def set_values_from_model(self):
         self.item_surname.setText(self.current_object.surname)
-        self.item_surname.selectAll()
+        
         self.item_name.setCurrentText(self.current_object.name)
         self.item_sex.setCurrentText(self.current_object.sex.get_title())
         self.item_group.addItems(self.get_groups_by_sex_and_age(self.current_object.sex, self.current_object.age))
@@ -384,6 +384,12 @@ class PersonEditDialog(QDialog):
             if self.current_object.get_year():
                 self.item_year.setValue(self.current_object.get_year())
                 self.year_change()
+
+        if self.current_object.surname:
+            self.item_bib.setFocus()
+            self.item_bib.selectAll()
+        else:
+            self.item_surname.selectAll()
 
     def open_team_dialog(self):
         try:

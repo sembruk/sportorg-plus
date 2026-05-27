@@ -68,8 +68,7 @@ class GroupEditDialog(QDialog):
 
         label_start_time = QLabel(_('Start time'))
         label_start_time.setToolTip(_('Start time for mass start (rogaining)'))
-        self.item_start_time = QTimeEdit()
-        self.item_start_time.setDisplayFormat(self.time_format)
+        self.item_start_time = DurationEdit()
         self.layout.addRow(label_start_time, self.item_start_time)
 
         self.item_max_time = DurationEdit()
@@ -208,7 +207,7 @@ class GroupEditDialog(QDialog):
         if self.current_object.max_age:
             self.item_age_max.setValue(self.current_object.max_age)
         if self.current_object.start_time:
-            self.item_start_time.setTime(time_to_qtime(self.current_object.start_time))
+            self.item_start_time.setSeconds(time_to_sec(self.current_object.start_time, max_val=None))
         if self.current_object.max_time:
             self.item_max_time.setSeconds(time_to_sec(self.current_object.max_time, max_val=None))
         if self.current_object.start_interval:
@@ -270,7 +269,7 @@ class GroupEditDialog(QDialog):
         if group.start_interval != time:
             group.start_interval = time
 
-        start_time = time_to_otime(self.item_start_time.time())
+        start_time = time_to_otime(self.item_start_time.seconds())
         if group.start_time != start_time:
             group.start_time = start_time
 

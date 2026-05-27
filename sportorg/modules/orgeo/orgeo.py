@@ -1,6 +1,7 @@
 import csv
 import logging
 import dateutil.parser
+from datetime import datetime
 from sportorg.language import _
 from sportorg.models import memory
 from sportorg.models.memory import Qualification, Sex
@@ -41,6 +42,7 @@ class OrgeoCSVReader:
                 'Команда': 'team_name',
                 'Код': 'code',
                 'Регион': 'district',
+                'Город': 'city',
                 'Страна': 'country',
                 'Квал.': 'qual_str',
                 'Дата рожд.': 'date_of_birth',
@@ -86,7 +88,8 @@ class OrgeoCSVReader:
         if 'code' in person_dict and person_dict['code'].isdigit():
             person_dict['code'] = int(person_dict['code'])
         if 'date_of_birth' in person_dict:
-            date_of_birth = dateutil.parser.parse(person_dict['date_of_birth']).date()
+            #date_of_birth = dateutil.parser.parse(person_dict['date_of_birth']).date()
+            date_of_birth = datetime.strptime(person_dict['date_of_birth'], '%d.%m.%Y').date()
             if not Config().configuration.get('use_birthday', False):
                 date_of_birth = date_of_birth.replace(day=1, month=1)
             person_dict['date_of_birth'] = date_of_birth
@@ -94,6 +97,15 @@ class OrgeoCSVReader:
             person_dict['claim_id'] = int(person_dict['claim_id'])
             claim_id = person_dict['claim_id']
             team_name = person_dict['team_name'] if 'team_name' in person_dict else ''
+            if 'city' in person_dict:
+                parts = team_name.split()
+                if len(parts) == 2 and parts[0] == 'Team' and parts[1].isdigit():
+                    team_name = ''
+
+                if team_name:
+                    team_name += ', ' + person_dict['city']
+                else:
+                    team_name = person_dict['city']
             self._teams[claim_id] = team_name
         self._data.append(person_dict)
 
@@ -147,7 +159,7 @@ def import_csv(source):
         person.name = person_dict['name']
         person.surname = person_dict['surname']
         if 'sex' in person_dict:
-            person.sex = Sex.M if person_dict['sex'] == 'М' else Sex.F
+            person.sex = Sex.M if person_dict['sex'] == 'М' or person_dict['sex'] == 'M' else Sex.F
         person.bib = person_dict['bib'] if 'bib' in person_dict else 0
         person.birth_date = person_dict['date_of_birth']
         if 'sportident_card' in person_dict and person_dict['sportident_card'].isdigit():
