@@ -208,7 +208,7 @@
         {% if result.status == 8 %}
         <h2>ПРЕВЫШЕНО КВ</h2>
         {% endif %}
-        <table>
+        <!--<table>
             {% set ns = namespace(last_place=-1) %}
             {% for item in items %}
                 {% if item.result.place|int < 11 and item.result.place|int > 0 %}
@@ -227,7 +227,7 @@
                     {% set ns.last_place = item.result.place|int %}
                 {% endif %}
             {% endfor %}
-        </table>
+        </table>-->
         <br>
         <br> {{ race.data.url }}
     </code>
