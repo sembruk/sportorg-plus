@@ -106,6 +106,28 @@
         return r
     }
 
+    function getSplits(result) {
+        var splits_string = '';
+        if (result.splits) {
+            var control_index = 0;
+            splits_string += '\tСтарт\t' + toHHMMSS(result.start_msec) + '\n';
+            for (var _b = 0, _c = result.splits; _b < _c.length; _b++) {
+                var split = _c[_b];
+                var str = ''
+                if (split.is_correct) {
+                    control_index++;
+                    str += control_index;
+                }
+                str += '\t(' + split.code + ')';
+                str += '\t' + toHHMMSS(split.relative_time + result.start_msec);
+                str += '\t' + toHHMMSS(split.leg_time);
+                splits_string += str + '\n';
+            }
+            splits_string += '\tФиниш\t' + toHHMMSS(result.finish_msec) + '\n';
+        }
+        return splits_string
+    }
+
     function getResultsByGroup(group, showFirstCount) {
         showFirstCount = +showFirstCount || 0;
         var isTeamRace = race.data.race_type === 6
@@ -116,6 +138,7 @@
             if (result.status !== 13 && person && person.group && person.group.id === group.id
                     && (showFirstCount > 0 ? result.place <= showFirstCount && result.place > 0 : true)) {
                 var r = getPersonResult(result)
+                r.splits = getSplits(result);
 
                 results.push(r);
             }
@@ -160,6 +183,7 @@
                     teamResult = r;
                     teamResult.index = ++index;
                     teamResult.time = teamResult.result_team_time
+                    teamResult._details = teamResult.splits;
                     prevTeamId = teamId;
                 } else if (teamResult) {
                     teamResult.name += '\n' + r.name;
@@ -186,6 +210,7 @@
             if (result.status !== 13 && person && person.group && person.group.course && person.group.course.id === course.id
                     && (showFirstCount > 0 ? result.place <= showFirstCount && result.place > 0 : true)) {
                 var r = getPersonResult(result)
+                r.splits = getSplits(result);
 
                 results.push(r);
             }
@@ -222,6 +247,7 @@
                     teamResult.index = ++index;
                     teamResult.time = teamResult.result_team_time
                     teamResult.place_show = teamResult.index
+                    teamResult._details = teamResult.splits;
                     prevTeamId = teamId;
                 } else if (teamResult) {
                     teamResult.name += '\n' + r.name;
@@ -402,6 +428,32 @@
     }
 
     render();
+
+    document.getElementById('results-tables').addEventListener("click", e => {
+        const tr = e.target.closest("tr");
+        if (!tr || !tr._details) return;
+
+        let detailsRow = tr.nextElementSibling;
+        if (detailsRow && detailsRow.classList.contains("details-row")) {
+            detailsRow.remove();
+            return;
+        }
+
+        detailsRow = document.createElement("tr");
+        detailsRow.className = "details-row";
+
+        const td = document.createElement("td");
+        td.colSpan = tr.cells.length;
+
+        const pre = document.createElement("pre");
+        pre.textContent = tr._details;
+
+        td.appendChild(pre);
+        detailsRow.appendChild(td);
+
+        tr.after(detailsRow);
+    });
+
 
     var Scrolling = {
         direction: 1,

@@ -206,6 +206,38 @@
         /*background: #cd7f32;*/
     }
 
+    .details-row td {
+        padding: 8px;
+        background: #f8f8f8;
+    }
+
+    .details-row pre {
+        margin: 0;
+        max-height: 800px;
+        overflow: auto;
+
+        font: 13px Consolas, Monaco, monospace;
+        white-space: pre-wrap;
+    }
+
+    .clickable-row {
+        cursor: pointer;
+    }
+
+    .clickable-row:hover td {
+        background: #5aaaff;
+        transition: background-color 0.2s ease;
+    }
+
+    .clickable-row td:first-child {
+        color: #0d6efd;
+        text-decoration: underline;
+    }
+
+    .clickable-row:hover td:first-child {
+        color: #0a58ca;
+    }
+
     @media print {
         @page {
             margin: 0.5cm;

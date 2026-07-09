@@ -83,6 +83,10 @@
             for (var _b = 0, _c = this.data; _b < _c.length; _b++) {
                 var obj = _c[_b];
                 var tr = Tr();
+                if (obj._details) {
+                    tr._details = obj._details;
+                    tr.classList.add('clickable-row');
+                }
                 if (obj instanceof Node || typeof obj === 'string') {
                     var td = Td();
                     td.colSpan = cols;
