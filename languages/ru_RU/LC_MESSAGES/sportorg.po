@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SportOrg\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-16 17:28+0300\n"
-"PO-Revision-Date: 2026-04-16 17:29+0300\n"
+"POT-Creation-Date: 2026-07-22 14:51+0300\n"
+"PO-Revision-Date: 2026-07-22 14:54+0300\n"
 "Last-Translator: SportOrg\n"
 "Language-Team: SportOrg\n"
 "Language: ru_RU\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Loco-Source-Locale: en\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Loco-Parser: loco_parse_po\n"
 "X-Poedit-Basepath: ../../../sportorg\n"
@@ -154,6 +154,9 @@ msgid ""
 "# Arguments: result, course\n"
 "# Leave function body empty if you don't need additional checks"
 msgstr ""
+"# Напишите тело функции здесь на языке Python\n"
+"# Аргументы: result, course\n"
+"# Отставьте тело пустым, если не нужны дополнительные проверки"
 
 #: gui/dialogs/cp_delete.py:25 gui/menu/menu.py:332
 msgid "Delete CP"
@@ -1540,12 +1543,12 @@ msgstr "Панель инструментов"
 msgid "Competitors"
 msgstr "Участники"
 
-#: gui/main_window.py:409 gui/menu/menu.py:189 modules/orgeo/orgeo.py:200
+#: gui/main_window.py:409 gui/menu/menu.py:189 modules/orgeo/orgeo.py:204
 #: modules/winorient/winorient.py:53
 msgid "Groups"
 msgstr "Группы"
 
-#: gui/main_window.py:411 gui/menu/menu.py:199 modules/orgeo/orgeo.py:201
+#: gui/main_window.py:411 gui/menu/menu.py:199 modules/orgeo/orgeo.py:205
 #: modules/winorient/winorient.py:55
 msgid "Teams"
 msgstr "Команды"
@@ -2234,17 +2237,17 @@ msgstr "Не удалось разобрать файл IOF XML"
 msgid "Controls not found in IOF XML file"
 msgstr "КП не найдены в файле IOF XML"
 
-#: modules/iof/iof_xml.py:203 modules/orgeo/orgeo.py:207
+#: modules/iof/iof_xml.py:203 modules/orgeo/orgeo.py:211
 #: modules/winorient/winorient.py:61
 msgid "Duplicate card numbers (card numbers are reset)"
 msgstr "Дублирующиеся чипы (номера чипов обнулены)"
 
-#: modules/iof/iof_xml.py:216 modules/orgeo/orgeo.py:217
+#: modules/iof/iof_xml.py:216 modules/orgeo/orgeo.py:221
 #: modules/winorient/winorient.py:71
 msgid "Duplicate names"
 msgstr "Повторяющиеся имена"
 
-#: modules/iof/iof_xml.py:229 modules/orgeo/orgeo.py:228
+#: modules/iof/iof_xml.py:229 modules/orgeo/orgeo.py:232
 msgid ""
 "Duplicate names or card numbers detected.\n"
 "See Log tab"
@@ -2252,11 +2255,11 @@ msgstr ""
 "Обнаружены повторяющиеся имена или номера чипов.\n"
 "См. Логи."
 
-#: modules/orgeo/orgeo.py:198 modules/winorient/winorient.py:50
+#: modules/orgeo/orgeo.py:202 modules/winorient/winorient.py:50
 msgid "Import result"
 msgstr "Результат импорта"
 
-#: modules/orgeo/orgeo.py:199 modules/winorient/winorient.py:51
+#: modules/orgeo/orgeo.py:203 modules/winorient/winorient.py:51
 msgid "Persons"
 msgstr "Люди"
 
@@ -2340,7 +2343,7 @@ msgstr "Открыть WDB файл"
 msgid "Save WDB file"
 msgstr "Сохранить WDB файл"
 
-#: utils/time.py:156
+#: utils/time.py:157
 msgid "/km"
 msgstr "/км"
 
