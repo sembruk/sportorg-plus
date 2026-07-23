@@ -1,5 +1,23 @@
 # SportOrgPlus Changelog
 
+## v1.8.0 - 2026-07-23
+
+### Features
+
+* Added user function for checking results in course edit dialog
+* Added Huichang management dialog 
+* Added Paid column
+* Get country from entry list (Orgeo CSV and IOF XML)
+* Template 1_results_teams.html updated (added splits, results by course)
+
+### Fixes
+
+* Change result status for all members of a team
+* Fixed IOF XML import
+* Fixed wdb import/export
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.7.0...v1.8.0)
+
 ## v1.7.0 - 2026-02-27
 
 ### Features
