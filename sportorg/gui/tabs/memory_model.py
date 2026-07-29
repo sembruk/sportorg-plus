@@ -618,7 +618,7 @@ class ControlPointMemoryModel(AbstractSportOrgMemoryModel):
         super().__init__()
 
     def get_headers(self):
-        return [_('Code'), _('Score'), _('X, meters'), _('Y, meters')]
+        return [_('Code'), _('Score'), _('X, meters'), _('Y, meters'), _('Station id')]
 
     def init_cache(self):
         self.cache.clear()
@@ -640,7 +640,8 @@ class ControlPointMemoryModel(AbstractSportOrgMemoryModel):
             control.code,
             control.score,
             control.x,
-            control.y
+            control.y,
+            control.station_id
         ]
 
     def get_source_array(self):

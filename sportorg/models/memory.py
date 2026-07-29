@@ -191,6 +191,7 @@ class ControlPoint(Model):
         self.score = 1.0
         self.x = 0.0
         self.y = 0.0
+        self.station_id = None
         self.altitude = 0.0
 
     def to_dict(self):
@@ -201,6 +202,7 @@ class ControlPoint(Model):
             'score': self.score,
             'x': self.x,
             'y': self.y,
+            'station_id': self.station_id,
             'altitude': self.altitude
         }
 
@@ -210,6 +212,7 @@ class ControlPoint(Model):
         self.score = float(data['score'])
         self.x = float(data['x'])
         self.y = float(data['y'])
+        self.station_id = data['station_id'] if 'station_id' in data else None
         self.altitude = float(data['altitude'])
 
 
