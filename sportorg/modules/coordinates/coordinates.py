@@ -4,7 +4,7 @@ import logging
 import utm
 from sportorg.libs.iof import parser as iof_parser
 
-from sportorg.models.memory import race, ControlPoint
+from sportorg.models.memory import race, ControlPoint, find
 from sportorg.language import _
 
 def custom_sort_key(k):
@@ -66,7 +66,17 @@ def import_coordinates_from_csv(csv_file_name):
     with open(csv_file_name) as csv_file:
         reader = csv.reader(csv_file, delimiter=',')
         cps = {}
+        obj = race()
         for row in reader:
+            if len(row) == 2:
+                # Import CSV with code and station ID
+                code = row[0].lower().strip()
+                station_id = row[1].lower().strip()
+                control = find(obj.control_points, code=str(code))
+                if control:
+                    control.station_id = station_id
+                continue
+
             code = row[0].lower().strip()
             x = int(row[1])
             y = int(row[2])
