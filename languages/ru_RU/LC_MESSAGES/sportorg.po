@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SportOrg\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-13 19:30+0300\n"
-"PO-Revision-Date: 2026-08-13 19:35+0300\n"
+"POT-Creation-Date: 2026-08-31 21:13+0300\n"
+"PO-Revision-Date: 2026-08-31 21:14+0300\n"
 "Last-Translator: SportOrg\n"
 "Language-Team: SportOrg\n"
 "Language: ru_RU\n"
@@ -22,11 +22,11 @@ msgstr ""
 msgid "About"
 msgstr "О нас"
 
-#: gui/dialogs/about.py:39
+#: gui/dialogs/about.py:41
 msgid "Contributors"
 msgstr "Разработчики"
 
-#: gui/dialogs/about.py:46
+#: gui/dialogs/about.py:48
 msgid "Home page"
 msgstr "Веб-сайт"
 
@@ -42,7 +42,7 @@ msgstr "Участник"
 #: gui/dialogs/course_edit.py:77 gui/dialogs/entry_mass_edit.py:172
 #: gui/dialogs/event_properties.py:104 gui/dialogs/filter_dialog.py:133
 #: gui/dialogs/group_edit.py:135 gui/dialogs/group_ranking.py:52
-#: gui/dialogs/import_persons_table_dialog.py:117
+#: gui/dialogs/import_persons_table_dialog.py:124
 #: gui/dialogs/live_dialog.py:119 gui/dialogs/not_start_dialog.py:58
 #: gui/dialogs/person_edit.py:177 gui/dialogs/print_properties.py:104
 #: gui/dialogs/relay_clone_dialog.py:49 gui/dialogs/relay_number_dialog.py:49
@@ -62,7 +62,7 @@ msgstr "ОК"
 #: gui/dialogs/entry_mass_edit.py:173 gui/dialogs/event_properties.py:107
 #: gui/dialogs/filter_dialog.py:134 gui/dialogs/group_edit.py:138
 #: gui/dialogs/group_ranking.py:55
-#: gui/dialogs/import_persons_table_dialog.py:120
+#: gui/dialogs/import_persons_table_dialog.py:127
 #: gui/dialogs/live_dialog.py:122 gui/dialogs/not_start_dialog.py:61
 #: gui/dialogs/person_edit.py:180 gui/dialogs/print_properties.py:107
 #: gui/dialogs/relay_clone_dialog.py:52 gui/dialogs/relay_number_dialog.py:52
@@ -80,7 +80,7 @@ msgstr "Отмена"
 
 #: gui/dialogs/bib_dialog.py:87 gui/dialogs/entry_mass_edit.py:163
 #: gui/dialogs/filter_dialog.py:96
-#: gui/dialogs/import_persons_table_dialog.py:39 gui/dialogs/person_edit.py:94
+#: gui/dialogs/import_persons_table_dialog.py:41 gui/dialogs/person_edit.py:94
 #: gui/dialogs/person_edit.py:256 gui/dialogs/person_edit.py:285
 #: gui/dialogs/result_edit.py:183 gui/dialogs/team_edit.py:55
 #: gui/dialogs/text_io.py:14 gui/dialogs/text_io.py:291
@@ -203,7 +203,7 @@ msgid "Mass Edit Dialog"
 msgstr "Диалог массового редактирования"
 
 #: gui/dialogs/entry_mass_edit.py:164 gui/dialogs/filter_dialog.py:98
-#: gui/dialogs/import_persons_table_dialog.py:40 gui/dialogs/person_edit.py:99
+#: gui/dialogs/import_persons_table_dialog.py:42 gui/dialogs/person_edit.py:99
 #: gui/dialogs/text_io.py:14 gui/dialogs/text_io.py:294
 #: gui/dialogs/text_io.py:345 gui/tabs/memory_model.py:239
 #: gui/tabs/memory_model.py:339 gui/tabs/memory_model.py:342
@@ -212,13 +212,13 @@ msgid "Team"
 msgstr "Команда"
 
 #: gui/dialogs/entry_mass_edit.py:165
-#: gui/dialogs/import_persons_table_dialog.py:55 gui/dialogs/person_edit.py:130
+#: gui/dialogs/import_persons_table_dialog.py:57 gui/dialogs/person_edit.py:130
 #: gui/tabs/memory_model.py:246
 msgid "Start group"
 msgstr "Забег"
 
 #: gui/dialogs/entry_mass_edit.py:166
-#: gui/dialogs/import_persons_table_dialog.py:50 gui/dialogs/person_edit.py:160
+#: gui/dialogs/import_persons_table_dialog.py:52 gui/dialogs/person_edit.py:160
 #: gui/dialogs/result_edit.py:129 gui/dialogs/text_io.py:14
 #: gui/dialogs/text_io.py:301 gui/dialogs/text_io.py:357
 #: gui/tabs/memory_model.py:240
@@ -322,7 +322,7 @@ msgstr "Дистанция"
 msgid "Is any course"
 msgstr "Любая дистанция"
 
-#: gui/dialogs/group_edit.py:61 gui/dialogs/import_persons_table_dialog.py:47
+#: gui/dialogs/group_edit.py:61 gui/dialogs/import_persons_table_dialog.py:49
 #: gui/dialogs/person_edit.py:75 gui/tabs/memory_model.py:238
 #: gui/tabs/memory_model.py:478
 msgid "Sex"
@@ -443,7 +443,7 @@ msgstr "не найдено"
 
 #: gui/dialogs/huichang_management_dialog.py:42
 msgid "Huichang Management"
-msgstr "Настройка Huichang"
+msgstr "Настройка ТаймКонтур"
 
 #: gui/dialogs/huichang_management_dialog.py:45
 #: gui/dialogs/teamwork_properties.py:48
@@ -512,9 +512,9 @@ msgstr "Сначала выберите действительный порт"
 
 #: gui/dialogs/huichang_management_dialog.py:133
 msgid "Could not connect to Huichang station"
-msgstr "Не получается подключиться к станции Huichang"
+msgstr "Не получается подключиться к станции ТаймКонтур"
 
-#: gui/dialogs/import_persons_table_dialog.py:38 gui/dialogs/person_edit.py:115
+#: gui/dialogs/import_persons_table_dialog.py:40 gui/dialogs/person_edit.py:115
 #: gui/dialogs/person_edit.py:287 gui/dialogs/result_edit.py:114
 #: gui/dialogs/team_edit.py:81 gui/dialogs/text_io.py:14
 #: gui/dialogs/text_io.py:121 gui/dialogs/text_io.py:299
@@ -524,56 +524,56 @@ msgstr "Не получается подключиться к станции Hui
 msgid "Bib"
 msgstr "Номер"
 
-#: gui/dialogs/import_persons_table_dialog.py:41
+#: gui/dialogs/import_persons_table_dialog.py:43
 msgid "Team number"
 msgstr "Номер команды"
 
-#: gui/dialogs/import_persons_table_dialog.py:42 gui/dialogs/person_edit.py:55
+#: gui/dialogs/import_persons_table_dialog.py:44 gui/dialogs/person_edit.py:55
 #: gui/dialogs/team_edit.py:81 gui/tabs/memory_model.py:238
 #: gui/tabs/memory_model.py:339 gui/tabs/memory_model.py:342
 msgid "First name"
 msgstr "Имя"
 
-#: gui/dialogs/import_persons_table_dialog.py:43 gui/dialogs/person_edit.py:51
+#: gui/dialogs/import_persons_table_dialog.py:45 gui/dialogs/person_edit.py:51
 #: gui/dialogs/team_edit.py:81 gui/tabs/memory_model.py:238
 #: gui/tabs/memory_model.py:339 gui/tabs/memory_model.py:342
 msgid "Last name"
 msgstr "Фамилия"
 
-#: gui/dialogs/import_persons_table_dialog.py:44
+#: gui/dialogs/import_persons_table_dialog.py:46
 msgid "Surname and name"
 msgstr "Фамилия и имя"
 
-#: gui/dialogs/import_persons_table_dialog.py:45 gui/dialogs/person_edit.py:68
+#: gui/dialogs/import_persons_table_dialog.py:47 gui/dialogs/person_edit.py:68
 msgid "Year of birth"
 msgstr "Год рождения"
 
-#: gui/dialogs/import_persons_table_dialog.py:46 gui/dialogs/person_edit.py:61
+#: gui/dialogs/import_persons_table_dialog.py:48 gui/dialogs/person_edit.py:61
 msgid "Birthday"
 msgstr "Дата рождения"
 
-#: gui/dialogs/import_persons_table_dialog.py:48 gui/dialogs/person_edit.py:108
+#: gui/dialogs/import_persons_table_dialog.py:50 gui/dialogs/person_edit.py:108
 #: gui/dialogs/text_io.py:14 gui/dialogs/text_io.py:297
 #: gui/dialogs/text_io.py:349
 msgid "Qualification"
 msgstr "Квалификация"
 
-#: gui/dialogs/import_persons_table_dialog.py:49 gui/dialogs/person_edit.py:137
+#: gui/dialogs/import_persons_table_dialog.py:51 gui/dialogs/person_edit.py:137
 #: gui/dialogs/result_edit.py:110 gui/dialogs/text_io.py:13
 #: gui/dialogs/text_io.py:288 gui/dialogs/text_io.py:339
 msgid "Card number"
 msgstr "Номер чипа"
 
-#: gui/dialogs/import_persons_table_dialog.py:51 gui/dialogs/team_edit.py:74
+#: gui/dialogs/import_persons_table_dialog.py:53 gui/dialogs/team_edit.py:74
 #: gui/tabs/memory_model.py:577
 msgid "Contact"
 msgstr "Контактные данные"
 
-#: gui/dialogs/import_persons_table_dialog.py:52 gui/tabs/memory_model.py:313
+#: gui/dialogs/import_persons_table_dialog.py:54 gui/tabs/memory_model.py:313
 msgid "Paid"
 msgstr "Оплачено"
 
-#: gui/dialogs/import_persons_table_dialog.py:53 gui/dialogs/result_edit.py:117
+#: gui/dialogs/import_persons_table_dialog.py:55 gui/dialogs/result_edit.py:117
 #: gui/dialogs/text_io.py:13 gui/dialogs/text_io.py:258
 #: gui/dialogs/text_io.py:308 gui/tabs/memory_model.py:240
 #: gui/tabs/memory_model.py:340 gui/tabs/memory_model.py:343
@@ -581,7 +581,7 @@ msgstr "Оплачено"
 msgid "Start"
 msgstr "Старт"
 
-#: gui/dialogs/import_persons_table_dialog.py:54 gui/dialogs/result_edit.py:118
+#: gui/dialogs/import_persons_table_dialog.py:56 gui/dialogs/result_edit.py:118
 #: gui/dialogs/text_io.py:13 gui/dialogs/text_io.py:158
 #: gui/dialogs/text_io.py:264 gui/dialogs/text_io.py:315
 #: gui/tabs/memory_model.py:340 gui/tabs/memory_model.py:343
@@ -589,49 +589,49 @@ msgstr "Старт"
 msgid "Finish"
 msgstr "Финиш"
 
-#: gui/dialogs/import_persons_table_dialog.py:65 gui/menu/menu.py:91
+#: gui/dialogs/import_persons_table_dialog.py:67 gui/menu/menu.py:91
 msgid "Import persons from table (clipboard)"
 msgstr "Импорт участников из таблицы (буфер обмена)"
 
-#: gui/dialogs/import_persons_table_dialog.py:72
+#: gui/dialogs/import_persons_table_dialog.py:74
 msgid "Replacement by bib"
 msgstr "Замена по стартовому номеру"
 
-#: gui/dialogs/import_persons_table_dialog.py:73
+#: gui/dialogs/import_persons_table_dialog.py:75
 msgid "Replacement by name"
 msgstr "Замена по имени и фамилии"
 
-#: gui/dialogs/import_persons_table_dialog.py:74
+#: gui/dialogs/import_persons_table_dialog.py:76
 msgid "Insert new records"
 msgstr "Вставка новых записей"
 
-#: gui/dialogs/import_persons_table_dialog.py:153
+#: gui/dialogs/import_persons_table_dialog.py:167
 msgid "Bib header not found"
 msgstr "Cтолбец Номер не найден"
 
-#: gui/dialogs/import_persons_table_dialog.py:157
-#: gui/dialogs/import_persons_table_dialog.py:161
+#: gui/dialogs/import_persons_table_dialog.py:171
+#: gui/dialogs/import_persons_table_dialog.py:175
 msgid "Bib not found"
 msgstr "Номер не найден"
 
-#: gui/dialogs/import_persons_table_dialog.py:177
+#: gui/dialogs/import_persons_table_dialog.py:191
 msgid "Name header not found"
 msgstr "Cтолбец c именем или фамилией не найден"
 
-#: gui/dialogs/import_persons_table_dialog.py:183
+#: gui/dialogs/import_persons_table_dialog.py:197
 msgid "Person not found"
 msgstr "Файл не найден"
 
-#: gui/dialogs/import_persons_table_dialog.py:210
+#: gui/dialogs/import_persons_table_dialog.py:224
 msgid "Unrecognized team number"
 msgstr "Номер команды не распознан"
 
-#: gui/dialogs/import_persons_table_dialog.py:307 modules/iof/iof_xml.py:203
+#: gui/dialogs/import_persons_table_dialog.py:321 modules/iof/iof_xml.py:203
 #: modules/orgeo/orgeo.py:211 modules/winorient/winorient.py:61
 msgid "Duplicate card numbers (card numbers are reset)"
 msgstr "Дублирующиеся чипы (номера чипов обнулены)"
 
-#: gui/dialogs/import_persons_table_dialog.py:321 modules/iof/iof_xml.py:216
+#: gui/dialogs/import_persons_table_dialog.py:335 modules/iof/iof_xml.py:216
 #: modules/orgeo/orgeo.py:221 modules/winorient/winorient.py:71
 msgid "Duplicate names"
 msgstr "Повторяющиеся имена"
@@ -1361,6 +1361,10 @@ msgstr "Доступные порты"
 msgid "Punch system"
 msgstr "Система отметки"
 
+#: gui/dialogs/timekeeping_properties.py:64
+msgid "Huichang"
+msgstr "ТаймКонтур"
+
 #: gui/dialogs/timekeeping_properties.py:70
 msgid "Assigning a card when reading"
 msgstr "Присвоение чипов при чтении"
@@ -2023,7 +2027,7 @@ msgstr "Запустить/остановить чтение чипов"
 
 #: gui/menu/menu.py:359
 msgid "Huichang management"
-msgstr "Настройка Huichang"
+msgstr "Настройка ТаймКонтур"
 
 #: gui/menu/menu.py:377
 msgid "On/Off"
@@ -2143,11 +2147,11 @@ msgstr "Порт не выбран"
 
 #: libs/huichang/huichang.py:73
 msgid "Disconnect from Huichang station"
-msgstr "Отключаю станцию Huichang"
+msgstr "Отключаю станцию ТаймКонтур"
 
 #: libs/huichang/huichang.py:81
 msgid "Not connected to Huichang station"
-msgstr "Станция Huichang не подключена"
+msgstr "Станция ТаймКонтур не подключена"
 
 #: libs/huichang/huichang.py:140
 msgid "Open port {}"
@@ -2163,7 +2167,7 @@ msgstr "Станция считывания не подключена"
 
 #: libs/huichang/huichang.py:170
 msgid "No response from Huichang station"
-msgstr "Нет ответа от станции Huichang"
+msgstr "Нет ответа от станции ТаймКонтур"
 
 #: libs/huichang/huichang.py:181
 msgid "Internal station data:"
