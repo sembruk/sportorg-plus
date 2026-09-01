@@ -7,6 +7,9 @@ on:
     - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
   workflow_dispatch: # Allows to run this workflow manually from the Actions tab
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -62,20 +65,57 @@ jobs:
       - name: Generate Changelog
         # Only on push
         if: startsWith(github.event_name, 'push') && startsWith(github.ref, 'refs/tags/')
+        shell: python
+        env:
+          VERSION: ${{ github.ref_name }}
         run: |
-          # Get text after ## ... <version> from changelog.ru.md and changelog.en.md
-          sed -n "/^##.*${{ github.ref_name }}.*$/,/^##/{/^##/d ; p}" changelog.ru.md | sed -z "s/^\n*//g" - > ${{ github.workspace }}-CHANGELOG.txt
-          printf "\n---\n" >> ${{ github.workspace }}-CHANGELOG.txt
-          sed -n "/^##.*${{ github.ref_name }}.*$/,/^##/{/^##/d ; p}" changelog.en.md | sed -z "s/^\n*//g" - >> ${{ github.workspace }}-CHANGELOG.txt
+          import os
+          import re
+          import sys
+          from pathlib import Path
+
+          sys.stdout.reconfigure(encoding="utf-8")
+
+          version = os.environ["VERSION"]
+          output = Path(r"${{ github.workspace }}-CHANGELOG.txt")
+
+          def extract_changelog(filename):
+              text = Path(filename).read_text(encoding="utf-8")
+              text = text.replace("\r\n", "\n")
+
+              # Find the section starting with ## ... VERSION
+              pattern = rf"^##[ \t]+.*{re.escape(version)}.*\n([\s\S]*?)(?=^##[ \t]+|\Z)"
+              match = re.search(pattern, text, re.MULTILINE)
+
+              if not match:
+                  raise RuntimeError(
+                      f"Could not find changelog section for {version} in {filename}"
+                  )
+
+              return match.group(1).strip()
+
+          ru = extract_changelog("changelog.ru.md")
+          en = extract_changelog("changelog.en.md")
+
+          output.write_text(
+              ru + "\n\n---\n\n" + en + "\n",
+              encoding="utf-8"
+          )
+
+          print(f"Generated changelog: {output}")
+          print("----- CHANGELOG -----")
+          print(output.read_text(encoding="utf-8"))
+          print("---------------------")
 
       - name: Release
         # Only on push
         if: startsWith(github.event_name, 'push') && startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           body_path: ${{ github.workspace }}-CHANGELOG.txt
           files: |
             dist/*.msi
+          generate_release_notes: true
 
 
 # vim: ts=2 sw=2 et
