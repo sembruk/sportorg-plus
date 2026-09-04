@@ -47,7 +47,7 @@ class HuichangResultThread(ResultThreadBase):
     @staticmethod
     def _get_result(card_data):
         result = ResultThreadBase._get_result(card_data)
-        if 'battery_level' in card_data:
+        if 'battery_level' in card_data and card_data['battery_level'] is not None:
             result.card_battery_level = max(0, min(100, card_data['battery_level']))
         return result
 
