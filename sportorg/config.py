@@ -14,7 +14,7 @@ class Env(BaseSettings):
         env_file = '.env'
 
 NAME = 'SportOrgPlus'
-VERSION = Version('v1.9.0')
+VERSION = Version('v1.9.1-rc0')
 REPO_BASE = 'sembruk/sportorg-plus'
 REPO_URL = 'https://github.com/' + REPO_BASE
 
