@@ -259,13 +259,13 @@ class ResultEditDialog(QDialog):
                         break
             result.splits = new_splits
 
-        time_ = time_to_otime(self.item_finish.seconds())
-        if result.finish_time != time_:
-            result.finish_time = time_
+        sec = self.item_finish.seconds()
+        if result.finish_time.to_sec() != sec:  # ignores milliseconds
+            result.finish_time = time_to_otime(sec)
 
-        time_ = time_to_otime(self.item_start.seconds())
-        if self.item_start.isEnabled() and result.start_time != time_:
-            result.start_time = time_
+        sec = self.item_start.seconds()
+        if self.item_start.isEnabled() and result.start_time and result.start_time.to_sec() != sec:  # ignores milliseconds
+            result.start_time = time_to_otime(sec)
 
         time_ = time_to_otime(self.item_credit.seconds())
         if result.credit_time != time_:

@@ -1,5 +1,18 @@
 # SportOrgPlus Changelog
 
+## v1.9.0 - 2026-09-01
+
+### Features
+
+* Import persons table dialog from SportOrg main branch
+
+### Fixes
+
+* Fixed zero timestamps from Huichang contact cards
+* Missed finish always was "00:00:00" 
+
+[All changes](https://github.com/sembruk/sportorg-plus/compare/v1.8.0...v1.9.0)
+
 ## v1.8.0 - 2026-07-23
 
 ### Features

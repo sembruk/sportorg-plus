@@ -87,6 +87,10 @@ def menu_list():
                             'title': _('IOF xml'),
                             'action': 'IOFEntryListImportAction'
                         },
+                        {
+                            "title": _("Import persons from table (clipboard)"),
+                            "action": "ImportPersonsAction",
+                        },
                     ]
                 },
                 {

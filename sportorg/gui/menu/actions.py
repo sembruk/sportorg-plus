@@ -35,6 +35,7 @@ from sportorg.gui.dialogs.telegram_dialog import TelegramDialog
 from sportorg.gui.dialogs.text_io import TextExchangeDialog
 from sportorg.gui.dialogs.timekeeping_properties import TimekeepingPropertiesDialog
 from sportorg.gui.dialogs.huichang_management_dialog import HuichangManagementDialog
+from sportorg.gui.dialogs.import_persons_table_dialog import ImportPersonsTableDialog
 from sportorg.gui.menu.action import Action
 from sportorg.gui.utils.custom_controls import messageBoxQuestion
 from sportorg.libs.winorient.wdb import write_wdb
@@ -727,4 +728,10 @@ class RentCardsAction(Action, metaclass=ActionFactory):
 class HuichangManagementAction(Action, metaclass=ActionFactory):
     def execute(self):
         HuichangManagementDialog().exec_()
+
+
+class ImportPersonsAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        ImportPersonsTableDialog().exec_()
+        self.app.refresh()
 

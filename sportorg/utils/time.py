@@ -1,7 +1,6 @@
-import datetime
-from datetime import date
 import time
 
+from datetime import date, datetime, timedelta, time
 from PySide2.QtCore import QTime, QDate
 
 from sportorg.common.otime import OTime
@@ -23,14 +22,14 @@ def timeit(method):
 
 
 def time_to_otime(t, day=0):
-    if isinstance(t, datetime.datetime):
+    if isinstance(t, datetime):
         return OTime(day, t.hour, t.minute, t.second, round(t.microsecond/1000))
-    if isinstance(t, datetime.time):
+    if isinstance(t, time):
         return OTime(day, t.hour, t.minute, t.second, round(t.microsecond/1000))
     if isinstance(t, QTime):
         return OTime(day, t.hour(), t.minute(), t.second(), t.msec())
-    if isinstance(t, datetime.timedelta):
-        return time_to_otime(datetime.datetime(2000, 1, 1 + day, 0, 0, 0) + t)
+    if isinstance(t, timedelta):
+        return time_to_otime(datetime(2000, 1, 1 + day, 0, 0, 0) + t)
     if isinstance(t, OTime):
         return t
     if isinstance(t, int):
@@ -50,11 +49,11 @@ def time_iof_to_otime(t):
 
 
 def time_to_datetime(t):
-    if isinstance(t, datetime.datetime):
+    if isinstance(t, datetime):
         return t
     otime = time_to_otime(t)
-    base = datetime.datetime(2000, 1, 1, otime.hour, otime.minute, otime.sec, otime.msec * 1000)
-    return base + datetime.timedelta(days=otime.day)
+    base = datetime(2000, 1, 1, otime.hour, otime.minute, otime.sec, otime.msec * 1000)
+    return base + timedelta(days=otime.day)
 
 
 def time_to_qtime(t):
@@ -67,8 +66,8 @@ def time_to_qtime(t):
 def _int_to_time(value):
     """ convert value from 1/100 s to time """
 
-    today = datetime.datetime.now()
-    ret = datetime.datetime(today.year, today.month, today.day, value // 360000 % 24, (value % 360000) // 6000,
+    today = datetime.now()
+    ret = datetime(today.year, today.month, today.day, value // 360000 % 24, (value % 360000) // 6000,
                             (value % 6000) // 100, (value % 100) * 10)
     return ret
 
@@ -98,6 +97,13 @@ def time_to_hhmmss(value):
     return dt.strftime("%H:%M:%S") + day_str
 
 
+def ddmmyyyy_to_time(value):
+    try:
+        return datetime.strptime(value, "%d.%m.%Y")
+    except (ValueError, TypeError):
+        return datetime(1900, 1, 1)
+
+
 def hhmmss_to_time(value):
     day = 0
     arr = str(value).split('+')
@@ -120,14 +126,14 @@ def hhmmss_to_time(value):
 
 
 def time_remove_day(value):
-    new_value = datetime.datetime(year=2000, month=1, day=1, hour=value.hour, minute=value.minute,
+    new_value = datetime(year=2000, month=1, day=1, hour=value.hour, minute=value.minute,
                                   second=value.second, microsecond=value.microsecond)
     return new_value
 
 
 def _time_to_sec(value, max_val=86400):  # default max value = 24h
 
-    if isinstance(value, datetime.datetime):
+    if isinstance(value, datetime):
         ret = value.hour * 3600 + value.minute * 60 + value.second + value.microsecond / 1000000
         if max_val:
             ret = ret % max_val

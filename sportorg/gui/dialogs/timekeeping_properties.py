@@ -61,7 +61,7 @@ class TimekeepingPropertiesDialog(QDialog):
         self.punch_system_layout.addRow(self.punch_system_sfr)
         self.punch_system_sportiduino = QRadioButton('Sportiduino (Clever)')
         self.punch_system_layout.addRow(self.punch_system_sportiduino)
-        self.punch_system_huichang = QRadioButton('Huichang')
+        self.punch_system_huichang = QRadioButton(_('Huichang'))
         self.punch_system_layout.addRow(self.punch_system_huichang)
         self.punch_system_si.setChecked(True)
         self.punch_system_box.setLayout(self.punch_system_layout)
