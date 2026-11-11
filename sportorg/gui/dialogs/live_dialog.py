@@ -69,7 +69,6 @@ class LiveDialog(QDialog):
         self.layout.addRow(self.item_result_sending)
 
         self.item_cp_sending = QCheckBox(_('Online CP sending'))
-        self.item_result_sending.setChecked(True)
         self.layout.addRow(self.item_cp_sending)
         self.item_cp_sending.setChecked(False)
 

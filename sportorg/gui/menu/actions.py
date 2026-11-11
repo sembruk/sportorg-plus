@@ -3,7 +3,7 @@ import time
 import uuid
 from typing import Any
 
-from PySide2 import QtCore, QtGui
+from PySide2 import QtCore
 
 from PySide2.QtWidgets import QMessageBox, QApplication, QTableView, QInputDialog
 
@@ -34,10 +34,12 @@ from sportorg.gui.dialogs.teamwork_properties import TeamworkPropertiesDialog
 from sportorg.gui.dialogs.telegram_dialog import TelegramDialog
 from sportorg.gui.dialogs.text_io import TextExchangeDialog
 from sportorg.gui.dialogs.timekeeping_properties import TimekeepingPropertiesDialog
+from sportorg.gui.dialogs.huichang_management_dialog import HuichangManagementDialog
+from sportorg.gui.dialogs.import_persons_table_dialog import ImportPersonsTableDialog
 from sportorg.gui.menu.action import Action
 from sportorg.gui.utils.custom_controls import messageBoxQuestion
 from sportorg.libs.winorient.wdb import write_wdb
-from sportorg.models.memory import race, ResultStatus, ResultManual, find
+from sportorg.models.memory import race, ResultStatus, ResultManual, find, SystemType
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.result.result_checker import ResultChecker
 from sportorg.models.start.start_preparation import guess_corridors_for_groups, copy_bib_to_card_number, copy_card_number_to_bib, split_teams, update_subgroups, merge_groups
@@ -50,6 +52,7 @@ from sportorg.modules.coordinates import coordinates
 from sportorg.modules.sfr.sfrreader import SFRReaderClient
 from sportorg.modules.sportident.sireader import SIReaderClient
 from sportorg.modules.sportiduino.sportiduino import SportiduinoClient
+from sportorg.modules.huichang.huichang import HuichangClient
 from sportorg.modules.teamwork import Teamwork
 from sportorg.modules.telegram.telegram import TelegramClient
 from sportorg.modules.updater import checker
@@ -100,7 +103,7 @@ class CopyAction(Action, metaclass=ActionFactory):
         for index in indexes:
             row = [str(row) for row in sel_model.model().get_data(index.row())]
             data += '\t'.join(row) + '\n'
-        QtGui.qApp.clipboard().setText(data)
+        QApplication.instance().clipboard().setText(data)
 
 
 class DuplicateAction(Action, metaclass=ActionFactory):
@@ -432,17 +435,15 @@ class ManualFinishAction(Action, metaclass=ActionFactory):
 
 class SPORTidentReadoutAction(Action, metaclass=ActionFactory):
     def execute(self):
-        SIReaderClient().toggle()
-
-
-class SportiduinoReadoutAction(Action, metaclass=ActionFactory):
-    def execute(self):
-        SportiduinoClient().toggle()
-
-
-class SFRReadoutAction(Action, metaclass=ActionFactory):
-    def execute(self):
-        SFRReaderClient().toggle()
+        punch_system = race().get_punch_system()
+        if punch_system == SystemType.SFR:
+            SFRReaderClient().toggle()
+        elif punch_system == SystemType.SPORTIDUINO:
+            SportiduinoClient().toggle()
+        elif punch_system == SystemType.HUICHANG:
+            HuichangClient().toggle()
+        else:
+            SIReaderClient().toggle()
 
 
 class CreateReportAction(Action, metaclass=ActionFactory):
@@ -730,3 +731,15 @@ class RentCardsAction(Action, metaclass=ActionFactory):
     def execute(self):
         RentCardsDialog().exec_()
         self.app.refresh()
+
+
+class HuichangManagementAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        HuichangManagementDialog().exec_()
+
+
+class ImportPersonsAction(Action, metaclass=ActionFactory):
+    def execute(self):
+        ImportPersonsTableDialog().exec_()
+        self.app.refresh()
+

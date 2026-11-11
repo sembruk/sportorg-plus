@@ -18,7 +18,7 @@ from sportorg.gui.dialogs.group_edit import GroupEditDialog
 from sportorg.gui.dialogs.team_edit import TeamEditDialog
 from sportorg.gui.dialogs.control_point_edit import ControlPointEditDialog
 from sportorg.models.constant import RentCards
-from sportorg.models.memory import Race, race, NotEmptyException, new_event, set_current_race_index
+from sportorg.models.memory import Race, race, NotEmptyException, new_event, set_current_race_index, SystemType
 from sportorg.models.result.result_calculation import ResultCalculation
 from sportorg.models.result.split_calculation import GroupSplits
 from sportorg.modules.backup.file import File
@@ -41,6 +41,7 @@ from sportorg.language import _
 from sportorg.modules.sportident.sireader import SIReaderClient
 from sportorg.modules.reader.backup import parse_backup_from_last_save
 from sportorg.modules.sportiduino.sportiduino import SportiduinoClient
+from sportorg.modules.huichang.huichang import HuichangClient
 from sportorg.modules.teamwork import Teamwork
 from sportorg.modules.telegram.telegram import TelegramClient
 from sportorg.modules.updater import checker
@@ -103,8 +104,8 @@ class MainWindow(QMainWindow):
         self.show()
         self.post_show()
 
-    sportident_status = False
-    sportident_icon = {
+    reader_status = False
+    reader_icon = {
         True: 'sportident-on.png',
         False: 'sportident.png',
     }
@@ -124,19 +125,29 @@ class MainWindow(QMainWindow):
         return None
 
     def interval(self):
-        if self.get_configuration().get('try_restore_backup'):
-            for client in [SIReaderClient, SportiduinoClient, SFRReaderClient]:
-                if client().is_need_check_backup and client().is_result_thread_alive():
-                    client().is_need_check_backup = False
-                    entries = self._check_card_data_backup(client().log_file_prefix())
-                    if entries is not None:
-                        client().inject_backup_card_data(entries)
+        punch_system = race().get_punch_system()
+        client = SIReaderClient
+        huichang_management_action = self.action_by_id['huichang_management']
+        huichang_management_action.setEnabled(punch_system == SystemType.HUICHANG)
+        if punch_system == SystemType.SFR:
+            client = SFRReaderClient
+        elif punch_system == SystemType.SPORTIDUINO:
+            client = SportiduinoClient
+        elif punch_system == SystemType.HUICHANG:
+            client = HuichangClient
 
-        if SIReaderClient().is_alive() != self.sportident_status:
-            self.sportident_status = SIReaderClient().is_alive()
+        if self.get_configuration().get('try_restore_backup'):
+            if client().is_need_check_backup and client().is_result_thread_alive():
+                client().is_need_check_backup = False
+                entries = self._check_card_data_backup(client().log_file_prefix())
+                if entries is not None:
+                    client().inject_backup_card_data(entries)
+
+        if client().is_alive() != self.reader_status:
+            self.reader_status = client().is_alive()
             self.toolbar_property['sportident'].setIcon(
                 QtGui.QIcon(
-                    config.icon_dir(self.sportident_icon[self.sportident_status])))
+                    config.icon_dir(self.reader_icon[self.reader_status])))
         # FIXME
         """
         if Teamwork().is_alive() != self.teamwork_status:
@@ -166,6 +177,7 @@ class MainWindow(QMainWindow):
         self.unlock_file()
         Broker().produce('close')
         SportiduinoClient().stop()
+        HuichangClient().stop()
         SIReaderClient().stop()
         SFRReaderClient().stop()
 
@@ -226,15 +238,36 @@ class MainWindow(QMainWindow):
 
         Teamwork().set_call(self.teamwork)
         SIReaderClient().set_call(self.add_sportident_result_from_sireader)
-        SportiduinoClient().set_call(self.add_sportiduino_result_from_reader)
-        SFRReaderClient().set_call(self.add_sfr_result_from_reader)
+        SportiduinoClient().set_call(self.add_sportident_result_from_sireader)
+        SFRReaderClient().set_call(self.add_sportident_result_from_sireader)
+        HuichangClient().set_call(self.add_sportident_result_from_sireader)
 
         self.service_timer = QTimer(self)
         self.service_timer.timeout.connect(self.interval)
         self.service_timer.start(1000) # msec
 
-        live_client.init()
         self._menu_disable(self.current_tab)
+
+        if (Configuration().parser.getboolean('live', 'recommend_disable_live', fallback=True)
+                and race().get_setting('live_enabled', False)):
+            message_box = QMessageBox(
+                QMessageBox.Question,
+                _('Question'),
+                _('Live is enabled.\nDo you want to disable it?'),
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Ignore,
+                self
+            )
+            message_box.button(QMessageBox.Yes).setText(_('Yes'))
+            message_box.button(QMessageBox.No).setText(_('No'))
+            message_box.button(QMessageBox.Ignore).setText(_('Do not show again'))
+            message_box.setDefaultButton(QMessageBox.No)
+            confirm = message_box.exec_()
+            if confirm == QMessageBox.Ignore:
+                Configuration().set_option('live', 'recommend_disable_live', False)
+            elif confirm == QMessageBox.Yes:
+                race().set_setting('live_enabled', False)
+             
+        live_client.init()
 
         if Configuration().configuration.get('check_updates'):
             last_update_check_date_str = Configuration().parser.get(
@@ -632,17 +665,11 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logging.exception(e)
 
-    def add_sfr_result_from_reader(self, result):
-        self.add_sportident_result_from_sireader(result)
-
-    def add_sportiduino_result_from_reader(self, result):
-        self.add_sportident_result_from_sireader(result)
-
     def teamwork(self, command):
         try:
             race().update_data(command.data)
             logging.info(repr(command.data))
-            if 'object' in command.data and command.data['object'] in ['ResultManual', 'ResultSportident', 'ResultSFR', 'ResultSportiduino']:
+            if 'object' in command.data and command.data['object'] in ['ResultManual', 'ResultSportident', 'ResultSFR', 'ResultSportiduino', 'ResultHuichang']:
                 ResultCalculation(race()).process_results()
             Broker().produce('teamwork_recieving', command.data)
             self.refresh()
@@ -697,7 +724,7 @@ class MainWindow(QMainWindow):
                 File(self.file, logging.root, File.JSON).save()
                 self.apply_filters()
                 self.last_update = time.time()
-                for client in [SIReaderClient, SportiduinoClient, SFRReaderClient]:
+                for client in [SIReaderClient, SportiduinoClient, SFRReaderClient, HuichangClient]:
                     client().save_event()
             except Exception as e:
                 logging.exception(e)

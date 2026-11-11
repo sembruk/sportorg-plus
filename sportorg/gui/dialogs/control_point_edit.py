@@ -52,6 +52,10 @@ class ControlPointEditDialog(QDialog):
         self.item_y.setMaximum(10000000)
         self.layout.addRow(self.label_y, self.item_y)
 
+        self.label_station_id = QLabel(_('Station ID'))
+        self.item_station_id = QLineEdit()
+        self.layout.addRow(self.label_station_id, self.item_station_id)
+
         def cancel_changes():
             self.close()
 
@@ -87,6 +91,10 @@ class ControlPointEditDialog(QDialog):
         self.item_score.setValue(self.current_object.score)
         self.item_x.setValue(self.current_object.x)
         self.item_y.setValue(self.current_object.y)
+        if self.current_object.station_id:
+            self.item_station_id.setText(self.current_object.station_id)
+        else:
+            self.item_station_id.setText('')
 
     def apply_changes_impl(self):
         cp = self.current_object
@@ -97,6 +105,7 @@ class ControlPointEditDialog(QDialog):
         cp.score = self.item_score.value()
         cp.x = self.item_x.value()
         cp.y = self.item_y.value()
+        cp.station_id = self.item_station_id.text()
 
         Teamwork().send(cp.to_dict())
 

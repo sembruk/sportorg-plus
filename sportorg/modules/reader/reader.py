@@ -1,4 +1,5 @@
 import logging
+import datetime
 import time
 
 from queue import Queue, Empty
@@ -6,6 +7,7 @@ from threading import main_thread, Event
 from PySide2.QtCore import QThread, Signal
 
 from sportorg.models import memory
+from sportorg.models.memory import find
 from sportorg.modules.reader.backup import CardDataBackuper
 from sportorg.utils.time import time_to_otime
 
@@ -65,18 +67,27 @@ class ResultThreadBase(QThread):
 
     @staticmethod
     def _datetime_to_otime(dt):
+        if isinstance(dt, datetime.time):
+            return time_to_otime(dt)
         return time_to_otime(dt, memory.race().get_days(dt))
 
     @staticmethod
     def _get_result(card_data):
         result = memory.race().new_result()
         result.card_number = int(card_data['card_number'])
+        control_points = memory.race().control_points
 
         for i in range(len(card_data['punches'])):
             t = card_data['punches'][i][1]
             if t:
+                code = str(card_data['punches'][i][0])
+
+                control = find(control_points, station_id=str(code))
+                if control:
+                    code = control.code
+
                 split = memory.Split()
-                split.code = str(card_data['punches'][i][0])
+                split.code = code
                 split.time = ResultThreadBase._datetime_to_otime(t)
                 #split.days = memory.race().get_days(t)
                 result.splits.append(split)

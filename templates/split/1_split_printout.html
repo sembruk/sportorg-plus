@@ -156,6 +156,10 @@
 </head>
 <body>
     <code>
+        {% set battery_level_str = "" %}
+        {% if result.card_battery_level %}
+            {% set battery_level_str = "(заряд: " ~ result.card_battery_level ~ "%)" %}
+        {% endif %}
         {{ race.data.title }}
         <br> {{ race.data.start_datetime|date }}
         <h2>{{ person.name }} {{ person.surname }} - {{ group.name }}</h2>

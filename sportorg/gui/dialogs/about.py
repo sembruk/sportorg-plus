@@ -26,9 +26,11 @@ class AboutDialog(QDialog):
         self.setMaximumWidth(640)
         self.layout = QFormLayout(self)
 
-        title_font = QFont("Times", 24)
         title_text = QLabel()
         title_text.setText('{} {}'.format(config.NAME, config.VERSION))
+        title_font = title_text.font()
+        title_font.setPointSize(24)
+        title_font.setBold(True)
         title_text.setFont(title_font)
         title_icon = QLabel()
         title_icon.setPixmap(QPixmap(config.ICON).scaled(75, 75))

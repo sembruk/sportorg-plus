@@ -119,7 +119,9 @@ class SIReaderClient(ReaderClientBase):
         ports = []
         if platform.system() == 'Linux':
             scan_ports = [os.path.join('/dev', f) for f in os.listdir('/dev') if
-                     re.match('ttyUSB.*', f)]
+                     re.match('ttyUSB.*|ttyACM.*', f)]
+            # Order of ports is important (Huichang has two ports: first for master station, second for printer)
+            scan_ports = sorted(scan_ports)
         elif platform.system() == 'Windows':
             scan_ports = ['COM' + str(i) for i in range(48)]
 

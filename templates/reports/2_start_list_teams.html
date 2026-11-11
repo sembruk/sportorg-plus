@@ -177,7 +177,7 @@
             try {
                 var isTeamRace = race.data.race_type === 6
                 var isRogaining = race.settings.result_processing_mode === "scores" && race.settings.result_processing_score_mode == "rogain";
-                //this.getField('subgroup').active = isRogaining
+                this.getField('subgroup').active = location.href.indexOf('sg=1') > -1;
             } catch (e){}
             return this;
         }
@@ -202,6 +202,25 @@
                 resultBlock.appendChild(new TableTextGenerator(getStartListByGroup(group), Fields.fields).getTable());
             }
         }
+
+        var query = {
+            sg: Fields.isActive('subgroup') ? 1 : 0
+        };
+        var queryString = '';
+        Object.keys(query).forEach(function (key) {
+            if (query[key]) {
+                if (queryString === '') {
+                    queryString += '?';
+                } else {
+                    queryString += '&'
+                }
+                queryString += key + '=' + query[key];
+            }
+        });
+        try {
+            var href = location.href.split('?')[0];
+            history.pushState({}, null, href + queryString);
+        } catch (e) {}
     }
     render();
 
@@ -246,6 +265,14 @@
     }.init();
 
     new SettingsGenerator([
+        {
+            title: 'Подгруппы',
+            value: Fields.isActive('subgroup'),
+            change: function (checked) {
+                Fields.active('subgroup', checked);
+                render()
+            }
+        },
         {
             title: 'Автоскролл',
             value: Scrolling.enabled,

@@ -282,7 +282,6 @@ class StartNumberManager(object):
 
     def set_numbers_by_order(self, items, first_number=1, interval=1, skip_list=[]):
         cur_number = first_number
-        cur_team_number = first_number
         known_teams = {}
         #if persons and len(persons) > 0:
         #    for current_person in persons:

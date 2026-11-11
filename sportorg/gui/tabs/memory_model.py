@@ -3,7 +3,7 @@ import re
 import uuid
 from abc import abstractmethod
 from copy import copy, deepcopy
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from PySide2.QtCore import QAbstractTableModel, Qt
 from typing import List
@@ -75,10 +75,16 @@ class AbstractSportOrgMemoryModel(QAbstractTableModel):
     def headerData(self, index, orientation, role=None):
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
-                columns = self.get_headers()
-                return columns[index]
+                return self._horizontal_header_data(index)
             if orientation == Qt.Vertical:
-                return str(index+1)
+                return self._vertical_header_data(index)
+
+    def _horizontal_header_data(self, index):
+        columns = self.get_headers()
+        return columns[index]
+
+    def _vertical_header_data(self, index):
+        return str(index+1)
 
     def data(self, index, role=None):
         if role == Qt.DisplayRole:
@@ -231,8 +237,8 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
         use_birthday = Config().configuration.get('use_birthday', False)
         headers = [_('Last name'), _('First name'), _('Sex'), _('Age') if use_birthday else _('Year title'),
                    _('Qualification title'), _('Group'), _('Team'),
-                   _('Bib'), _('Start'), _('Card title'),
-                   _('Comment'), _('Result count title'), _('Rented card'),
+                   _('Bib'), _('Start'), _('Card title'), _('Comment'),
+                   _('Result count title'), _('Rented card'), _('Paid title'),
                    _('World code title'), _('National code title'),
                    _('Out of competition title')]
 
@@ -304,6 +310,7 @@ class PersonMemoryModel(AbstractSportOrgMemoryModel):
             ret.append(person.subgroups_str())
         ret.append(person.result_count)
         ret.append(_('Rented card') if is_rented_card else _('Own card'))
+        ret.append(_('Paid') if person.is_paid else '')
         ret.append(str(person.world_code) if person.world_code else '')
         ret.append(str(person.national_code) if person.national_code else '')
 
@@ -335,6 +342,10 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
         return [_('Last name'), _('First name'), _('Group'), _('Team'), _('Bib'), _('Card title'),
                 _('Start'), _('Finish'), _('Result'), _('Status'), _('Credit'), _('Penalty'), _('Penalty legs title'),
                 _('Place'), _('Type'), _('Readout'), _('Rented card')]
+
+    def _vertical_header_data(self, index):
+        # Reversed order
+        return str(len(self.cache) - index)
 
     def init_cache(self):
         self.cache.clear()
@@ -435,6 +446,28 @@ class ResultMemoryModel(AbstractSportOrgMemoryModel):
     def set_source_array(self, array):
         self.race.results = array
 
+    @staticmethod
+    def _parse_time_with_day(value):
+        if not isinstance(value, str):
+            return None
+        m = re.fullmatch(r"(\d\d):(\d\d):(\d\d)(\+(\d))?", value)
+        if not m:
+            return None
+
+        h, mnt, s, _, day = m.groups()
+        day_offset = int(day) if day else 0
+
+        td = timedelta(hours=int(h), minutes=int(mnt), seconds=int(s))
+        return (day_offset, int(td.total_seconds()))
+
+
+    def sort_key(self, obj, column):
+        item = self.get_item(obj, column)
+
+        parsed = self._parse_time_with_day(item)
+        if parsed is not None:
+            return (0, parsed)
+        return (1, item is None, str(type(item)), item)
 
 class GroupMemoryModel(AbstractSportOrgMemoryModel):
     def __init__(self):
@@ -443,8 +476,8 @@ class GroupMemoryModel(AbstractSportOrgMemoryModel):
     def get_headers(self):
         return [_('Name'), _('Full name'), _('Course name'), _('Start fee title'), _('Type'), _('Length title'),
                 _('Point count title'), _('Climb title'), _('Sex'),
-                _('Min age') if self.race.is_team_race() else _('Min year title'),
-                _('Max age') if self.race.is_team_race() else _('Max year title'),
+                _('Min age'),
+                _('Max age'),
                 _('Start time'), _('Max time'), _('Start interval title'), _('Start corridor title'),
                 _('Order in corridor title')]
 
@@ -479,8 +512,8 @@ class GroupMemoryModel(AbstractSportOrgMemoryModel):
             control_count,
             course.climb if course else 0,
             group.sex.get_title(),
-            group.min_age if self.race.is_team_race() else group.min_year,
-            group.max_age if self.race.is_team_race() else group.max_year,
+            group.min_age,
+            group.max_age,
             group.start_time.to_str() if group.start_time else '',
             group.max_time.to_str(),
             group.start_interval,
@@ -585,7 +618,7 @@ class ControlPointMemoryModel(AbstractSportOrgMemoryModel):
         super().__init__()
 
     def get_headers(self):
-        return [_('Code'), _('Score'), _('X, meters'), _('Y, meters')]
+        return [_('Code'), _('Score'), _('X, meters'), _('Y, meters'), _('Station id')]
 
     def init_cache(self):
         self.cache.clear()
@@ -607,7 +640,8 @@ class ControlPointMemoryModel(AbstractSportOrgMemoryModel):
             control.code,
             control.score,
             control.x,
-            control.y
+            control.y,
+            control.station_id
         ]
 
     def get_source_array(self):

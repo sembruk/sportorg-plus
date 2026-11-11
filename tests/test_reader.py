@@ -10,6 +10,7 @@ import pytest
 
 from sportorg.modules.sportiduino.sportiduino import SportiduinoClient
 from sportorg.modules.sportident.sireader import SIReaderClient
+from sportorg.modules.huichang.huichang import HuichangClient
 
 
 class SportiduinoEmulator(Thread):
@@ -100,6 +101,57 @@ class SPORTidentEmulator(Thread):
                         #print('=>'+' '.join(format(x, '02x') for x in msg))
                         time.sleep(0.01)
                     repled.add(data)
+        ser.close()
+
+
+class HuichangEmulator(Thread):
+    CARD_DATA = [
+        [
+            b'\xaa\xbb\xff\x20\x13\x61\x01\x30\x26\xff\xff\xff\xff\xff\x15\x12\x27\x05\x04\x06\x12\x26\x2e\x26',
+            b'\xaa\xbb\xff\x20\x0d\x21\x12\x26\x38\x21\x12\x27\x01\x21\x12\x27\x07\x2f',
+            b'\xaa\xbb\xff\x20\x01\xff',
+            b'\xaa\xbb\xff\xa1\x02\x1d\x39'
+        ],
+        [
+            b'\xaa\xbb\xff\x60\x13\x33\x07\x89\x90\x0b\x05\x1a\x37\x02\x15\x35\x1b\x00\x03\x06\x05\x1a\x36\x64',
+            b'\xaa\xbb\xff\x60\x15\x1f\x05\x1a\x37\x20\x05\x1a\x3a\x21\x05\x1a\x3b\x22\x05\x1a\x3b\x23\x05\x1a\x3b\xfd',
+            b'\xaa\xbb\xff\x60\x01\xff'
+        ],
+    ]
+
+    def __init__(self, link, stop_event):
+        super().__init__()
+        self.link = link
+        self.stop_event = stop_event
+        self.daemon = True
+        self.start()
+
+    def run(self):
+        ser = serial.Serial(self.link, baudrate=9600, timeout=1)
+        print(f"Emulating Huichang on {self.link}...")
+        connected = False
+        while not self.stop_event.is_set():
+            if connected:
+                time.sleep(1)
+                for packets in self.CARD_DATA:
+                    for p in packets:
+                        ser.write(p)
+                        time.sleep(0.01)
+                    time.sleep(0.5)
+                connected = False
+            if ser.in_waiting:
+                data = ser.read(ser.in_waiting)
+                print('<='+' '.join(format(x, '02x') for x in data))
+
+                if data[:3] == b'\xaa\xbb\xff':
+                    if data[3] == 0x28:
+                        print("Switching Huichang master station to Online/Offline mode")
+                        connected = True
+                    # Send Ok
+                    msg = b"\xaa\xbb\xff" + bytes([data[3]]) + b"\x02\xcc\x6d"
+                    ser.write(msg)
+                    #print('=>'+' '.join(format(x, '02x') for x in msg))
+                    time.sleep(0.01)
         ser.close()
 
 
@@ -258,6 +310,59 @@ def test_sportident(app, result_handler, socat):
         (36, '13:46:28'),
     ]
 
+    for i, split in enumerate(result.splits):
+        assert (int(split.code), str(split.time)) == expected[i]
+
+
+@pytest.mark.skipif(platform.system() != 'Linux', reason="This test only works on Linux")
+def test_huichang(app, result_handler, socat):
+    _, link1, link2 = socat
+
+    stop_event = Event()
+    emulator_thread = HuichangEmulator(link1, stop_event)
+
+    race().set_setting('system_port', link2)
+    #race().set_setting('time_accuracy', 2)
+
+    HuichangClient().set_call(result_handler.add_result_from_reader)
+    HuichangClient().start()
+
+    # Run the event loop for a few seconds to allow the signal to be processed
+    QTimer.singleShot(5000, app.quit)
+    app.exec_()
+
+    HuichangClient().stop()
+    stop_event.set()
+    emulator_thread.join()
+
+    assert len(result_handler.results) == 2
+
+    result = result_handler.results[0]
+    assert result.card_number == 61013026
+    assert str(result.start_time) == '00:00:00'
+    assert str(result.finish_time) == '18:39:05'
+    assert result.card_battery_level == 29
+    # clear = 18:38:46
+    expected = [
+        (33, '18:38:56'),
+        (33, '18:39:01'),
+        (33, '18:39:07'),
+    ]
+    for i, split in enumerate(result.splits):
+        assert (int(split.code), str(split.time)) == expected[i]
+
+    result = result_handler.results[1]
+    assert result.card_number == 33078990
+    assert str(result.start_time) == '05:26:55'
+    assert str(result.finish_time) == '05:27:00'
+    # clear = 05:26:54
+    expected = [
+        (31, '05:26:55'),
+        (32, '05:26:58'),
+        (33, '05:26:59'),
+        (34, '05:26:59'),
+        (35, '05:26:59'),
+    ]
     for i, split in enumerate(result.splits):
         assert (int(split.code), str(split.time)) == expected[i]
 

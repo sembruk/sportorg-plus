@@ -143,7 +143,16 @@ def create_person(person_entry):
                     team.group = person.group
                 if 'role_person' in person_entry['organization']:
                     team.contact = person_entry['organization']['role_person']
+                if 'country' in person_entry['organization']:
+                    team.country = person_entry['organization']['country']
                 obj.teams.append(team)
+            elif obj.is_team_race() and person.group is not None and person.group != team.group:
+                new_team = team.clone()
+                obj.team_max_number += 1
+                new_team.number = obj.team_max_number
+                new_team.group = person.group
+                obj.teams.append(new_team)
+                team = new_team
             person.team = team
 
     if 'birth_date' in person_entry['person']:

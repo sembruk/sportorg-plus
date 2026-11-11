@@ -2,6 +2,7 @@ import re
 import datetime
 import time
 import uuid
+import logging
 from abc import abstractmethod
 from datetime import date
 from enum import IntEnum, Enum
@@ -32,6 +33,7 @@ class SystemType(Enum):
     SPORTIDENT = 2
     SFR = 3
     SPORTIDUINO = 4
+    HUICHANG = 7
 
     def __str__(self):
         return self._name_
@@ -134,7 +136,6 @@ class CourseControl(Model):
         self.code = ''
         self.length = 0
         self.order = 0
-        self.cutoff = False
 
     def __str__(self):
         return '{} {}'.format(self.code, self.length)
@@ -174,14 +175,11 @@ class CourseControl(Model):
             'object': self.__class__.__name__,
             'code': self.code,
             'length': self.length,
-            'cutoff': self.cutoff
         }
 
     def update_data(self, data):
         self.code = str(data['code'])
         self.length = int(data['length'])
-        if 'cutoff' in data:
-            self.cutoff = bool(data['cutoff'])
 
 
 class ControlPoint(Model):
@@ -193,6 +191,7 @@ class ControlPoint(Model):
         self.score = 1.0
         self.x = 0.0
         self.y = 0.0
+        self.station_id = None
         self.altitude = 0.0
 
     def to_dict(self):
@@ -203,6 +202,7 @@ class ControlPoint(Model):
             'score': self.score,
             'x': self.x,
             'y': self.y,
+            'station_id': self.station_id,
             'altitude': self.altitude
         }
 
@@ -212,6 +212,7 @@ class ControlPoint(Model):
         self.score = float(data['score'])
         self.x = float(data['x'])
         self.y = float(data['y'])
+        self.station_id = data['station_id'] if 'station_id' in data else None
         self.altitude = float(data['altitude'])
 
 
@@ -224,6 +225,8 @@ class Course(Model):
         self.climb = 0
         self._controls = []  # type: List[CourseControl]
         self.unrolled_controls = []  # unrolled copy of _controls
+        self.user_function_string = None
+        self._user_function = None
 
         self.count_person = 0
         self.count_group = 0
@@ -279,7 +282,8 @@ class Course(Model):
             'name': self.name,
             'length': self.length,
             'climb': self.climb,
-            'corridor': self.corridor
+            'corridor': self.corridor,
+            'user_function_string': self.user_function_string
         }
 
     def update_data(self, data):
@@ -294,6 +298,8 @@ class Course(Model):
             control.update_data(item)
             self._controls.append(control)
         self.unrolled_controls = self.get_unrolled_controls()
+        if 'user_function_string' in data:
+            self.user_function_string = data['user_function_string']
 
     def get_unrolled_controls(self):
         # return unrolled controls list, e.g. '*(31-45)[3]' -> '*(31-45) *(31-45) *(31-45)'
@@ -319,6 +325,20 @@ class Course(Model):
             if '[]' in control.code:
                 count_str = '≥' + count_str
         return count_str
+
+    @staticmethod
+    def build_user_function(code):
+        namespace = {}
+
+        func_code = "def user_function(result, course):\n"
+
+        for line in code.splitlines():
+            func_code += "    " + line + '\n'
+
+        exec(func_code, namespace)
+
+        return namespace['user_function']
+
 
 class Subgroup(Model):
     def __init__(self):
@@ -353,8 +373,6 @@ class Group(Model):
         self.long_name = ''
         self.sex = Sex.MF
 
-        self.min_year = 0
-        self.max_year = 0
 
         self.min_age = 0
         self.max_age = 0
@@ -408,8 +426,6 @@ class Group(Model):
             'long_name': self.long_name,
             'price': self.price,
             'sex': self.sex.value,
-            'min_year': self.min_year,
-            'max_year': self.max_year,
             'min_age': self.min_age,
             'max_age': self.max_age,
             'start_time': self.start_time.to_msec() if self.start_time else None,
@@ -431,10 +447,8 @@ class Group(Model):
         self.long_name = str(data['long_name'])
         self.price = int(data['price'])
         self.sex = Sex(int(data['sex']))
-        self.min_year = int(data['min_year'])
-        self.max_year = int(data['max_year'])
-        self.min_age = int(data['min_age'])
-        self.max_age = int(data['max_age'])
+        self.min_age = int(data['min_age']) if 'min_age' in data else 0
+        self.max_age = int(data['max_age']) if 'max_age' in data else 0
         self.max_time = OTime(msec=int(data['max_time']))
         self.start_interval = OTime(msec=int(data['start_interval']))
         self.start_corridor = int(data['start_corridor'])
@@ -610,6 +624,7 @@ class Result:
         self.final_result_time = None  # type: OTime real time, when nobody can win
 
         self.card_number = 0
+        self.card_battery_level = None  # 0-100%, Huichang contact-less card
         self.splits = []  # type: List[Split]
         self.__start_time = None
         self.__finish_time = None
@@ -668,7 +683,7 @@ class Result:
             if self.splits[i].code != other.splits[i].code:
                 return False
             abs_diff = abs(self.splits[i].time.to_sec() - other.splits[i].time.to_sec())
-            if self.splits[i].code != '85' and abs_diff > max_gap.to_sec() and OTime.get_msec(day=1)//1000 - abs_diff > max_gap.to_sec():
+            if abs_diff > max_gap.to_sec() and OTime.get_msec(day=1)//1000 - abs_diff > max_gap.to_sec():
                 return False
          
         return True
@@ -700,6 +715,7 @@ class Result:
 
             'splits': [split.to_dict() for split in self.splits],
             'card_number': self.card_number,
+            'card_battery_level': self.card_battery_level,
 
             'speed': self.speed,  # readonly
             'length': self.length,  # readonly
@@ -744,6 +760,8 @@ class Result:
             self.bib = int(data['bib'])
         if 'card_number' in data:
             self.card_number = int(data['card_number'])
+        if 'card_battery_level' in data and data['card_battery_level']:
+            self.card_battery_level = int(data['card_battery_level'])
         if 'splits' in data:
             self.splits = []
             for item in data['splits']:
@@ -773,9 +791,7 @@ class Result:
             ret += str(self.scores) + ' ' + _('points') + ' '
 
         time_accuracy = race().get_setting('time_accuracy', 0)
-        if self.person.group is None:
-            print(self.person)
-        if self.person.group.is_team_race():
+        if race().is_team_race():
             ret += self.get_result_otime_team().to_str(time_accuracy)
         else:
             ret += self.get_result_otime().to_str(time_accuracy)
@@ -913,7 +929,7 @@ class Result:
         return self.status == ResultStatus.OK or self.status == ResultStatus.RESTORED
 
     def is_punch(self):
-        return self.is_sportident() or self.is_sfr() or self.is_sportiduino()
+        return self.system_type not in [SystemType.NONE, SystemType.MANUAL]
 
     def is_sportident(self):
         return self.system_type == SystemType.SPORTIDENT
@@ -923,6 +939,9 @@ class Result:
 
     def is_sportiduino(self):
         return self.system_type == SystemType.SPORTIDUINO
+
+    def is_huichang(self):
+        return self.system_type == SystemType.HUICHANG
 
     def is_manual(self):
         return self.system_type == SystemType.MANUAL
@@ -991,10 +1010,8 @@ class ResultSportident(Result):
     def get_start_time(self):
         obj = race()
         start_source = obj.get_setting('system_start_source', 'protocol')
-        if start_source == 'protocol':
-            if self.person and self.person.start_time and self.person.start_time.to_msec():
-                return self.person.start_time
-        elif start_source == 'station':
+        if start_source in ['protocol', 'station']:
+            # If have start punch in result use one
             if self.start_time and self.start_time.to_msec():
                 return self.start_time
             elif self.person and self.person.start_time and self.person.start_time.to_msec():
@@ -1011,8 +1028,6 @@ class ResultSportident(Result):
                     if split.code == str(start_cp_number):
                         self.__start_time = split.time
                         return self.__start_time
-        elif start_source == 'gate':
-            pass
         elif start_source == 'group':
             # If have start punch in result use one
             if self.start_time and self.start_time.to_msec():
@@ -1020,6 +1035,8 @@ class ResultSportident(Result):
             elif self.person and self.person.group:
                 if self.person.group.start_time and self.person.group.start_time.to_msec():
                     return self.person.group.start_time
+        elif start_source == 'gate':
+            pass
 
         return OTime()
 
@@ -1115,7 +1132,7 @@ class ResultSportident(Result):
         return False
 
 
-    def check(self, course=None):
+    def check_by_course(self, course=None):
         if not course:
             return super().check()
         count_controls = len(course.controls)
@@ -1129,34 +1146,34 @@ class ResultSportident(Result):
             s.course_index = -1
 
         #### BNO: reset credit_time for bonuses
-        self.credit_time = OTime()
-        unique_bonuses = set()
-        check_only_bonus = False
+        #self.credit_time = OTime()
+        #unique_bonuses = set()
+        #check_only_bonus = False
 
-        prev_code = None
-        for i in range(len(self.splits)):
-            split = self.splits[i]
-            cur_code = split.code
-            #if prev_code is None:
-            #    prev_code = cur_code
-            #ss = prev_code+'-'+cur_code
-            #if int(prev_code) > int(cur_code):
-            #    ss = cur_code+'-'+prev_code
-            #if ss == '33-44':
-            #    self.status = ResultStatus.DISQUALIFIED
+        #prev_code = None
+        #for i in range(len(self.splits)):
+        #    split = self.splits[i]
+        #    cur_code = split.code
+        #    #if prev_code is None:
+        #    #    prev_code = cur_code
+        #    #ss = prev_code+'-'+cur_code
+        #    #if int(prev_code) > int(cur_code):
+        #    #    ss = cur_code+'-'+prev_code
+        #    #if ss == '33-44':
+        #    #    self.status = ResultStatus.DISQUALIFIED
 
-            prev_code = cur_code
-            # check bonuses
-            # CP 83-87 - 8 minutes
-            if int(cur_code) in [83, 84, 85, 86, 87]:
-                if cur_code not in unique_bonuses:
-                    unique_bonuses.add(cur_code)
-                    self.credit_time += OTime(minute=8)
-                continue
-            elif check_only_bonus:
-                if i == len(self.splits)-1:
-                    return True
-                continue
+        #    prev_code = cur_code
+        #    # check bonuses
+        #    # CP 83-87 - 8 minutes
+        #    if int(cur_code) in [83, 84, 85, 86, 87]:
+        #        if cur_code not in unique_bonuses:
+        #            unique_bonuses.add(cur_code)
+        #            self.credit_time += OTime(minute=8)
+        #        continue
+        #    elif check_only_bonus:
+        #        if i == len(self.splits)-1:
+        #            return True
+        #        continue
         ####
 
         course_index = 0
@@ -1191,6 +1208,28 @@ class ResultSportident(Result):
             return True
 
         return False
+
+    def check_by_user_function(self, course=None):
+        if not course:
+            return True
+
+        if course.user_function_string:
+            if not course._user_function:
+                code = course.user_function_string
+                course._user_function = course.build_user_function(code)
+            try:
+                course._user_function(self, course)
+            except Exception as e:
+                logging.error(_('User function error for course "{}":').format(course.name))
+                logging.exception(e)
+                return False
+
+        return True
+
+    def check(self, course=None):
+        status1 = self.check_by_course(course)
+        status2 = self.check_by_user_function(course)
+        return status1 and status2
 
     def merge_with(self, new_result):
         # Merge with new result (merge splits, backup old finish/start, use new finish/start as finish/start)
@@ -1251,6 +1290,8 @@ class ResultSFR(ResultSportident):
 class ResultSportiduino(ResultSportident):
     system_type = SystemType.SPORTIDUINO
 
+class ResultHuichang(ResultSportident):
+    system_type = SystemType.HUICHANG
 
 class Person(Model):
     def __init__(self):
@@ -1404,7 +1445,7 @@ class RaceData(Model):
         self.chief_referee = ''
         self.secretary = ''
         self.url = ''
-        self.race_type = RaceType.INDIVIDUAL_RACE
+        self.race_type = RaceType.TEAM_RACE
         self.start_datetime = None  # type: datetime
         self.end_datetime = None  # type: datetime
         self.relay_leg_count = 3
@@ -1427,7 +1468,9 @@ class RaceData(Model):
             return 0
         if date_ is None:
             date_ = datetime.datetime.now()
-        return max((date_ - self.start_datetime).days, 0)
+        d1 = self.start_datetime.date()
+        d2 = date_.date()
+        return max((d2 - d1).days, 0)
 
     def to_dict(self):
         return {
@@ -1466,6 +1509,7 @@ class Race(Model):
         'ResultSportident': ResultSportident,
         'ResultSFR': ResultSFR,
         'ResultSportiduino': ResultSportiduino,
+        'ResultHuichang': ResultHuichang,
         'Group': Group,
         'Course': Course,
         'Team': Team,
@@ -1496,6 +1540,7 @@ class Race(Model):
             'ResultSportident': self.results,
             'ResultSFR': self.results,
             'ResultSportiduino': self.results,
+            'ResultHuichang': self.results,
             'Group': self.groups,
             'Course': self.courses,
             'Team': self.teams,
@@ -1555,7 +1600,7 @@ class Race(Model):
         if dict_obj['object'] == 'Person':
             obj.group = self.get_obj('Group', dict_obj['group_id'])
             obj.team = self.get_obj('Team', dict_obj['team_id'])
-        elif dict_obj['object'] in ['Result', 'ResultManual', 'ResultSportident', 'ResultSFR', 'ResultSportiduino']:
+        elif dict_obj['object'] in ['Result', 'ResultManual', 'ResultSportident', 'ResultSFR', 'ResultSportiduino', 'ResultHuichang']:
             obj.person = self.get_obj('Person', dict_obj['person_id'])
         elif dict_obj['object'] == 'Group':
             obj.course = self.get_obj('Course', dict_obj['course_id'])
@@ -1567,7 +1612,7 @@ class Race(Model):
         obj = self.support_obj[dict_obj['object']]()
         obj.id = uuid.UUID(dict_obj['id'])
         self.update_obj(obj, dict_obj)
-        self.list_obj[dict_obj['object']].insert(0, obj)
+        self.list_obj[dict_obj['object']].append(obj)
 
     def get_type(self, group: Group):
         if group.get_type():
@@ -1582,6 +1627,9 @@ class Race(Model):
             return self.settings[setting]
         else:
             return nvl_value
+
+    def get_punch_system(self):
+        return SystemType(self.get_setting('punch_system', SystemType.SPORTIDENT.value))
 
     def get_days(self, date_=None):
         return self.data.get_days(date_)
@@ -2432,7 +2480,12 @@ class TeamResult(object):
             self.score = result.scores
         else:
             self.score = min(self.score, result.scores)
+        team_status = self.members_results[0].status
+        if team_status.value > result.status.value:
+            result.status = team_status
         for i in range(len(self.members_results)):
+            if result.status != team_status:
+                self.members_results[i].status = result.status
             self.members_results[i].scores = self.score
 
     def get_penalty_time(self):

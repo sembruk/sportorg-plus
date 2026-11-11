@@ -55,7 +55,8 @@ class EventPropertiesDialog(QDialog):
         # self.item_end_date = QCalendarWidget()
         self.item_end_date = QDateTimeEdit()
         self.item_end_date.setDisplayFormat('yyyy.MM.dd HH:mm:ss')
-        self.layout.addRow(self.label_end_date, self.item_end_date)
+        # Disabled because not used
+        #self.layout.addRow(self.label_end_date, self.item_end_date)
 
         self.label_location = QLabel(_('Location'))
         self.item_location = QLineEdit()
@@ -64,6 +65,7 @@ class EventPropertiesDialog(QDialog):
         self.label_type = QLabel(_('Event type'))
         self.item_type = AdvComboBox()
         self.item_type.addItems(RaceType.get_titles())
+        #self.item_type.setDisabled(True)  # Now using only team race
         self.layout.addRow(self.label_type, self.item_type)
 
         self.label_relay_legs = QLabel(_('Relay legs'))

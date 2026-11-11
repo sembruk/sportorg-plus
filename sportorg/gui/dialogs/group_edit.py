@@ -63,20 +63,8 @@ class GroupEditDialog(QDialog):
         self.item_age_min = QSpinBox()
         self.item_age_max = QSpinBox()
 
-        self.item_year_min = QSpinBox()
-        self.item_year_min.setMaximum(date.today().year)
-        self.item_year_min.editingFinished.connect(self.year_change)
-
-        self.item_year_max = QSpinBox()
-        self.item_year_max.setMaximum(date.today().year)
-        self.item_year_max.editingFinished.connect(self.year_change)
-
-        if race().is_team_race():
-            self.layout.addRow(_('Min age'), self.item_age_min)
-            self.layout.addRow(_('Max age'), self.item_age_max)
-        else:
-            self.layout.addRow(_('Min year'), self.item_year_min)
-            self.layout.addRow(_('Max year'), self.item_year_max)
+        self.layout.addRow(_('Min age'), self.item_age_min)
+        self.layout.addRow(_('Max age'), self.item_age_max)
 
         label_start_time = QLabel(_('Start time'))
         label_start_time.setToolTip(_('Start time for mass start (rogaining)'))
@@ -219,10 +207,6 @@ class GroupEditDialog(QDialog):
             self.item_age_min.setValue(self.current_object.min_age)
         if self.current_object.max_age:
             self.item_age_max.setValue(self.current_object.max_age)
-        if self.current_object.min_year:
-            self.item_year_min.setValue(self.current_object.min_year)
-        if self.current_object.max_year:
-            self.item_year_max.setValue(self.current_object.max_year)
         if self.current_object.start_time:
             self.item_start_time.setTime(time_to_qtime(self.current_object.start_time))
         if self.current_object.max_time:
@@ -272,12 +256,6 @@ class GroupEditDialog(QDialog):
 
         if group.max_age != self.item_age_max.value():
             group.max_age = self.item_age_max.value()
-
-        if group.min_year != self.item_year_min.value():
-            group.min_year = self.item_year_min.value()
-
-        if group.max_year != self.item_year_max.value():
-            group.max_year = self.item_year_max.value()
 
         if group.start_corridor != self.item_corridor.value():
             group.start_corridor = self.item_corridor.value()

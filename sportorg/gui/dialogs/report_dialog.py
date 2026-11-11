@@ -147,10 +147,10 @@ class ReportDialog(QDialog):
         current_race['settings'].pop('live_url', None)
         current_race['settings'].pop('live_urls', None)
 
-        current_race['results'] = deepcopy(current_race['results'])
-        # Remove results
-        for result in current_race['results']:
-            result.pop('splits', None)
+        #current_race['results'] = deepcopy(current_race['results'])
+        ## Remove results
+        #for result in current_race['results']:
+        #    result.pop('splits', None)
 
         template_path_items = template_path.split('/')[-1]
         template_path_items = '.'.join(template_path_items.split('.')[:-1]).split('_')

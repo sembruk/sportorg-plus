@@ -151,7 +151,6 @@ class Sportiduino(object):
         def pack(self):
             config_data = b''
             config_data += int2byte(self.antenna_gain)
-            print(self.timezone.total_seconds())
             config_data += int2byte(int(self.timezone.total_seconds()/60/15))
             return config_data
 

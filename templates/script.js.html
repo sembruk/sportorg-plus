@@ -83,6 +83,10 @@
             for (var _b = 0, _c = this.data; _b < _c.length; _b++) {
                 var obj = _c[_b];
                 var tr = Tr();
+                if (obj._details) {
+                    tr._details = obj._details;
+                    tr.classList.add('clickable-row');
+                }
                 if (obj instanceof Node || typeof obj === 'string') {
                     var td = Td();
                     td.colSpan = cols;
@@ -399,6 +403,8 @@
         }
         if (!value) return '';
 
+        const milliseconds = Math.floor(value % 1000);
+
         value /= 1000;
 
         let hours = Math.floor(value / 3600);
@@ -414,7 +420,14 @@
             return (dd < 10 ? '0' + dd : dd) + '';
         };
 
-        return with0(hours) + ':' + with0(minutes) + ':' + with0(seconds);
+        let result = with0(hours) + ':' + with0(minutes) + ':' + with0(seconds);
+
+        if (milliseconds > 0) {
+            const fraction = String(milliseconds).padStart(3, '0').replace(/0+$/, '');
+            result += '.' + fraction;
+        }
+
+        return result;
     }
 
     function getById(list, id) {

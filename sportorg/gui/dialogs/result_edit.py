@@ -7,10 +7,12 @@ from datetime import datetime
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QFormLayout, QLabel, QLineEdit, QDialog, \
-    QTimeEdit, QSpinBox, QGroupBox, QTextEdit, QDialogButtonBox, QComboBox
+    QTimeEdit, QSpinBox, QGroupBox, QTextEdit, QDialogButtonBox, QComboBox, \
+    QPushButton, QStyle, QHBoxLayout
 
 from sportorg import config
 from sportorg.gui.dialogs.person_edit import PersonEditDialog
+from sportorg.gui.dialogs.bib_dialog import BibDialog
 from sportorg.gui.global_access import GlobalAccess
 from sportorg.gui.utils.custom_controls import AdvComboBox
 from sportorg.language import _
@@ -26,8 +28,6 @@ from sportorg.common.extendedtimeedit import DurationEdit
 
 
 class ResultEditDialog(QDialog):
-    control_was_pressed = False;
-
     def __init__(self, result, is_new=False):
         super().__init__(GlobalAccess().get_main_window())
         self.current_object = result
@@ -57,11 +57,17 @@ class ResultEditDialog(QDialog):
         self.item_created_at.setReadOnly(True)
 
         self.item_card_number = QSpinBox()
-        self.item_card_number.setMaximum(9999999)
+        self.item_card_number.setMaximum(99999999)  # Huichang has 8 digits
 
         self.item_bib = QSpinBox()
         self.item_bib.setMaximum(Limit.BIB)
         self.item_bib.valueChanged.connect(self.show_person_info)
+
+        self.find_button = QPushButton('')
+        icon = self.find_button.style().standardIcon(QStyle.SP_FileDialogContentsView)
+        self.find_button.setIcon(icon)
+        self.find_button.setMaximumSize(40, 40)
+        self.find_button.clicked.connect(self.find_person)
 
         self.label_person_info = QLabel('')
 
@@ -102,7 +108,11 @@ class ResultEditDialog(QDialog):
         self.layout.addRow(QLabel(_('Created at')), self.item_created_at)
         if self.current_object.is_punch():
             self.layout.addRow(QLabel(_('Card number')), self.item_card_number)
-        self.layout.addRow(QLabel(_('Bib')), self.item_bib)
+        bib_layout = QHBoxLayout()
+        bib_layout.addWidget(self.item_bib)
+        bib_layout.addWidget(self.find_button)
+        self.layout.addRow(QLabel(_('Bib')), bib_layout)
+        #self.layout.addRow(QLabel(_('Bib')), self.item_bib)
         self.layout.addRow(QLabel(''), self.label_person_info)
         self.layout.addRow(QLabel(_('Start')), self.item_start)
         self.layout.addRow(QLabel(_('Finish')), self.item_finish)
@@ -121,9 +131,8 @@ class ResultEditDialog(QDialog):
         if self.current_object.is_punch():
             start_source = race().get_setting('system_start_source', 'protocol')
             finish_source = race().get_setting('system_finish_source', 'station')
-            if start_source == 'protocol' or start_source == 'cp' or start_source == 'group':
-                #self.item_start.setDisabled(True)
-                pass
+            if start_source == 'cp':
+                self.item_start.setDisabled(True)
             if finish_source == 'cp':
                 self.item_finish.setDisabled(True)
             self.layout.addRow(self.splits.widget)
@@ -158,14 +167,8 @@ class ResultEditDialog(QDialog):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
             self.cancel_changes()
-        if event.key() == Qt.Key_Control:
-            self.control_was_pressed = True
-        if event.key() in [Qt.Key_Return, Qt.Key_Enter] and self.control_was_pressed:
+        if event.key() in [Qt.Key_Return, Qt.Key_Enter]:
             self.apply_changes()
-
-    def keyReleaseEvent(self, event):
-        if event.key() == Qt.Key_Control:
-            self.control_was_pressed = False
 
     def show_person_info(self):
         bib = self.item_bib.value()
@@ -183,6 +186,14 @@ class ResultEditDialog(QDialog):
                 self.label_person_info.setText(info)
             else:
                 self.label_person_info.setText(_('not found'))
+
+    def find_person(self):
+        bib_dialog = BibDialog(str(self.item_bib.value()))
+        bib_dialog.exec_()
+        person = bib_dialog.get_person()
+        if person:
+            self.item_bib.setValue(person.bib)
+            self.show_person_info()
 
     def set_values_from_model(self):
         if self.current_object.is_punch():
@@ -248,13 +259,13 @@ class ResultEditDialog(QDialog):
                         break
             result.splits = new_splits
 
-        time_ = time_to_otime(self.item_finish.seconds())
-        if result.finish_time != time_:
-            result.finish_time = time_
+        sec = self.item_finish.seconds()
+        if result.finish_time.to_sec() != sec:  # ignores milliseconds
+            result.finish_time = time_to_otime(sec)
 
-        time_ = time_to_otime(self.item_start.seconds())
-        if self.item_start.isEnabled() and result.start_time != time_:
-            result.start_time = time_
+        sec = self.item_start.seconds()
+        if self.item_start.isEnabled() and result.start_time and result.start_time.to_sec() != sec:  # ignores milliseconds
+            result.start_time = time_to_otime(sec)
 
         time_ = time_to_otime(self.item_credit.seconds())
         if result.credit_time != time_:
@@ -305,6 +316,7 @@ class ResultEditDialog(QDialog):
                     if team.result:
                         for r in team.result.members_results:
                             if r is not result:
+                                r.status = result.status
                                 ResultChecker.checking(r)
                 if result.person and result.person.group:
                     GroupSplits(race(), result.person.group).generate(True)

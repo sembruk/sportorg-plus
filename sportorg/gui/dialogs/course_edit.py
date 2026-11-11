@@ -1,8 +1,8 @@
 import logging
 from PySide2.QtCore import Qt
 
-from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QFormLayout, QLabel, QLineEdit, QDialog, QSpinBox, QTextEdit, QDialogButtonBox
+from PySide2.QtGui import QIcon, QFontDatabase
+from PySide2.QtWidgets import QFormLayout, QLabel, QLineEdit, QDialog, QSpinBox, QTextEdit, QDialogButtonBox, QPlainTextEdit
 
 from sportorg import config
 from sportorg.gui.global_access import GlobalAccess
@@ -16,7 +16,6 @@ from sportorg.modules.teamwork import Teamwork
 
 
 class CourseEditDialog(QDialog):
-    control_was_pressed = False;
 
     def __init__(self, course, is_new=False):
         super().__init__(GlobalAccess().get_main_window())
@@ -65,6 +64,14 @@ class CourseEditDialog(QDialog):
         self.item_controls.setTabChangesFocus(True)
         self.layout.addRow(self.label_controls, self.item_controls)
 
+        self.label_user_script = QLabel(_('User function for checking results'))
+        self.layout.addRow(self.label_user_script)
+        self.user_function_editor = QPlainTextEdit()
+        self.user_function_editor.setPlaceholderText(_('# Write function body here using Python\n# Arguments: result, course\n# Leave function body empty if you don\'t need additional checks'))
+        font = QFontDatabase.systemFont(QFontDatabase.FixedFont)
+        self.user_function_editor.setFont(font)
+        self.layout.addRow(self.user_function_editor)
+
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.button_ok = button_box.button(QDialogButtonBox.Ok)
         self.button_ok.setText(_('OK'))
@@ -89,14 +96,8 @@ class CourseEditDialog(QDialog):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
             self.cancel_changes()
-        if event.key() == Qt.Key_Control:
-            self.control_was_pressed = True
-        if event.key() in [Qt.Key_Return, Qt.Key_Enter] and self.control_was_pressed:
+        if event.key() in [Qt.Key_Return, Qt.Key_Enter]:
             self.apply_changes()
-
-    def keyReleaseEvent(self, event):
-        if event.key() == Qt.Key_Control:
-            self.control_was_pressed = False
 
     def check_name(self):
         name = self.item_name.text()
@@ -117,7 +118,10 @@ class CourseEditDialog(QDialog):
         if self.current_object._controls:
             self.item_control_qty.setValue(len(self.current_object._controls))
         for c in self.current_object._controls:
-            self.item_controls.append('{}{}{}'.format(c.code, ' ' + str(c.length) if c.length else '', ' ' + _('cutoff') if c.cutoff else ''))
+            self.item_controls.append('{}{}'.format(c.code, ' ' + str(c.length) if c.length else ''))
+
+        if self.current_object.user_function_string:
+            self.user_function_editor.setPlainText(self.current_object.user_function_string)
 
     def apply_changes_impl(self):
         course = self.current_object
@@ -146,15 +150,15 @@ class CourseEditDialog(QDialog):
                 try:
                     control.length = int(l[1])
                 except Exception as e:
-                    try:
-                        control.cutoff = (l[1] == _('cutoff') or l[1] == _('ct'))
-                        if len(l) > 2:
-                            control.length = int(l[2])
-                    except Exception as e:
-                        logging.exception(e)
-                        control.length = 0
+                    logging.exception(e)
+                    control.length = 0
             controls.append(control)
         course.controls = controls
+        
+        user_function_string = self.user_function_editor.toPlainText()
+        if course.user_function_string != user_function_string:
+            course.user_function_string = user_function_string
+            course._user_function = None
 
         obj = race()
         ResultChecker.check_all()
@@ -162,3 +166,4 @@ class CourseEditDialog(QDialog):
         RaceSplits(obj).generate()
         ScoreCalculation(obj).calculate_scores()
         Teamwork().send(course.to_dict())
+

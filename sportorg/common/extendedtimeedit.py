@@ -15,7 +15,7 @@ class DurationEdit(QWidget):
         self.daysSpin = QSpinBox()
         self.daysSpin.setRange(0, 9)
         self.daysSpin.setValue(0)
-        self.daysSpin.setMaximumWidth(30)
+        self.daysSpin.setMaximumWidth(45)
         self.daysLabel1 = QLabel("+")
         self.daysLabel2 = QLabel("дней")
 
