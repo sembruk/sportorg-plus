@@ -96,10 +96,10 @@
         //r.team = a
         if (result.status == 8) {
             r.result = "КВ"
-            r.place_show = '';
+            //r.place_show = '';
         } else if (result.status !== 1) {
             r.diff = '';
-            r.place_show = '';
+            //r.place_show = '';
             // Copy status description from result
             r.scores = r.result;
             r.penalty_time = '';
@@ -141,8 +141,7 @@
             if (result.status !== 13 && person && person.group && person.group.id === group.id
                     && (showFirstCount > 0 ? result.place <= showFirstCount && result.place > 0 : true)) {
                 var r = getPersonResult(result)
-                r.splits = getSplits(result)
-
+                r.splits = getSplits(result);
                 results.push(r);
             }
         }
@@ -203,7 +202,7 @@
         }
         return results;
     }
-	function getResultsByCourse(group, showFirstCount) {
+	function getResultsByCourse(course, showFirstCount) {
         showFirstCount = +showFirstCount || 0;
         var isTeamRace = race.data.race_type === 6
         var results = [];
