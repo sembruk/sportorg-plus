@@ -604,7 +604,7 @@ class Result:
         self.id = uuid.uuid4()
         self.bib = 0
         self.start_time = None  # type: OTime
-        self.finish_time = OTime.now()  # type: OTime
+        self.finish_time = None  # type: OTime
         self.person = None  # type: Person
         self.status = ResultStatus.OK
         self.status_comment = ''

@@ -1,5 +1,6 @@
 from itertools import zip_longest
 from typing import List, Union
+from datetime import datetime, timedelta
 
 import pytest
 
@@ -17,6 +18,7 @@ from sportorg.models.memory import (
     race,
 )
 from sportorg.models.result.result_checker import ResultChecker
+from sportorg.modules.sportident.result_generation import ResultSportidentGeneration
 
 
 def test_controls_as_int():
@@ -542,6 +544,16 @@ def test_non_obvious_behavior():
     assert result.check(make_course(course)) == True
     assert result.splits[0].is_correct == True
     assert result.splits[0].has_penalty == True
+
+
+def test_missed_finish_readout():
+    create_race()
+    race().set_setting('system_missed_finish', 'readout')
+    race().data.start_datetime = datetime.now().replace(hour=9,minute=0,second=0, microsecond=0) - timedelta(days=1)
+    result = race().results[0]
+    rg = ResultSportidentGeneration(result)
+    assert rg.get_result().finish_time.day == 1
+ 
 
 
 def ok(course: List[Union[int, str]], splits: List[int]) -> bool:
